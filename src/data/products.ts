@@ -17,8 +17,71 @@ export type Product = {
   stock: number;
 };
 
-const img = (id: string) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=82`;
+// Real Pakistani suit images from public/images
+const embLawn1    = "/images/imgi_144_p18050-embroidered-lawn-dress.jpg";
+const embLawn2    = "/images/imgi_148_p18200-embroidered-lawn-dress.jpg";
+const embLawn3    = "/images/imgi_167_p18052-embroidered-lawn-dress.jpg";
+const embLawn4    = "/images/imgi_208_embroidered-lawn-dress-18857_580x.jpg";
+const embLawn5    = "/images/imgi_191_blush-coral-pakistani-women-embroidered-lawn-suit-with-ivory-dupatta.jpg";
+const embLawn6    = "/images/imgi_217_RubyRougePakistaniembroideredlawnsuitfrontfullview.jpg";
+const embLawn7    = "/images/imgi_190_09-DesignerBlackEmbroideredLawnSuitforWomen_ShipstoUS_Canadaby-Charizma1.jpg";
+const digitalPrint1 = "/images/imgi_162_p17881-digital-print-lawn-dress.jpg";
+const digitalPrint2 = "/images/imgi_169_digital-print-lawn-18852_580x.jpg";
+const digitalPrint3 = "/images/imgi_161_DWEF24-51PrintedYellowSide-2_2.jpg";
+const digitalPrint4 = "/images/imgi_224_Instagram-Sapphire-women-new-yellow-dress-design-original-brand-empires-collection-buy-online-Pakistan-best-clothing-brand-girls-latest-fashion-2025-eid-festive-.jpg";
+const luxuryLawn1  = "/images/imgi_195_MOTIF-new-latest-summer-collection-2024-new-arrivals-luxury-lawn-collection-2023-lawn-dress-designs-heavy-embroidered-3-piece-lawn-suit-eid-collection-big-eid-su.jpg";
+const luxuryLawn2  = "/images/imgi_177_luxury-wear.jpg";
+const luxuryLawn3  = "/images/imgi_184_women-lawn-2026.jpg";
+const luxuryLawn4  = "/images/imgi_212_Qalamkar-women-new-dress-design-original-brand-empires-collection-buy-online-Pakistan-best-clothing-brand-girls-latest-fashion-2025-eid-festive.jpg";
+const luxuryLawn5  = "/images/imgi_160_Qalamkar-women-new-dress-design-original-brand-empires-collection-buy-Lawn-Dresses-Online-Pakistan-best-clothing-brand-Fashion-Shalwar-kameez-deisgn-2025.jpg";
+const luxuryLawn6  = "/images/imgi_154_Faiza-Saqlain-women-new-dress-design-original-brand-empires-collection-buy-Lawn-Dresses-Online-Pakistan-best-clothing-brand-girls-Fashion-2025-eid-festive-pink-d.jpg";
+const pretSuit1   = "/images/imgi_202_MSS-6229_2_3_piece_pret_lawn_suit.jpg";
+const pretSuit2   = "/images/imgi_237_MSS-6251_2_lovely_3_piece_pret_lawn.jpg";
+const pretSuit3   = "/images/imgi_216_MSS-6244_2_dress_design_Pakistan.jpg";
+const pretSuit4   = "/images/imgi_235_Buy-online-this-Fuchsia-3-piece-ready-to-wear-embroidered-Banjara-Extand-Pakistan-dress-by-Zeen-Cambridge-Eid-Collection-2017-Pakistan-Pret-Wear-758x1137.jpg";
+const pretSuit5   = "/images/imgi_172_3-Piece-Grey-Ready-to-wear-Pakistani-Dress-is-available-online-at-a-discounted-sale-price-online-shopping-alkaram-spring-summer-festival-Eid-collection-2017-side.jpg";
+const festive1    = "/images/imgi_203_PakistaniFashionLawnSuitforFestiveWear.jpg";
+const festive2    = "/images/imgi_204_large_16655053380_inayaweb-0014-032a8074-1024x1024.jpg";
+const festive3    = "/images/imgi_183_0Q6A1682.jpg";
+const festive4    = "/images/imgi_230_MWU05939.jpg";
+const festive5    = "/images/imgi_227_MTB01504.jpg";
+const festive6    = "/images/imgi_218_MTB01771_bdfa80be-0e8c-4ad0-be58-9dc07ebb1bd3.jpg";
+const bridal1     = "/images/imgi_238_haniya.jpg";
+const bridal2     = "/images/imgi_233_DSC08955.jpg";
+const bridal3     = "/images/imgi_223_DSC06561.jpg";
+const winterSuit1 = "/images/imgi_149_0034_049A8588_700x_920f4ebf-09fd.jpg";
+const winterSuit2 = "/images/imgi_198_BiAenUxTNO.jpg";
+const winterSuit3 = "/images/imgi_219_c5fc8c4d3bffa10ab4f7488a66728b7f.jpg";
+const aquaSuit    = "/images/imgi_150_Dark-Aqua-Wholesale-Pakistani-Lawn-Suit.jpg";
+const coralSuit   = "/images/imgi_155_Coral-Pink-Wholesale-Pakistani-Lawn-Suit.jpg";
+const greenSuit   = "/images/imgi_159_green-pakistani-style-lawn-cotton-suit-material-for-ladies-stilento-1.jpg";
+const brownSuit   = "/images/imgi_192_light-brown-pakistani-style-lawn-cotton-suit-material-for-women-stilento-1.jpg";
+const mustardSuit = "/images/imgi_170_mustard-lawn-cotton-embroidered-and-digital-print-pakistani-suit-slssls4505-u.jpg";
+const jadeSuit    = "/images/imgi_229_jade-pakistani-lawn-suit-for-women-black-wfrf1ph6.jpg";
+const saleSuit1   = "/images/imgi_193_ladies-lawn-sale.jpg";
+const saleSuit2   = "/images/imgi_200_4_2_ba3cb379-4297-4770-81a3-6ba2dd27b84d.jpg";
+const saleSuit3   = "/images/imgi_201_pack-of-3-pakistani-embroidered-lawn-suits-wholesale_44701.jpg";
+const saleSuit4   = "/images/imgi_205_new-branded-suit-for-women.jpg";
+const saleSuit5   = "/images/imgi_206_AIZ04271_b2a11281-da8e-476d-8658-4bdc3ab23082.jpg";
+const saleSuit6   = "/images/imgi_209_A3649d6ec30d341649782ae6d2813c68a2.jpg";
+const saleSuit7   = "/images/imgi_213_LadiesSummer3PCLawnSuitImage.jpg";
+const saleSuit8   = "/images/imgi_215_blog_banner_4_e4673f72-c6f7-40a4-9bd0-0a9224857b07.jpg";
+const saleSuit9   = "/images/imgi_220_3_215e3f99-5f15-4f17-b4db-e20d800930d8.jpg";
+const saleSuit10  = "/images/imgi_221_28_3cbd8fdf-08b6-4993-82d1-310d1a39b721.jpg";
+const saleSuit11  = "/images/imgi_228_3PC_SemiStitched_LawnShirt_CottonShalwar_FancyDupatta1_46797588758840.jpg";
+const saleSuit12  = "/images/imgi_232_crossstitch-daily-lawn-24_119.jpg";
+const saleSuit13  = "/images/imgi_239_8AC0735D-9EEF-40AA-844E-F1333584D3C5.jpg";
+const saleSuit14  = "/images/imgi_240_2_27e9ae58-5ceb-4fea-a562-9deb7001ff3b.jpg";
+const saleSuit15  = "/images/imgi_241_WhatsApp-Image-2026-324-at-12.35.50-PM-900x1199.jpg";
+const saleSuit16  = "/images/imgi_185_l1.jpg";
+const saleSuit17  = "/images/imgi_187_-Famous-Premium-Pakistani-Lawn-Suit---Luxury-Comfort-for-the-Style-Savvy-Woman2-thumbs-600X825.jpg";
+const saleSuit18  = "/images/imgi_174_B7D77BA4-6C79-4B45-BAAE-88A1BF7064A2_620x.jpg";
+const saleSuit19  = "/images/imgi_176_adan-s-libas-unstitched-printed-lawn-original-pakistani-suit-stilento-1_fd128b52-3008-481b-88f4-32e3-min.jpg";
+const saleSuit20  = "/images/imgi_175_2024.jpg";
+const saleSuit21  = "/images/imgi_197_1-57_1.jpg";
+const saleSuit22  = "/images/imgi_179_U2167A_2_540x.jpg";
+const saleSuit23  = "/images/imgi_156_606.jpg";
+const saleSuit24  = "/images/imgi_158_aa9fa22b7deee46ca5e3caaa83a24eb7.jpg";
 
 export const products: Product[] = [
   {
@@ -34,7 +97,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Pastel Mint", "Powder Pink", "Ivory"],
     sizes: ["Unstitched", "XS", "S", "M", "L", "XL"],
-    images: ["/images/hero_lawn.png"],
+    images: ["/images/hero_lawn.png", embLawn1],
     description: "An exquisite 3-piece embroidered lawn suit. Features a heavily detailed organza neckline patch, digital printed pure silk dupatta, and matching dyed trousers fabric.",
     fabric: "Premium Lawn with Silk Dupatta",
     stock: 24
@@ -52,7 +115,7 @@ export const products: Product[] = [
     badge: "Bestseller",
     colors: ["Crimson Red", "Emerald Green", "Royal Blue"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: ["/images/festive_peshwas.png"],
+    images: ["/images/festive_peshwas.png", festive1],
     description: "A traditional floor-length chiffon Peshwas with a total flow of 12 panels, detailed gold tilla embroidery, hand-crafted gota borders, and a matching embellished net dupatta.",
     fabric: "Pure Chiffon & Net Dupatta",
     stock: 12
@@ -70,7 +133,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Mint Green", "Lilac", "Peach Pink"],
     sizes: ["XS", "S", "M", "L"],
-    images: ["/images/chikankari_pret.png"],
+    images: ["/images/chikankari_pret.png", pretSuit1],
     description: "A ready-to-wear pastel kurti featuring intricate hand-embroidered Lucknowi chikankari (shadow work) on breathable cotton fabric. Tailored for daily elegance.",
     fabric: "Hand-embroidered Cotton",
     stock: 18
@@ -87,23 +150,23 @@ export const products: Product[] = [
     reviews: 34,
     colors: ["Plum Wine", "Midnight Black", "Forest Green"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1617627143750-d86bc21e42bb")],
-    description: "A luxurious deep-toned velvet shirt adorned with intricate gold zari borders, paired with a matching velvet shawl.",
-    fabric: "Micro-velvet",
+    images: [winterSuit1, winterSuit2],
+    description: "A luxurious deep-toned velvet shirt adorned with intricate gold zari borders, paired with a matching velvet shawl featuring heavy multi-head embroidery.",
+    fabric: "Micro-velvet with raw silk pants",
     stock: 8
   },
   {
     id: "p5",
     slug: "midnight-karandi-suit",
     name: "Midnight Karandi Suit",
-    category: "Winter Wear",
+    category: "Winter Collection",
     brand: "Jahanara Heritage",
     price: 9500,
     rating: 4.6,
     reviews: 45,
     colors: ["Deep Navy", "Coal Black"],
     sizes: ["Unstitched"],
-    images: [img("photo-1595777457583-95e059d581b8")],
+    images: [winterSuit3, jadeSuit],
     description: "Winter-ready heavy karandi fabric with minimalist embroidery on the neckline. Perfect for chilly evenings.",
     fabric: "Karandi",
     stock: 20
@@ -119,7 +182,7 @@ export const products: Product[] = [
     reviews: 50,
     colors: ["Sky Blue", "White"],
     sizes: ["S", "M", "L"],
-    images: [img("photo-1529139574466-a303027c1d8b")],
+    images: [pretSuit5, pretSuit4],
     description: "Lightweight and breathable cambric co-ord set featuring delicate floral prints for summer.",
     fabric: "Cambric",
     stock: 40
@@ -128,14 +191,14 @@ export const products: Product[] = [
     id: "p7",
     slug: "printed-khaddar-set",
     name: "Printed Khaddar Set",
-    category: "Winter Wear",
+    category: "Winter Collection",
     brand: "Jahanara Heritage",
     price: 7500,
     rating: 4.7,
     reviews: 62,
     colors: ["Brick Red", "Mustard"],
     sizes: ["Unstitched", "S", "M"],
-    images: [img("photo-1483985988355-763728e1935b")],
+    images: [mustardSuit, brownSuit],
     description: "Traditional printed khaddar suit with a warm shawl to keep you cozy.",
     fabric: "Khaddar",
     stock: 28
@@ -151,14 +214,14 @@ export const products: Product[] = [
     reviews: 30,
     colors: ["Beige", "Grey"],
     sizes: ["S", "M", "L", "XL"],
-    images: [img("photo-1496747611176-843222e1e57c")],
+    images: [pretSuit2, pretSuit3],
     description: "Versatile linen kurta perfect for office wear or daily errands.",
     fabric: "Linen",
     stock: 35
   },
   {
     id: "p9",
-    slug: "block-print-lawn-dupatta",
+    slug: "block-print-lawn",
     name: "Block Print Lawn",
     category: "Luxury Lawn",
     brand: "Jahanara Heritage",
@@ -167,7 +230,7 @@ export const products: Product[] = [
     reviews: 55,
     colors: ["Gold", "Terracotta"],
     sizes: ["Unstitched"],
-    images: [img("photo-1485968579580-b6d095142e6e")],
+    images: [luxuryLawn1, luxuryLawn2],
     description: "Traditional block print motifs on high-quality lawn.",
     fabric: "Lawn",
     stock: 19
@@ -183,7 +246,7 @@ export const products: Product[] = [
     reviews: 22,
     colors: ["Silver", "Gold"],
     sizes: ["M", "L"],
-    images: [img("photo-1502716119720-b23a93e5fe1b")],
+    images: [festive2, festive3],
     description: "Textured jacquard fabric for a sophisticated evening look.",
     fabric: "Jacquard",
     stock: 10
@@ -199,7 +262,7 @@ export const products: Product[] = [
     reviews: 80,
     colors: ["Multi"],
     sizes: ["XS", "S", "M", "L"],
-    images: [img("photo-1469334031218-e382a71b716b")],
+    images: [digitalPrint3, digitalPrint1],
     description: "Vibrant screen-printed kurtis for everyday comfort.",
     fabric: "Cotton",
     stock: 50
@@ -215,7 +278,7 @@ export const products: Product[] = [
     reviews: 18,
     colors: ["Deep Emerald", "Royal Plum"],
     sizes: ["S", "M", "L"],
-    images: [img("photo-1539008835657-9e8e9680c956")],
+    images: [festive5, festive6],
     description: "Flowy crepe silk that drapes perfectly for formal occasions.",
     fabric: "Crepe Silk",
     stock: 7
@@ -231,7 +294,7 @@ export const products: Product[] = [
     reviews: 12,
     colors: ["Pastel Peach", "Ivory"],
     sizes: ["Free Size"],
-    images: [img("photo-1551803091-e20673f15770")],
+    images: [bridal1, bridal2],
     description: "Delicate organza saree with heavy hand-embroidery.",
     fabric: "Organza",
     stock: 5
@@ -247,7 +310,7 @@ export const products: Product[] = [
     reviews: 40,
     colors: ["Brown", "Cream"],
     sizes: ["One Size"],
-    images: [img("photo-1509631179647-0177331693ae")],
+    images: [winterSuit2, winterSuit3],
     description: "Authentic pashmina wool shawl for winter styling.",
     fabric: "Wool",
     stock: 25
@@ -263,7 +326,7 @@ export const products: Product[] = [
     reviews: 65,
     colors: ["Black", "White", "Nude"],
     sizes: ["S", "M", "L"],
-    images: [img("photo-1583391733956-3750e0ff4e8b")],
+    images: [pretSuit3, pretSuit2],
     description: "Versatile raw silk trousers to pair with any kurti.",
     fabric: "Raw Silk",
     stock: 45
@@ -280,7 +343,7 @@ export const products: Product[] = [
     badge: "Couture",
     colors: ["Crimson Gold", "Blush Pink Gold"],
     sizes: ["Custom Size"],
-    images: [img("photo-1502716119720-b23a93e5fe1b"), img("photo-1469334031218-e382a71b716b")],
+    images: [bridal1, bridal3],
     description: "An opulent bridal lehenga set meticulously crafted over 120 hours. Heavily embellished with hand-crafted kora, dabka, tilla, and sequins on premium raw silk.",
     fabric: "Raw Silk Lehenga & Choli with Net Dupatta",
     stock: 3
@@ -297,7 +360,7 @@ export const products: Product[] = [
     badge: "Couture",
     colors: ["Deep Red Tilla", "Antique Gold"],
     sizes: ["Custom Size"],
-    images: [img("photo-1469334031218-e382a71b716b")],
+    images: [bridal2, bridal3],
     description: "A grand traditional bridal gharara set with a heavily embellished short kameez, a dramatically flared gharara with gota-patti borders, and a net embroidered dupatta.",
     fabric: "Tilla Work Raw Silk + Embroidered Net Dupatta",
     stock: 4
@@ -315,7 +378,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Sky Blue", "Dusty Rose", "Sage Green"],
     sizes: ["Unstitched", "S", "M", "L", "XL"],
-    images: ["/images/printed_lawn_blue.png"],
+    images: ["/images/printed_lawn_blue.png", digitalPrint2],
     description: "A stunning 3-piece digital printed lawn suit with a vibrant floral motif on soft sky-blue lawn. Includes a printed chiffon dupatta with lace border and plain dyed trouser fabric.",
     fabric: "Premium Digital Print Lawn + Chiffon Dupatta",
     stock: 40
@@ -333,7 +396,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Champagne Gold", "Pearl White", "Rose Gold"],
     sizes: ["Unstitched", "XS", "S", "M", "L", "XL"],
-    images: [img("photo-1483985988355-763728e1935b")],
+    images: [luxuryLawn6, festive4],
     description: "A shimmering 3-piece tissue fabric suit with multi-colour floral resham embroidery all over the shirt, a sequined border dupatta, and premium shimmer trouser fabric.",
     fabric: "Premium Tissue Fabric + Shimmer Net Dupatta",
     stock: 14
@@ -349,7 +412,7 @@ export const products: Product[] = [
     reviews: 54,
     colors: ["Mustard Gold", "Olive Green"],
     sizes: ["Unstitched", "XS", "S", "M", "L"],
-    images: [img("photo-1595777457583-95e059d581b8"), img("photo-1509631179647-0177331693ae")],
+    images: [mustardSuit, embLawn5],
     description: "Perfect for pre-wedding festivities. Bright mustard organza kameez featuring floral tilla embroidery, combined with a tulip shalwar and block-printed dupatta.",
     fabric: "Organza & Tulip Cotton Shalwar",
     stock: 15
@@ -367,7 +430,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Deep Rust", "Emerald Green"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1583391733956-3750e0ff4e8b")],
+    images: [festive3, festive6],
     description: "A traditional wrap-around Angrakha cut frock in premium flowy chiffon, adorned with elaborate mirrors, gota embellishments, and handmade silk tassel ties.",
     fabric: "Chiffon Angrakha with Silk Linings",
     stock: 7
@@ -383,7 +446,7 @@ export const products: Product[] = [
     reviews: 19,
     colors: ["Teal Blue", "Plum Wine"],
     sizes: ["Free Size"],
-    images: [img("photo-1539008835657-9e8e9680c956")],
+    images: [aquaSuit, jadeSuit],
     description: "A modern-meets-traditional premium silk kaftan featuring an intricately hand-worked neckline with dabka and sequence work, cut for an elegant free-flowing drape.",
     fabric: "Premium Korean Raw Silk",
     stock: 11
@@ -400,7 +463,7 @@ export const products: Product[] = [
     reviews: 32,
     colors: ["Ivory Gold", "Sky Blue"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1551803091-e20673f15770")],
+    images: [embLawn4, embLawn3],
     description: "Ready-to-wear everyday luxury shirt made of self-design jacquard cotton silk fabric, detailed with pearl button detailing on the neckline and lace inserts.",
     fabric: "Self-Jacquard Cotton Silk",
     stock: 25
@@ -418,7 +481,7 @@ export const products: Product[] = [
     badge: "Bestseller",
     colors: ["Sage Green", "Blush Pink"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1595777457583-95e059d581b8")],
+    images: [coralSuit, embLawn6],
     description: "A romantic chiffon short kurti with delicate gold zari embroidery, paired with a matching crushed georgette gharara and a borders-finished dupatta.",
     fabric: "Chiffon Kurti with Crushed Georgette Gharara",
     stock: 14
@@ -436,7 +499,7 @@ export const products: Product[] = [
     badge: "Pre-Order",
     colors: ["Emerald Green", "Maroon Red"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1529139574466-a303027c1d8b"), img("photo-1483985988355-763728e1935b")],
+    images: [luxuryLawn4, luxuryLawn5],
     description: "A pure raw silk straight shirt hand-embellished with dabka, crystal beads, and resham work. Paired with wide-leg pants and an organza border-embroidered dupatta.",
     fabric: "Raw Silk & Organza Dupatta",
     stock: 6
@@ -454,7 +517,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Olive Green", "Off White", "Deep Navy"],
     sizes: ["XS", "S", "M", "L"],
-    images: [img("photo-1529139574466-a303027c1d8b")],
+    images: [greenSuit, pretSuit5],
     description: "Modern palazzo-style ready-to-wear set with a flowy embroidered A-line kurti, wide-leg palazzo pants, and a coordinating contrast dupatta with hand-worked tassels.",
     fabric: "Georgette Kurti + Palazzo Crepe",
     stock: 16
@@ -472,11 +535,12 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Marigold Orange", "Deep Teal", "Crimson"],
     sizes: ["Unstitched", "S", "M", "L"],
-    images: [img("photo-1583744946564-b52ac1c389c8")],
+    images: [digitalPrint4, digitalPrint3],
     description: "A vivid 3-piece screen printed cambric suit with a geometric tribal pattern. Features a matching printed cotton dupatta and raw-dyed shalwar fabric.",
     fabric: "Fine Cambric Cotton + Printed Cotton Dupatta",
     stock: 35
   },
+  // ─── SALE ITEMS ───────────────────────────────────────────────
   {
     id: "s1",
     slug: "sale-floral-printed-3piece-lawn",
@@ -490,7 +554,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Black & White", "Navy Floral", "Dusty Rose"],
     sizes: ["Unstitched", "S", "M", "L", "XL"],
-    images: [img("photo-1583744946564-b52ac1c389c8")],
+    images: [saleSuit1, saleSuit2],
     description: "Breezy all-over jaal floral print on premium lawn fabric. 3-piece set includes printed shirt, plain trouser fabric, and a printed chiffon dupatta with kiran lace border.",
     fabric: "Lawn + Chiffon Dupatta",
     stock: 60
@@ -508,7 +572,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Olive Green Print", "Rust Floral", "Indigo Blue"],
     sizes: ["XS", "S", "M", "L"],
-    images: [img("photo-1496747611176-843222e1e57c")],
+    images: [saleSuit3, saleSuit4],
     description: "Casual co-ord set featuring a relaxed-fit printed shirt with matching tapered trousers. Perfect for everyday wear — comfortable, stylish, and easy to pair with flats.",
     fabric: "Soft Cambric Cotton",
     stock: 45
@@ -526,7 +590,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Ivory Mughal", "Teal Motif", "Maroon"],
     sizes: ["Unstitched", "S", "M", "L"],
-    images: [img("photo-1485968579580-b6d095142e6e")],
+    images: [saleSuit5, saleSuit6],
     description: "Inspired by Mughal artistry — a beautifully rendered all-over Mughal motif print on cool lawn. Includes matching trouser fabric and a printed lawn dupatta with embroidered border.",
     fabric: "Premium Lawn + Embroidered Dupatta",
     stock: 38
@@ -544,7 +608,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Baby Pink", "Lilac", "Off White"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1529139574466-a303027c1d8b")],
+    images: [saleSuit7, saleSuit8],
     description: "A delicate pink kurti with floral embroidery on the yoke, daman, and sleeves. Wear it with white or matching cigarette pants for a fresh, feminine look.",
     fabric: "Lawn Cotton with Embroidery",
     stock: 55
@@ -562,7 +626,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Earth Brown", "Terracotta", "Forest Green"],
     sizes: ["Unstitched", "S", "M", "L"],
-    images: [img("photo-1551803091-e20673f15770")],
+    images: [saleSuit9, saleSuit10],
     description: "A 3-piece suit with bold hand block-printed tribal motifs in earthy tones. Comes with a coordinating printed cotton dupatta and dyed plain trouser fabric.",
     fabric: "Block Print Cotton",
     stock: 40
@@ -580,7 +644,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Chalk White", "Sky Blue", "Peach", "Pistachio"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1539008835657-9e8e9680c956")],
+    images: [saleSuit11, saleSuit12],
     description: "Your everyday go-to: a simple, clean-cut cotton kurti with subtle pintuck details paired with matching straight-cut trousers. Effortless style for home, errands, or casual outings.",
     fabric: "100% Cotton",
     stock: 80
@@ -598,7 +662,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Indigo Shibori", "Rose Shibori", "Teal Shibori"],
     sizes: ["S", "M", "L"],
-    images: [img("photo-1583391733956-3750e0ff4e8b")],
+    images: [saleSuit13, saleSuit14],
     description: "Artisan hand-dyed shibori (bandhani-style) 2-piece set with unique organic dye patterns. Each piece is one-of-a-kind. Pair with simple bottoms to let the print shine.",
     fabric: "Hand-Dyed Mulmul Cotton",
     stock: 22
@@ -616,7 +680,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Navy Blue", "Mint Green", "Brick Red"],
     sizes: ["S", "M", "L", "XL"],
-    images: [img("photo-1509631179647-0177331693ae")],
+    images: [saleSuit15, saleSuit16],
     description: "A relaxed palazzo + kurti set with a solid base and a contrast embroidered hem on the kurti. Flowy and comfortable — a perfect blend of casual and chic.",
     fabric: "Viscose Lawn",
     stock: 48
@@ -634,7 +698,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Dusty Mauve", "Sage Green", "Champagne"],
     sizes: ["XS", "S", "M", "L"],
-    images: [img("photo-1469334031218-e382a71b716b")],
+    images: [saleSuit17, saleSuit18],
     description: "A 2-piece printed georgette set with an A-line kurti and matching flared trousers. Delicate all-over floral print with lace trim detail on the sleeves.",
     fabric: "Printed Georgette",
     stock: 33
@@ -652,7 +716,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Ivory", "Powder Blue", "Sage"],
     sizes: ["Unstitched", "S", "M", "L"],
-    images: [img("photo-1595777457583-95e059d581b8")],
+    images: [saleSuit19, saleSuit20],
     description: "A semi-formal 3-piece cotton net suit with a delicately embroidered front panel and cuffs. Includes a fine net dupatta with hand-stitched scalloped border.",
     fabric: "Cotton Net with Embroidery",
     stock: 27
@@ -670,7 +734,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Multi Abstract", "Monochrome", "Tropical"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1483985988355-763728e1935b")],
+    images: [saleSuit21, saleSuit22],
     description: "A bold, modern digital-printed lawn shirt for a statement casual look. Loose fit, round neck, with a straight hemline. Pair with plain white trousers.",
     fabric: "Digital Print Lawn",
     stock: 70
@@ -688,7 +752,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["White", "Powder Pink", "Sea Green"],
     sizes: ["XS", "S", "M", "L"],
-    images: [img("photo-1502716119720-b23a93e5fe1b")],
+    images: [saleSuit23, saleSuit24],
     description: "Versatile plain kurta featuring an intricately embroidered round neckline patch with thread and mirror work. Mix and match with any bottom.",
     fabric: "Cotton Cambric",
     stock: 52
@@ -706,7 +770,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Black Border", "Emerald Border", "Maroon Border"],
     sizes: ["Unstitched", "S", "M", "L", "XL"],
-    images: [img("photo-1617627143750-d86bc21e42bb")],
+    images: [embLawn7, embLawn6],
     description: "A statement 3-piece suit with a plain base and bold, wide printed borders running along the hem and dupatta. Classic Pakistani style with a modern edge.",
     fabric: "Premium Lawn + Chiffon Dupatta",
     stock: 36
@@ -724,7 +788,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Peach Floral", "Blue Jall", "Green Jall"],
     sizes: ["S", "M", "L", "XL"],
-    images: [img("photo-1529139574466-a303027c1d8b")],
+    images: [digitalPrint2, digitalPrint1],
     description: "Head-to-toe matching floral jall print co-ord set — shirt, trousers, and dupatta all in one cohesive print. Maximum impact, minimum effort.",
     fabric: "Lawn Cotton",
     stock: 41
@@ -742,7 +806,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Black Polka", "Navy Polka", "Red Polka"],
     sizes: ["XS", "S", "M", "L"],
-    images: [img("photo-1485968579580-b6d095142e6e")],
+    images: [embLawn2, embLawn1],
     description: "A playful and chic polka dot printed casual suit with a classic band collar and neat button placket. Light, airy, and perfect for summer.",
     fabric: "Lawn Cotton",
     stock: 55
@@ -760,7 +824,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic Check", "Red Plaid", "Blue Tartan"],
     sizes: ["S", "M", "L", "XL"],
-    images: [img("photo-1551803091-e20673f15770")],
+    images: [luxuryLawn3, luxuryLawn2],
     description: "Classic check and plaid printed suit with a relaxed fit shirt and straight-leg trousers. A timeless pattern that never goes out of style.",
     fabric: "Cotton Poplin",
     stock: 42
@@ -778,7 +842,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Mustard", "Bottle Green", "Plum"],
     sizes: ["S", "M", "L"],
-    images: [img("photo-1539008835657-9e8e9680c956")],
+    images: [embLawn5, coralSuit],
     description: "A festive 2-piece embroidered kurta with heavy thread embroidery on the front, paired with a matching flared sharara. Ideal for eid visits and family gatherings.",
     fabric: "Cambric Kurti + Raw Silk Sharara",
     stock: 18
@@ -796,7 +860,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Lavender", "Mint", "Peach", "Butter"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: [img("photo-1583391733956-3750e0ff4e8b")],
+    images: [aquaSuit, greenSuit],
     description: "Soft pastel 3-piece suit with neat pintuck detailing on the shirt front and sleeves. Includes plain trouser fabric and a printed organza dupatta with lace border.",
     fabric: "Soft Cotton with Organza Dupatta",
     stock: 60
@@ -814,7 +878,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Multi Bright", "Multi Pastel"],
     sizes: ["S", "M", "L"],
-    images: [img("photo-1509631179647-0177331693ae")],
+    images: [digitalPrint4, digitalPrint3],
     description: "An artsy, bohemian multi-color patchwork kurta featuring contrasting printed panels stitched together for a unique, handcrafted look. Style with simple white trousers.",
     fabric: "Mixed Print Lawn",
     stock: 30
@@ -832,7 +896,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Ivory Lace", "Blush Lace", "Black Lace"],
     sizes: ["S", "M", "L", "XL"],
-    images: [img("photo-1595777457583-95e059d581b8")],
+    images: [embLawn3, embLawn4],
     description: "A refined 3-piece suit with delicate lace trim detailing running along the hemline, neckline, and dupatta borders. Subtle elegance for lunches, brunches, and semi-formal occasions.",
     fabric: "Fine Cotton with French Lace",
     stock: 25
@@ -850,7 +914,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Fuchsia", "Electric Blue", "Tangerine"],
     sizes: ["S", "M", "L", "XL"],
-    images: [img("photo-1496747611176-843222e1e57c")],
+    images: [pretSuit4, pretSuit5],
     description: "Pop of color! Vibrant solid-color kurti with subtle lurex self-print, paired with a flowy wide-leg palazzo. Bold, cheerful, and confidence-boosting.",
     fabric: "Viscose + Lurex Blend",
     stock: 47
@@ -868,7 +932,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Vintage Rose", "Garden Green", "Ivory Bloom"],
     sizes: ["Unstitched", "S", "M", "L"],
-    images: [img("photo-1583744946564-b52ac1c389c8")],
+    images: [luxuryLawn6, luxuryLawn4],
     description: "An elegant 3-piece suit featuring a vintage-style large floral print on cool lawn. Reminiscent of garden party fashion — comes with a matching screen-printed chiffon dupatta.",
     fabric: "Premium Lawn + Screen Print Chiffon",
     stock: 34
@@ -886,7 +950,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Charcoal", "Steel Blue", "Burgundy"],
     sizes: ["S", "M", "L", "XL"],
-    images: [img("photo-1617627143750-d86bc21e42bb")],
+    images: [festive4, festive5],
     description: "A polished straight-cut formal suit with neat embroidered detailing on the neckline and cuffs. Suitable for office, meetings, or formal family occasions.",
     fabric: "Self-Jacquard + Silk Trouser",
     stock: 21
@@ -904,7 +968,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Coral Red", "Royal Purple", "Deep Teal"],
     sizes: ["S", "M", "L"],
-    images: [img("photo-1469334031218-e382a71b716b")],
+    images: [bridal3, bridal2],
     description: "A stunning lehenga-style long frock featuring flared printed panels, contrast gota patti border detailing, and a matching embroidered dupatta. Great for mehndi and formal dinners.",
     fabric: "Chiffon Frock + Net Dupatta",
     stock: 14
@@ -939,8 +1003,8 @@ export const blogPosts = [
   { slug: "heritage-lawn-edit", title: "The Heritage Lawn Edit", category: "Styling", image: "/images/hero_lawn.png", excerpt: "How to style your luxury unstitched lawn sets with statement jewelry and traditional khussas." },
   { slug: "caring-for-embellishments", title: "Caring for Zari and Chiffon", category: "Care", image: "/images/festive_peshwas.png", excerpt: "A complete guide to preserving hand-crafted tilla, gota, and dabka work on festive wear." },
   { slug: "evolution-of-peshwas", title: "The Evolution of the Peshwas", category: "Editorial", image: "/images/chikankari_pret.png", excerpt: "Exploring the historic roots of the flowy South Asian Peshwas silhouette and its modern revival." },
-  { slug: "styling-winter-wear", title: "Winter Styling Guide", category: "Styling", image: "/images/hero_lawn.png", excerpt: "Layering your khaddar and karandi suits for a chic and comfortable winter look." },
-  { slug: "fabric-care-101", title: "Preserving Luxury Fabrics", category: "Care", image: "/images/festive_peshwas.png", excerpt: "Essential tips to keep your silk and velvet outfits in pristine condition for years." },
+  { slug: "styling-winter-wear", title: "Winter Styling Guide", category: "Styling", image: "/images/imgi_149_0034_049A8588_700x_920f4ebf-09fd.jpg", excerpt: "Layering your khaddar and karandi suits for a chic and comfortable winter look." },
+  { slug: "fabric-care-101", title: "Preserving Luxury Fabrics", category: "Care", image: "/images/imgi_195_MOTIF-new-latest-summer-collection-2024-new-arrivals-luxury-lawn-collection-2023-lawn-dress-designs-heavy-embroidered-3-piece-lawn-suit-eid-collection-big-eid-su.jpg", excerpt: "Essential tips to keep your silk and velvet outfits in pristine condition for years." },
   { slug: "block-print-renaissance", title: "The Block Print Renaissance", category: "Trends", image: "/images/printed_lawn_blue.png", excerpt: "How artisan hand block-printing is making a bold comeback in Pakistani luxury lawn collections." },
-  { slug: "eid-dressing-guide", title: "Eid Dressing: A Complete Guide", category: "Editorial", image: "/images/festive_peshwas.png", excerpt: "From sehri to Eid night, a curated style guide for every occasion of the festive season." }
+  { slug: "eid-dressing-guide", title: "Eid Dressing: A Complete Guide", category: "Editorial", image: "/images/imgi_203_PakistaniFashionLawnSuitforFestiveWear.jpg", excerpt: "From sehri to Eid night, a curated style guide for every occasion of the festive season." }
 ];
