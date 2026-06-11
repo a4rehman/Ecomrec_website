@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbfaf8;
+  --foreground: #181818;
+  --muted: #767676;
+  --line: #ded9d2;
+  --panel: rgba(255, 255, 255, 0.74);
+  --accent: #b6805d;
+  --accent-2: #e7c8b4;
+}
+
+.dark {
+  --background: #11100f;
+  --foreground: #f7f1ea;
+  --muted: #b8b0a8;
+  --line: #34302b;
+  --panel: rgba(23, 21, 19, 0.78);
+  --accent: #d2a17c;
+  --accent-2: #604436;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-panel: var(--panel);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, sans-serif;
+  letter-spacing: 0;
+}
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+.tracked-luxury { letter-spacing: .24em; text-transform: uppercase; }
+.hairline { border-color: var(--line); }
+.glass {
+  background: var(--panel);
+  border: 1px solid color-mix(in srgb, var(--line), transparent 18%);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 60px rgba(20, 16, 12, .08);
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.container-lux { width: min(100% - 32px, 1440px); margin-inline: auto; }
+::selection { background: var(--accent); color: white; }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}

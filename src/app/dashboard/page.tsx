@@ -1,0 +1,6 @@
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
+export default function DashboardPage() {
+  return <section className="container-lux py-14"><h1 className="mb-10 font-serif text-6xl">Account Dashboard</h1><div className="grid gap-6 lg:grid-cols-[260px_1fr]"><aside className="glass p-5">{["Profile", "Orders", "Addresses", "Wishlist", "Settings"].map((i) => <a className="block border-b border-line py-4 tracked-luxury text-xs" key={i}>{i}</a>)}</aside><div className="grid gap-5 md:grid-cols-2"><div className="border border-line p-6"><h2 className="font-serif text-3xl">Profile</h2><p className="mt-3 text-muted">Amina Rahman · amina@example.com</p></div><div className="border border-line p-6"><h2 className="font-serif text-3xl">Recent Order</h2><p className="mt-3 text-muted">#ME-2048 · Processing · $189</p></div><div className="border border-line p-6"><h2 className="font-serif text-3xl">Default Address</h2><p className="mt-3 text-muted">Lahore, Pakistan</p></div><div className="border border-line p-6"><h2 className="font-serif text-3xl">Wishlist</h2><Link href="/wishlist"><Button className="mt-4" variant="outline">View Wishlist</Button></Link></div></div></div></section>;
+}
