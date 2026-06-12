@@ -9,6 +9,7 @@ import { RootState, toggleDarkMode } from "@/store/store";
 import { categories } from "@/data/products";
 import { CollectionSwitcher } from "./collection-switcher";
 import { useSession, signOut } from "next-auth/react";
+import { BrandLogo } from "./brand-logo";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -16,22 +17,27 @@ export function Header() {
   const { data: session } = useSession();
   const user = session?.user as any;
   const dispatch = useDispatch();
+  const navLinks = [
+    ["Home", "/"],
+    ["Shop", "/shop"],
+    ["New Arrivals", "/shop?sort=new"],
+    ["Collections", "/shop"],
+    ["About Us", "/about"],
+    ["Contact", "/contact"]
+  ];
 
   return (
     <>
-      <div className="h-10 bg-[#191919] text-white">
-        <div className="container-lux flex h-full items-center justify-center text-[10px] font-bold tracking-[.22em] uppercase">FREE SHIPPING IN PAKISTAN - GLOBAL EXPRESS SHIPPING OVER $350</div>
+      <div className="h-10 bg-accent text-white">
+        <div className="container-lux flex h-full items-center justify-center text-[10px] font-semibold tracking-[.24em] uppercase">Sawera Collection - Made for Her, Inspired by Grace</div>
       </div>
       <CollectionSwitcher />
-      <header className="sticky top-0 z-40 border-b border-line bg-background/86 backdrop-blur-2xl">
-        <div className="container-lux grid h-24 grid-cols-3 items-center">
+      <header className="sticky top-0 z-40 border-b border-line bg-white/84 shadow-[0_12px_38px_rgba(201,131,134,.08)] backdrop-blur-2xl">
+        <div className="container-lux grid min-h-28 grid-cols-3 items-center py-3">
           <button onClick={() => setOpen(true)} className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-wide transition hover:text-accent">
             <Menu size={30} strokeWidth={1.6} /> Menu
           </button>
-          <Link href="/" className="group justify-self-center text-center">
-            <span className="block font-serif text-[2rem] leading-none tracking-[.2em] transition group-hover:text-accent md:text-4xl">SIERRA</span>
-            <span className="tracked-luxury mt-1 block text-[10px] text-muted">Collections</span>
-          </Link>
+          <BrandLogo className="justify-self-center" imageClassName="w-36 md:w-52" />
           <nav className="flex items-center gap-5 justify-self-end">
             <Link className="hidden transition hover:text-accent sm:block" href="/shop"><Search strokeWidth={1.7} /></Link>
             {user ? (
@@ -54,13 +60,30 @@ export function Header() {
             <button className="focus-ring transition hover:text-accent" onClick={() => dispatch(toggleDarkMode())} aria-label="Toggle dark mode">{darkMode ? <Sun strokeWidth={1.7} /> : <Moon strokeWidth={1.7} />}</button>
           </nav>
         </div>
+        <nav className="container-lux hidden h-12 items-center justify-center gap-9 border-t border-line/70 text-[11px] font-medium uppercase tracking-[.24em] text-muted lg:flex">
+          {navLinks.map(([label, href]) => (
+            <Link href={href} key={label} className="relative py-4 transition hover:text-accent after:absolute after:bottom-2 after:left-0 after:h-px after:w-0 after:bg-accent after:transition-all hover:after:w-full">
+              {label}
+            </Link>
+          ))}
+        </nav>
       </header>
       <AnimatePresence>
         {open && (
           <>
             <motion.div className="fixed inset-0 z-50 bg-black/35" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
             <motion.aside className="fixed left-0 top-0 z-50 h-dvh w-[min(480px,92vw)] overflow-y-auto bg-background p-9 shadow-2xl" initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "spring", damping: 28, stiffness: 260 }}>
-              <button onClick={() => setOpen(false)} className="focus-ring mb-10"><X size={28} strokeWidth={1.4} /></button>
+              <div className="mb-10 flex items-start justify-between gap-6">
+                <BrandLogo imageClassName="w-36" showTagline />
+                <button onClick={() => setOpen(false)} className="focus-ring"><X size={28} strokeWidth={1.4} /></button>
+              </div>
+              <div className="mb-8 space-y-0 border-y border-line">
+                {navLinks.map(([label, href]) => (
+                  <Link key={label} href={href} onClick={() => setOpen(false)} className="group flex min-h-16 items-center justify-between border-b border-line text-sm tracking-[.24em] uppercase last:border-b-0">
+                    {label}
+                  </Link>
+                ))}
+              </div>
               <div className="space-y-0">
                 {categories.map((cat, i) => (
                   <Link key={cat} href={`/shop?category=${encodeURIComponent(cat.replace("'26", "").trim())}`} onClick={() => setOpen(false)} className="group flex min-h-20 items-center justify-between border-b border-line text-base tracking-[.28em] uppercase">

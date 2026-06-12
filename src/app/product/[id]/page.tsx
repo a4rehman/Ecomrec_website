@@ -28,7 +28,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     stock: product.inStock ? 10 : 0,
     rating: 5,
     reviews: 1,
-    brand: "Sierra"
+    brand: "Sawera"
   };
 
   return <ProductDetailClient initialProduct={formattedProduct} slug={product.id} />;

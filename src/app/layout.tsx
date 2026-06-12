@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
-const sans = Manrope({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const serif = Cormorant_Garamond({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
+const sans = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-sans", display: "swap" });
+const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Sierra Collections | Luxury Pakistani Heritage & Festive Wear", template: "%s | Sierra Collections" },
-  description: "Explore Sierra Collections' refined edit of luxury Pakistani suits, unstitched lawn, festive chiffon Peshwas, ready-to-wear pret kurtis, and bespoke bridal wear.",
+  title: { default: "Sawera Collection | Made for Her, Inspired by Grace", template: "%s | Sawera Collection" },
+  description: "Premium women's fashion and elegant collections designed for modern women.",
   icons: {
     icon: "/favicon.svg"
   },
   openGraph: {
-    title: "Sierra Collections",
-    description: "Premium luxury Pakistani heritage and festive wear with global express delivery.",
+    title: "Sawera Collection | Made for Her, Inspired by Grace",
+    description: "Premium women's fashion and elegant collections designed for modern women.",
     type: "website"
   }
 };

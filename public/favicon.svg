@@ -1,45 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Deep teal background -->
-  <rect width="512" height="512" rx="96" fill="#0d3d3d"/>
-  <!-- Outer decorative border ring -->
-  <rect x="22" y="22" width="468" height="468" rx="80" fill="none" stroke="#C9A84C" stroke-width="10"/>
-  <!-- Inner thin border -->
-  <rect x="40" y="40" width="432" height="432" rx="68" fill="none" stroke="#C9A84C" stroke-width="3" stroke-dasharray="12 6"/>
-
-  <!-- Corner ornamental floral motifs -->
-  <!-- Top-left -->
-  <circle cx="80" cy="80" r="6" fill="#C9A84C" opacity="0.7"/>
-  <circle cx="80" cy="80" r="12" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.5"/>
-  <!-- Top-right -->
-  <circle cx="432" cy="80" r="6" fill="#C9A84C" opacity="0.7"/>
-  <circle cx="432" cy="80" r="12" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.5"/>
-  <!-- Bottom-left -->
-  <circle cx="80" cy="432" r="6" fill="#C9A84C" opacity="0.7"/>
-  <circle cx="80" cy="432" r="12" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.5"/>
-  <!-- Bottom-right -->
-  <circle cx="432" cy="432" r="6" fill="#C9A84C" opacity="0.7"/>
-  <circle cx="432" cy="432" r="12" fill="none" stroke="#C9A84C" stroke-width="2" opacity="0.5"/>
-
-  <!-- Top small decorative diamond -->
-  <polygon points="256,58 263,74 256,90 249,74" fill="#C9A84C" opacity="0.8"/>
-
-  <!-- "JC" Monogram - bold luxury lettering -->
-  <!-- J -->
-  <text x="120" y="310" font-family="Georgia, serif" font-size="210" font-weight="bold"
-        fill="#C9A84C" letter-spacing="-8">J</text>
-  <!-- C -->
-  <text x="262" y="310" font-family="Georgia, serif" font-size="210" font-weight="bold"
-        fill="#ffffff" letter-spacing="-8">C</text>
-
-  <!-- Horizontal gold divider under text -->
-  <line x1="80" y1="330" x2="432" y2="330" stroke="#C9A84C" stroke-width="2.5" opacity="0.6"/>
-
-  <!-- Brand name in small caps below -->
-  <text x="256" y="370" font-family="Georgia, serif" font-size="32" font-weight="normal"
-        fill="#C9A84C" text-anchor="middle" letter-spacing="8">SIERRA</text>
-  <text x="256" y="405" font-family="Georgia, serif" font-size="22" font-weight="normal"
-        fill="#ffffff" text-anchor="middle" letter-spacing="12" opacity="0.85">COUTURE</text>
-
-  <!-- Bottom floral diamond -->
-  <polygon points="256,425 262,435 256,445 250,435" fill="#C9A84C" opacity="0.6"/>
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="96" height="96" rx="24" fill="#FFFAF9"/>
+  <rect x="7" y="7" width="82" height="82" rx="21" stroke="#EADAD8" stroke-width="2"/>
+  <path d="M62.8 28.2C59.5 22.7 53.8 19.2 46.8 19.2C37.2 19.2 30.4 24.9 30.4 32.8C30.4 41.4 38.5 45.4 47.1 49.6C55.1 53.5 63.5 57.6 63.5 67.1C63.5 78.1 54.1 84.7 41.8 84.7C34.5 84.7 27.7 82.4 23.2 78.9L25.5 67.4H27.6C29.7 76.5 35.8 81.6 44 81.6C53.1 81.6 59.2 76.8 59.2 69.4C59.2 61.4 51.6 57.8 43.3 53.8C34.9 49.8 26.1 45.5 26.1 35.1C26.1 24 35.7 16 48.1 16C54.9 16 61.1 18.1 65.3 21.4L64.9 28.2H62.8Z" fill="#C98386"/>
+  <path d="M28 69C41 65 47 55 50 42" stroke="#C98386" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M37 56C31 52 27 47 25 41C32 41 37 45 41 51" stroke="#C98386" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M42 48C40 41 41 35 45 29C49 35 49 41 46 48" stroke="#C98386" stroke-width="2.5" stroke-linecap="round"/>
 </svg>

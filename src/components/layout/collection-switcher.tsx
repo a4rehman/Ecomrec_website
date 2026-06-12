@@ -16,13 +16,13 @@ export function CollectionSwitcher() {
   };
 
   return (
-    <div className="flex items-center justify-center border-b border-line bg-background/50 py-2.5 text-xs">
-      <div className="flex rounded-full border border-line bg-background p-1 shadow-sm">
+    <div className="flex items-center justify-center border-b border-line bg-white/60 py-2.5 text-xs backdrop-blur-xl">
+      <div className="flex rounded-full border border-line bg-white/70 p-1 shadow-sm">
         <button
           onClick={() => handleToggle("premium")}
           className={`flex items-center gap-1.5 rounded-full px-5 py-1.5 font-medium tracking-wide uppercase transition duration-300 ${
             activeTier === "premium"
-              ? "bg-foreground text-background shadow-sm"
+              ? "bg-accent text-white shadow-sm"
               : "text-muted hover:text-foreground"
           }`}
         >
@@ -33,7 +33,7 @@ export function CollectionSwitcher() {
           onClick={() => handleToggle("simple")}
           className={`flex items-center gap-1.5 rounded-full px-5 py-1.5 font-medium tracking-wide uppercase transition duration-300 ${
             activeTier === "simple"
-              ? "bg-foreground text-background shadow-sm"
+              ? "bg-accent text-white shadow-sm"
               : "text-muted hover:text-foreground"
           }`}
         >

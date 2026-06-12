@@ -58,7 +58,7 @@ function ShopContent() {
       // 2. Search & filter controls
       return (
         (category === "All" || p.category === category) &&
-        (brand === "All" || (p.brand || "Sierra") === brand) &&
+        (brand === "All" || (p.brand || "Sawera") === brand) &&
         p.price <= max &&
         (p.title || p.name || "").toLowerCase().includes(query.toLowerCase())
       );
@@ -74,7 +74,7 @@ function ShopContent() {
 
   const availableBrands = useMemo(() => {
     const list = dbProducts.filter(p => priceTier === "premium" ? p.price >= 5000 : p.price < 5000);
-    return [...new Set(list.map(p => p.brand || "Sierra"))];
+    return [...new Set(list.map(p => p.brand || "Sawera"))];
   }, [dbProducts, priceTier]);
 
   return (

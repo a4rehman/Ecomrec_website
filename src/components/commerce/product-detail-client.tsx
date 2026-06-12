@@ -18,7 +18,7 @@ export function ProductDetailClient({ initialProduct, slug }: { initialProduct?:
   if (!product) {
     return (
       <div className="container-lux py-24 text-center">
-        <p className="text-muted mb-4 font-serif text-2xl">Looking for Sierra creations...</p>
+        <p className="text-muted mb-4 font-serif text-2xl">Looking for Sawera creations...</p>
         <Link href="/shop" className="text-accent underline uppercase tracking-wider text-xs font-semibold">
           Back to collections
         </Link>

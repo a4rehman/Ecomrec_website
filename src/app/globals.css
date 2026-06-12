@@ -1,23 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f7f3;
-  --foreground: #121715;
-  --muted: #69716d;
-  --line: #deded5;
-  --panel: rgba(255, 255, 250, 0.76);
-  --accent: #9f8448;
-  --accent-2: #15463f;
+  --background: #fffaf9;
+  --foreground: #2a2625;
+  --muted: #7b7370;
+  --line: #eadad8;
+  --panel: rgba(255, 255, 255, 0.82);
+  --accent: #c98386;
+  --accent-2: #f4dfe0;
+  --rose-gold: #c98a87;
+  --blush: #f8ecec;
+  --soft-grey: #756f6c;
 }
 
 .dark {
-  --background: #0d1110;
-  --foreground: #f5f1e8;
-  --muted: #b4bbb5;
-  --line: #29312e;
-  --panel: rgba(17, 24, 22, 0.78);
-  --accent: #d8bd73;
-  --accent-2: #7eb0a1;
+  --background: #181313;
+  --foreground: #fff7f6;
+  --muted: #d2c2bf;
+  --line: #4b3838;
+  --panel: rgba(35, 27, 27, 0.82);
+  --accent: #e2a2a2;
+  --accent-2: #5f3d40;
+  --rose-gold: #e4a3a0;
+  --blush: #2d2020;
+  --soft-grey: #d4c7c3;
 }
 
 @theme inline {
@@ -28,6 +34,9 @@
   --color-panel: var(--panel);
   --color-accent: var(--accent);
   --color-accent-2: var(--accent-2);
+  --color-rose-gold: var(--rose-gold);
+  --color-blush: var(--blush);
+  --color-soft-grey: var(--soft-grey);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
 }
@@ -37,7 +46,9 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--background), white 24%) 0%, var(--background) 34%, color-mix(in srgb, var(--background), var(--accent-2) 5%) 100%);
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--accent-2), transparent 34%) 0 220px, transparent 221px),
+    radial-gradient(circle at 88% 18%, color-mix(in srgb, var(--accent), transparent 86%) 0 280px, transparent 281px),
+    linear-gradient(180deg, #fff 0%, var(--background) 42%, color-mix(in srgb, var(--background), var(--accent-2) 18%) 100%);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, sans-serif;
   letter-spacing: 0;
@@ -45,18 +56,37 @@ body {
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
 .tracked-luxury { letter-spacing: .24em; text-transform: uppercase; }
+.brand-script { font-family: var(--font-serif), Georgia, serif; font-style: italic; letter-spacing: .08em; }
 .hairline { border-color: var(--line); }
 .glass {
   background: var(--panel);
   border: 1px solid color-mix(in srgb, var(--line), transparent 18%);
   backdrop-filter: blur(18px);
-  box-shadow: 0 22px 70px color-mix(in srgb, var(--foreground), transparent 91%);
+  border-radius: 18px;
+  box-shadow: 0 22px 70px color-mix(in srgb, var(--accent), transparent 88%);
 }
 .premium-surface {
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--panel), white 14%), color-mix(in srgb, var(--panel), var(--accent-2) 8%));
+    linear-gradient(135deg, color-mix(in srgb, var(--panel), white 16%), color-mix(in srgb, var(--panel), var(--accent-2) 30%));
   border: 1px solid color-mix(in srgb, var(--line), transparent 8%);
-  box-shadow: 0 26px 80px color-mix(in srgb, var(--foreground), transparent 92%);
+  border-radius: 20px;
+  box-shadow: 0 26px 80px color-mix(in srgb, var(--accent), transparent 88%);
+}
+.botanical-panel {
+  position: relative;
+  overflow: hidden;
+}
+.botanical-panel::before {
+  content: "S";
+  position: absolute;
+  right: -18px;
+  top: -58px;
+  z-index: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 13rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent), transparent 88%);
+  pointer-events: none;
 }
 .lux-sheen {
   position: relative;
@@ -68,7 +98,7 @@ button, input, select, textarea { font: inherit; }
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(120deg, transparent 8%, rgba(255,255,255,.18) 18%, transparent 32%);
+  background: linear-gradient(120deg, transparent 8%, rgba(255,255,255,.34) 18%, transparent 32%);
   transform: translateX(-120%);
   transition: transform .9s ease;
 }
