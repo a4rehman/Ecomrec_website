@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { RootState, addProduct, updateProduct, deleteProduct, logoutUser } from "@/store/store";
+import { Product } from "@/data/products";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
@@ -15,10 +17,9 @@ import {
 
 export default function AdminPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const dispatch = useDispatch();
   
-  const [products, setProducts] = useState<any[]>([]);
-  const [orders, setOrders] = useState<any[]>([]); // To be fetched from DB later
+  const { products, user, orders } = useSelector((s: RootState) => s.commerce);
   const [activeTab, setActiveTab] = useState<"products" | "orders">("products");
   const [searchQuery, setSearchQuery] = useState("");
   const [authorized, setAuthorized] = useState(false);
@@ -30,7 +31,7 @@ export default function AdminPage() {
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Luxury Lawn");
-  const [brand, setBrand] = useState("Sawera Heritage");
+  const [brand, setBrand] = useState("Jahanara Heritage");
   const [price, setPrice] = useState(0);
   const [compareAt, setCompareAt] = useState(0);
   const [badge, setBadge] = useState("");
@@ -39,8 +40,7 @@ export default function AdminPage() {
   const [stock, setStock] = useState(10);
   const [colorsInput, setColorsInput] = useState("Pastel Mint, Powder Pink, Ivory");
   const [sizesSelected, setSizesSelected] = useState<string[]>(["Unstitched", "M", "L"]);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [notification, setNotification] = useState("");
 
@@ -48,29 +48,23 @@ export default function AdminPage() {
 
   // Authenticate user
   useEffect(() => {
-    if (status === "unauthenticated") {
+    const storedUser = localStorage.getItem("jahanara_user");
+    if (!storedUser) {
       router.push("/login");
-    } else if (status === "authenticated") {
-      if ((session?.user as any)?.role !== "ADMIN") {
-        router.push("/");
+      return;
+    }
+    
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.role !== "admin") {
+        router.push("/login");
       } else {
         setAuthorized(true);
-        fetchProducts();
       }
+    } catch (e) {
+      router.push("/login");
     }
-  }, [session, status, router]);
-
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch("/api/products");
-      if (res.ok) {
-        const data = await res.json();
-        setProducts(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    }
-  };
+  }, [user, router]);
 
   const handleSizeToggle = (sz: string) => {
     if (sizesSelected.includes(sz)) {
@@ -80,28 +74,36 @@ export default function AdminPage() {
     }
   };
 
-  // Handle image selection
+  // Process image upload to Base64
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
     
     const fileArray = Array.from(files);
-    setImageFiles([...imageFiles, ...fileArray]);
+    const promises = fileArray.map((file) => {
+      return new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
 
-    const previewUrls = fileArray.map(file => URL.createObjectURL(file));
-    setPreviewImages([...previewImages, ...previewUrls]);
+    Promise.all(promises).then((base64Strings) => {
+      setImageFiles([...imageFiles, ...base64Strings]);
+    });
   };
 
   const handleClearImages = () => {
     setImageFiles([]);
-    setPreviewImages([]);
     setImageUrl("");
   };
 
   const resetForm = () => {
     setName("");
     setCategory("Luxury Lawn");
-    setBrand("Sawera Heritage");
+    setBrand("Jahanara Heritage");
     setPrice(0);
     setCompareAt(0);
     setBadge("");
@@ -111,39 +113,33 @@ export default function AdminPage() {
     setColorsInput("Pastel Mint, Powder Pink, Ivory");
     setSizesSelected(["Unstitched", "M", "L"]);
     setImageFiles([]);
-    setPreviewImages([]);
     setImageUrl("");
     setEditMode(false);
     setSelectedProductId("");
   };
 
-  const handleEditClick = (p: any) => {
+  const handleEditClick = (p: Product) => {
     setEditMode(true);
     setSelectedProductId(p.id);
-    setName(p.title || p.name);
+    setName(p.name);
     setCategory(p.category);
-    setBrand(p.brand || "Sawera");
+    setBrand(p.brand);
     setPrice(p.price);
     setCompareAt(p.compareAt || 0);
     setBadge(p.badge || "");
     setDescription(p.description);
-    setFabric(p.fabric || "");
-    setStock(p.stock || (p.inStock ? 10 : 0));
-    setColorsInput(p.colors || "");
-    setSizesSelected(p.sizes ? p.sizes.split(", ") : []);
-    setPreviewImages([p.imagePath]);
+    setFabric(p.fabric);
+    setStock(p.stock);
+    setColorsInput(p.colors.join(", "));
+    setSizesSelected(p.sizes);
+    setImageFiles(p.images);
     setShowForm(true);
   };
 
-  const handleDeleteClick = async (id: string) => {
+  const handleDeleteClick = (id: string) => {
     if (confirm("Are you sure you want to delete this product?")) {
-      try {
-        await fetch(`/api/products/${id}`, { method: "DELETE" });
-        showToast("Product deleted successfully!");
-        fetchProducts();
-      } catch (e) {
-        showToast("Failed to delete product");
-      }
+      dispatch(deleteProduct(id));
+      showToast("Product deleted successfully!");
     }
   };
 
@@ -154,7 +150,7 @@ export default function AdminPage() {
     }, 4000);
   };
 
-  const handleSaveProduct = async (e: React.FormEvent) => {
+  const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name || !description || price <= 0) {
@@ -162,65 +158,42 @@ export default function AdminPage() {
       return;
     }
 
-    let uploadedImagePath = imageUrl;
-
-    if (imageFiles.length > 0) {
-      const formData = new FormData();
-      formData.append("file", imageFiles[0]); // upload first image for now
-      
-      try {
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.imagePath) {
-          uploadedImagePath = uploadData.imagePath;
-        }
-      } catch (e) {
-        console.error("Upload failed", e);
-      }
+    // Combine uploaded files and input URL
+    const finalImages = [...imageFiles];
+    if (imageUrl) finalImages.push(imageUrl);
+    if (finalImages.length === 0) {
+      finalImages.push("/images/hero_lawn.png"); // fallback default image
     }
 
-    if (!uploadedImagePath) {
-      uploadedImagePath = previewImages[0] || "/images/hero_lawn.png";
-    }
+    const productSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-    const productData = {
+    const colors = colorsInput.split(",").map((c) => c.trim()).filter(Boolean);
+
+    const productData: Product = {
+      id: editMode ? selectedProductId : `p-${Date.now()}`,
+      slug: productSlug,
       name,
-      title: name,
       category,
       brand,
       price: Number(price),
       compareAt: compareAt > 0 ? Number(compareAt) : undefined,
+      rating: editMode ? products.find(p => p.id === selectedProductId)?.rating || 4.8 : 5.0,
+      reviews: editMode ? products.find(p => p.id === selectedProductId)?.reviews || 1 : 1,
       badge: badge || undefined,
-      colors: colorsInput,
-      sizes: sizesSelected.join(", "),
-      imagePath: uploadedImagePath,
+      colors,
+      sizes: sizesSelected.length > 0 ? sizesSelected : ["Unstitched"],
+      images: finalImages,
       description,
       fabric,
       stock: Number(stock)
     };
 
-    try {
-      if (editMode) {
-        await fetch(`/api/products/${selectedProductId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productData),
-        });
-        showToast("Product updated successfully!");
-      } else {
-        await fetch("/api/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productData),
-        });
-        showToast("Product added successfully!");
-      }
-      fetchProducts();
-    } catch (e) {
-      showToast("Failed to save product.");
+    if (editMode) {
+      dispatch(updateProduct(productData));
+      showToast("Product updated successfully!");
+    } else {
+      dispatch(addProduct(productData));
+      showToast("Product added successfully!");
     }
 
     setShowForm(false);
@@ -228,16 +201,18 @@ export default function AdminPage() {
   };
 
   const handleLogout = () => {
-    signOut({ callbackUrl: "/login" });
+    dispatch(logoutUser());
+    localStorage.removeItem("jahanara_user");
+    router.push("/login");
   };
 
   const filteredProducts = products.filter(p => 
-    (p.title || p.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.category || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.brand || "").toLowerCase().includes(searchQuery.toLowerCase())
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.brand.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (status === "loading" || !authorized) {
+  if (!authorized) {
     return (
       <div className="container-lux py-32 text-center">
         <p className="text-xl font-serif text-muted">Checking administrator credentials...</p>
@@ -256,7 +231,7 @@ export default function AdminPage() {
       <div className="flex flex-col gap-6 md:flex-row md:items-center justify-between border-b border-line pb-8 mb-8">
         <div>
           <span className="tracked-luxury text-xs text-accent">Studio Admin</span>
-          <h1 className="font-serif text-6xl">Sawera Atelier</h1>
+          <h1 className="font-serif text-6xl">Jahanara Atelier</h1>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href="/shop">
@@ -271,6 +246,7 @@ export default function AdminPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
+        {/* Admin Navigation */}
         <aside className="space-y-2">
           <button
             onClick={() => { setActiveTab("products"); setShowForm(false); }}
@@ -296,8 +272,10 @@ export default function AdminPage() {
           </button>
         </aside>
 
+        {/* Admin Contents */}
         <main className="glass p-6 md:p-8 rounded min-h-[500px]">
           {showForm ? (
+            /* CRUD Add/Edit Form */
             <div>
               <div className="flex items-center gap-4 mb-8">
                 <button onClick={() => setShowForm(false)} className="hover:text-accent transition">
@@ -310,7 +288,7 @@ export default function AdminPage() {
                 <div className="grid gap-6 sm:grid-cols-2">
                   <label className="block text-sm font-medium">
                     Suit Name *
-                    <Input className="mt-2" placeholder="e.g. Sawera Organza Peshwas" value={name} onChange={(e) => setName(e.target.value)} required />
+                    <Input className="mt-2" placeholder="e.g. Jahanara Organza Peshwas" value={name} onChange={(e) => setName(e.target.value)} required />
                   </label>
                   <label className="block text-sm font-medium">
                     Category *
@@ -333,7 +311,7 @@ export default function AdminPage() {
                 <div className="grid gap-6 sm:grid-cols-3">
                   <label className="block text-sm font-medium">
                     Brand Name *
-                    <Input className="mt-2" placeholder="e.g. Sawera Heritage" value={brand} onChange={(e) => setBrand(e.target.value)} required />
+                    <Input className="mt-2" placeholder="e.g. Jahanara Heritage" value={brand} onChange={(e) => setBrand(e.target.value)} required />
                   </label>
                   <label className="block text-sm font-medium">
                     Price (PKR) *
@@ -395,6 +373,7 @@ export default function AdminPage() {
                   />
                 </label>
 
+                {/* Upload Image Section */}
                 <div className="border border-line rounded p-5 bg-background/50 grid gap-4">
                   <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
                     <ImagePlus size={14} /> Product Images
@@ -421,16 +400,16 @@ export default function AdminPage() {
                     </label>
                   </div>
 
-                  {previewImages.length > 0 && (
+                  {imageFiles.length > 0 && (
                     <div className="mt-4">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-muted">Photos Preview ({previewImages.length})</span>
+                        <span className="text-xs font-semibold text-muted">Photos Preview ({imageFiles.length})</span>
                         <button type="button" onClick={handleClearImages} className="text-xs text-red-600 underline">Clear All</button>
                       </div>
                       <div className="flex flex-wrap gap-3">
-                        {previewImages.map((img, index) => (
-                          <div key={index} className="relative w-20 aspect-[3/4] border border-line overflow-hidden rounded bg-zinc-100">
-                            {img && <Image src={img} alt={`Preview ${index}`} fill className="object-cover" />}
+                        {imageFiles.map((base64, index) => (
+                          <div key={index} className="relative w-20 aspect-[3/4] border border-line overflow-hidden rounded">
+                            <Image src={base64} alt={`Preview ${index}`} fill className="object-cover" />
                           </div>
                         ))}
                       </div>
@@ -447,6 +426,7 @@ export default function AdminPage() {
               </form>
             </div>
           ) : activeTab === "products" ? (
+            /* Products List View */
             <div>
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <h2 className="font-serif text-4xl">All Published Suits ({filteredProducts.length})</h2>
@@ -464,6 +444,7 @@ export default function AdminPage() {
                       <th className="py-4 font-medium">Name</th>
                       <th className="py-4 font-medium">Category</th>
                       <th className="py-4 font-medium">Price</th>
+                      <th className="py-4 font-medium">Stock</th>
                       <th className="py-4 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
@@ -472,14 +453,15 @@ export default function AdminPage() {
                       <tr key={p.id} className="border-b border-line/60 hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition">
                         <td className="py-4">
                           <div className="relative w-12 aspect-[3/4] border border-line/50 overflow-hidden bg-neutral-100">
-                            {p.imagePath && (
-                              <Image src={p.imagePath} alt={p.title || p.name} fill className="object-cover" />
+                            {p.images && p.images[0] && (
+                              <Image src={p.images[0]} alt={p.name} fill className="object-cover" />
                             )}
                           </div>
                         </td>
-                        <td className="py-4 font-medium max-w-[200px] truncate">{p.title || p.name}</td>
+                        <td className="py-4 font-medium max-w-[200px] truncate">{p.name}</td>
                         <td className="py-4 text-xs text-muted">{p.category}</td>
                         <td className="py-4 text-sm font-semibold">{formatPrice(p.price)}</td>
+                        <td className="py-4 text-sm">{p.stock} pcs</td>
                         <td className="py-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button
@@ -508,26 +490,46 @@ export default function AdminPage() {
               </div>
             </div>
           ) : (
+            /* Orders Management View */
             <div>
               <h2 className="font-serif text-4xl mb-6">Customer COD Orders ({orders.length})</h2>
+              
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-line text-xs uppercase tracking-wider text-muted">
                       <th className="py-4 font-medium">Order ID</th>
+                      <th className="py-4 font-medium">Customer</th>
                       <th className="py-4 font-medium">Date</th>
+                      <th className="py-4 font-medium">Method</th>
                       <th className="py-4 font-medium">Total</th>
                       <th className="py-4 font-medium">Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.length === 0 && (
-                      <tr>
-                        <td colSpan={4} className="text-center text-muted py-12">No orders have been placed yet.</td>
+                    {orders.map((o) => (
+                      <tr key={o.id} className="border-b border-line/60">
+                        <td className="py-4 font-semibold text-accent">#{o.id}</td>
+                        <td className="py-4">
+                          <div className="text-sm font-medium">{o.name}</div>
+                          <div className="text-xs text-muted max-w-[180px] truncate">{o.address}, {o.city}</div>
+                          <div className="text-xs text-muted">{o.phone}</div>
+                        </td>
+                        <td className="py-4 text-sm text-muted">{o.date}</td>
+                        <td className="py-4 text-xs">Cash on Delivery</td>
+                        <td className="py-4 text-sm font-semibold">{formatPrice(o.total)}</td>
+                        <td className="py-4">
+                          <span className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 text-yellow-700 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
+                            {o.status}
+                          </span>
+                        </td>
                       </tr>
-                    )}
+                    ))}
                   </tbody>
                 </table>
+                {orders.length === 0 && (
+                  <p className="text-center text-muted py-12">No orders have been placed yet.</p>
+                )}
               </div>
             </div>
           )}

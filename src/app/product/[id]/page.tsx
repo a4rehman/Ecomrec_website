@@ -1,35 +1,19 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { products } from "@/data/products";
 import { ProductDetailClient } from "@/components/commerce/product-detail-client";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const product = await prisma.product.findUnique({ where: { id } });
-  return { title: product?.title ?? "Product", description: product?.description };
+export function generateStaticParams() {
+  return products.map((p) => ({ slug: p.slug }));
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const product = await prisma.product.findUnique({ where: { id } });
-  
-  if (!product) {
-    notFound();
-  }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = products.find((p) => p.slug === slug);
+  return { title: product?.name ?? "Product", description: product?.description };
+}
 
-  // Map Prisma Product to Frontend Product format temporarily
-  const formattedProduct = {
-    ...product,
-    slug: product.id,
-    name: product.title,
-    images: [product.imagePath],
-    sizes: product.sizes.split(", "),
-    colors: product.colors.split(", "),
-    fabric: "Premium",
-    stock: product.inStock ? 10 : 0,
-    rating: 5,
-    reviews: 1,
-    brand: "Sawera"
-  };
-
-  return <ProductDetailClient initialProduct={formattedProduct} slug={product.id} />;
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = products.find((p) => p.slug === slug);
+  return <ProductDetailClient initialProduct={product} slug={slug} />;
 }

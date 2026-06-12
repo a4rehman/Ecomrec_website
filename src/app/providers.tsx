@@ -10,31 +10,20 @@ function StateHydrator({ children }: { children: ReactNode }) {
   const state = useSelector((s: RootState) => s.commerce);
 
   useEffect(() => {
-    // 1. Products (Fetch dynamically from SQLite Database)
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          const mapped = data.map((p: any) => ({
-            ...p,
-            slug: p.id,
-            name: p.title,
-            images: [p.imagePath],
-            sizes: p.sizes ? p.sizes.split(", ") : ["S", "M", "L"],
-            colors: p.colors ? p.colors.split(", ") : ["Default"],
-            fabric: "Premium",
-            stock: p.inStock ? 10 : 0,
-            rating: p.rating || 5,
-            reviews: p.reviews || 1,
-            brand: p.brand || "Sawera"
-          }));
-          dispatch(setProducts(mapped));
-        }
-      })
-      .catch((e) => console.error("Failed to fetch database products in provider:", e));
+    // 1. Products
+    const storedProducts = localStorage.getItem("jahanara_products");
+    if (storedProducts) {
+      try {
+        dispatch(setProducts(JSON.parse(storedProducts)));
+      } catch (e) {
+        console.error("Failed to parse stored products:", e);
+      }
+    } else {
+      localStorage.setItem("jahanara_products", JSON.stringify(state.products));
+    }
 
     // 2. User
-    const storedUser = localStorage.getItem("sawera_user");
+    const storedUser = localStorage.getItem("jahanara_user");
     if (storedUser) {
       try {
         dispatch(loginUser(JSON.parse(storedUser)));
@@ -44,7 +33,7 @@ function StateHydrator({ children }: { children: ReactNode }) {
     }
 
     // 3. Price Tier
-    const storedPriceTier = localStorage.getItem("SAWERA_price_tier");
+    const storedPriceTier = localStorage.getItem("jahanara_price_tier");
     if (storedPriceTier) {
       try {
         dispatch(setPriceTier(JSON.parse(storedPriceTier)));
@@ -54,7 +43,7 @@ function StateHydrator({ children }: { children: ReactNode }) {
     }
 
     // 4. Orders
-    const storedOrders = localStorage.getItem("SAWERA_orders");
+    const storedOrders = localStorage.getItem("jahanara_orders");
     if (storedOrders) {
       try {
         dispatch(setOrders(JSON.parse(storedOrders)));
@@ -67,24 +56,24 @@ function StateHydrator({ children }: { children: ReactNode }) {
   // Sync state back to localStorage on change
   useEffect(() => {
     if (state.products && state.products.length > 0) {
-      localStorage.setItem("SAWERA_products", JSON.stringify(state.products));
+      localStorage.setItem("jahanara_products", JSON.stringify(state.products));
     }
   }, [state.products]);
 
   useEffect(() => {
     if (state.user) {
-      localStorage.setItem("sawera_user", JSON.stringify(state.user));
+      localStorage.setItem("jahanara_user", JSON.stringify(state.user));
     } else {
-      localStorage.removeItem("sawera_user");
+      localStorage.removeItem("jahanara_user");
     }
   }, [state.user]);
 
   useEffect(() => {
-    localStorage.setItem("SAWERA_price_tier", JSON.stringify(state.priceTier));
+    localStorage.setItem("jahanara_price_tier", JSON.stringify(state.priceTier));
   }, [state.priceTier]);
 
   useEffect(() => {
-    localStorage.setItem("SAWERA_orders", JSON.stringify(state.orders));
+    localStorage.setItem("jahanara_orders", JSON.stringify(state.orders));
   }, [state.orders]);
 
   return <>{children}</>;
@@ -95,19 +84,15 @@ function ThemeBoundary({ children }: { children: ReactNode }) {
   return <div className={darkMode ? "dark min-h-screen bg-background text-foreground" : "min-h-screen bg-background text-foreground"}>{children}</div>;
 }
 
-import { SessionProvider } from "next-auth/react";
-
 export function Providers({ children }: { children: ReactNode }) {
   const queryClient = useMemo(() => new QueryClient(), []);
   return (
-    <SessionProvider>
-      <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
-          <StateHydrator>
-            <ThemeBoundary>{children}</ThemeBoundary>
-          </StateHydrator>
-        </QueryClientProvider>
-      </Provider>
-    </SessionProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <StateHydrator>
+          <ThemeBoundary>{children}</ThemeBoundary>
+        </StateHydrator>
+      </QueryClientProvider>
+    </Provider>
   );
 }
