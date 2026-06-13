@@ -29,6 +29,7 @@ export default function CheckoutPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
   const [phone, setPhone] = useState("");
   const [payMethod, setPayMethod] = useState("cod"); // default to COD
