@@ -2,7 +2,7 @@ import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Product, products as initialProducts } from "@/data/products";
 
 type Line = { id: string; qty: number; size?: string; color?: string };
-export type User = { email: string; name: string; role: "admin" | "user" };
+export type User = { id?: string; email: string; name: string; role: "admin" | "user" };
 export type Order = { id: string; items: Line[]; total: number; name: string; email: string; address: string; city: string; zip: string; phone: string; date: string; status: string };
 
 type CommerceState = {

@@ -42,6 +42,7 @@ eggs/
 .eggs/
 lib/
 !src/lib/
+!src/lib/**
 !src/lib/emailjs.ts
 lib64/
 parts/

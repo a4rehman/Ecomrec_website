@@ -8,6 +8,7 @@ import { loginUser } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BrandLogo } from "@/components/layout/brand-logo";
+import { ApiResponse, AuthUser } from "@/types/auth";
 
 export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "reset" }) {
   const router = useRouter();
@@ -23,7 +24,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
 
   const title = mode === "login" ? "Login" : mode === "register" ? "Sign Up" : mode === "forgot" ? "Forgot Password" : "Reset Password";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -41,26 +42,28 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
 
       // 1. Admin login check
       if (email.toLowerCase() === "admin@saweracollection.com" && password === "admin") {
-        const adminUser = { email: "admin@saweracollection.com", name: "Administrator", role: "admin" as const };
+        const adminUser = { id: "admin-demo", email: "admin@saweracollection.com", name: "Administrator", role: "admin" as const };
         dispatch(loginUser(adminUser));
-        localStorage.setItem("sawera_user", JSON.stringify(adminUser));
+        localStorage.setItem("jahanara_user", JSON.stringify(adminUser));
         router.push("/admin");
         return;
       }
 
-      // 2. Regular user login check
-      const storedUsers = localStorage.getItem("sawera_registered_users");
-      const usersList = storedUsers ? JSON.parse(storedUsers) : [];
-      const matchedUser = usersList.find((u: any) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const result = await response.json() as ApiResponse<AuthUser>;
 
-      if (matchedUser) {
-        const userSession = { email: matchedUser.email, name: matchedUser.name, role: "user" as const };
-        dispatch(loginUser(userSession));
-        localStorage.setItem("sawera_user", JSON.stringify(userSession));
-        router.push("/shop");
-      } else {
-        setError("Invalid email or password.");
+      if (!response.ok || !result.ok || !result.data) {
+        setError(result.message || "Invalid email or password.");
+        return;
       }
+
+      dispatch(loginUser(result.data));
+      localStorage.setItem("jahanara_user", JSON.stringify(result.data));
+      router.push("/shop");
     } else if (mode === "register") {
       if (!firstName || !lastName) {
         setError("First and last name are required.");
@@ -70,8 +73,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
         setError("Password is required.");
         return;
       }
-      if (password.length < 5) {
-        setError("Password must be at least 5 characters long.");
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters long.");
         return;
       }
       if (password !== confirmPassword) {
@@ -79,29 +82,25 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
         return;
       }
 
-      // Regular user registration
-      const storedUsers = localStorage.getItem("sawera_registered_users");
-      const usersList = storedUsers ? JSON.parse(storedUsers) : [];
-      const userExists = usersList.some((u: any) => u.email.toLowerCase() === email.toLowerCase());
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, firstName, lastName, password })
+      });
+      const result = await response.json() as ApiResponse<AuthUser>;
 
-      if (userExists) {
-        setError("An account with this email already exists.");
+      if (!response.ok || !result.ok || !result.data) {
+        setError(result.message || "Could not create your account.");
         return;
       }
 
-      const name = `${firstName} ${lastName}`;
-      const newUser = { email, password, name };
-      usersList.push(newUser);
-      localStorage.setItem("sawera_registered_users", JSON.stringify(usersList));
-
-      const userSession = { email, name, role: "user" as const };
-      dispatch(loginUser(userSession));
-      localStorage.setItem("sawera_user", JSON.stringify(userSession));
+      dispatch(loginUser(result.data));
+      localStorage.setItem("jahanara_user", JSON.stringify(result.data));
       router.push("/shop");
     } else if (mode === "forgot") {
-      setSuccess("If that account exists, a reset link has been simulated to your inbox!");
+      router.push("/forgot-password");
     } else if (mode === "reset") {
-      setSuccess("Your password has been successfully reset! You can now log in.");
+      router.push("/reset-password");
     }
   };
 
@@ -151,7 +150,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
 
         <p className="mt-8 text-muted">
           {mode === "login" ? (
-            <>Don&apos;t have an account? <Link href="/register" className="text-foreground underline">Sign up</Link></>
+            <>Don&apos;t have an account? <Link href="/register" className="text-foreground underline">Sign up</Link><br /><Link href="/forgot-password" className="mt-2 inline-block text-foreground underline">Forgot password?</Link></>
           ) : (
             <>Already have an account? <Link href="/login" className="text-foreground underline">Login</Link></>
           )}
