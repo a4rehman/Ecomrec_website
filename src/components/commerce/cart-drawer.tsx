@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { X, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { products } from "@/data/products";
@@ -12,7 +13,8 @@ import { Button } from "@/components/ui/button";
 
 export function CartDrawer() {
   const dispatch = useDispatch();
-  const { cart, cartDrawerOpen } = useSelector((s: RootState) => s.commerce);
+  const router = useRouter();
+  const { cart, cartDrawerOpen, user } = useSelector((s: RootState) => s.commerce);
 
   const lines = cart
     .map((line) => ({ ...line, product: products.find((p) => p.id === line.id)! }))
@@ -144,9 +146,19 @@ export function CartDrawer() {
                   Go to Cart
                 </Button>
               </Link>
-              <Link href="/checkout" passHref onClick={() => dispatch(closeCartDrawer())}>
-                <Button className="w-full">Checkout</Button>
-              </Link>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  dispatch(closeCartDrawer());
+                  if (user) {
+                    router.push("/checkout");
+                  } else {
+                    router.push("/login?redirect=/checkout");
+                  }
+                }}
+              >
+                Checkout
+              </Button>
             </div>
           </div>
         )}

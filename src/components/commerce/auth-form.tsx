@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "@/store/store";
@@ -12,6 +12,8 @@ import { ApiResponse, AuthUser } from "@/types/auth";
 
 export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "reset" }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/shop";
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
@@ -63,7 +65,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
 
       dispatch(loginUser(result.data));
       localStorage.setItem("jahanara_user", JSON.stringify(result.data));
-      router.push("/shop");
+      router.push(redirectTo);
     } else if (mode === "register") {
       if (!firstName || !lastName) {
         setError("First and last name are required.");

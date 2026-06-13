@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import { RootState, clearCart, createOrder } from "@/store/store";
 import { CartClient } from "@/components/commerce/cart-client";
 import { Input } from "@/components/ui/input";
@@ -14,12 +16,19 @@ import { CheckCircle2, RotateCcw, ShoppingBag, Truck } from "lucide-react";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
-  const { cart, products } = useSelector((s: RootState) => s.commerce);
+  const router = useRouter();
+  const { cart, products, user } = useSelector((s: RootState) => s.commerce);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.replace("/login?redirect=/checkout");
+    }
+  }, [user, router]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
   const [phone, setPhone] = useState("");
   const [payMethod, setPayMethod] = useState("cod"); // default to COD
