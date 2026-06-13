@@ -155,14 +155,6 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
             <>Already have an account? <Link href="/login" className="text-foreground underline">Login</Link></>
           )}
         </p>
-
-        {mode === "login" && (
-          <div className="relative z-10 mt-4 rounded-3xl border border-line bg-background/50 p-4 text-left text-xs text-muted">
-            <p className="font-semibold text-foreground mb-1">Quick Demo Accounts:</p>
-            <p>- Admin: <code className="rounded bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800">admin@saweracollection.com</code> (Password: <code className="rounded bg-neutral-100 px-1 py-0.5 dark:bg-neutral-800">admin</code>)</p>
-            <p>- Customer: Sign up with any email or create one in seconds.</p>
-          </div>
-        )}
       </div>
     </section>
   );
