@@ -1,6 +1,6 @@
 # Maison Elara Ecommerce
 
-A production-ready, premium ecommerce demo inspired by the uploaded Farasha reference screenshots and upgraded with a modern luxury storefront system.
+A production-ready, premium ecommerce demo inspired by the uploaded Farasha reference screenshots and upgraded with a modern luxury storefront sys.
 
 ## Design Analysis
 
