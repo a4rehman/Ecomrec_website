@@ -19,7 +19,13 @@ export function Footer() {
         </section>
         <section>
           <h3 className="tracked-luxury mb-7 text-sm">Policies</h3>
-          {["Privacy Policy", "Return & Exchange", "Order Cancellation", "Custom and Duties", "Terms of Service", "Refund Policy"].map((p) => <Link className="mb-4 block text-muted transition hover:text-accent" href="#" key={p}>{p}</Link>)}
+          {[
+            { name: "Privacy Policy", path: "/privacy-policy" },
+            { name: "Return & Exchange", path: "/return-exchange" },
+            { name: "Order Cancellation", path: "/order-cancellation" },
+            { name: "Terms of Service", path: "/terms-of-service" },
+            { name: "Refund Policy", path: "/refund-policy" }
+          ].map((p) => <Link className="mb-4 block text-muted transition hover:text-accent" href={p.path} key={p.name}>{p.name}</Link>)}
         </section>
         <section>
           <h3 className="tracked-luxury mb-7 text-sm">Newsletter</h3>
