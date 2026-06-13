@@ -1042,7 +1042,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_1",
     slug: "ee_luxury_lawn_1",
-    name: "Luxury Lawn Essential 1",
+    name: "Ayla Embroidered Lawn Suit",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 4283,
@@ -1052,7 +1052,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [luxuryLawn1, embLawn1],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1060,7 +1060,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_2",
     slug: "ee_luxury_lawn_2",
-    name: "Luxury Lawn Essential 2",
+    name: "Noor Pastel Lawn Set",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3697,
@@ -1070,7 +1070,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [luxuryLawn2, embLawn2],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1078,7 +1078,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_3",
     slug: "ee_luxury_lawn_3",
-    name: "Luxury Lawn Essential 3",
+    name: "Meher Floral Lawn 3-Piece",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3078,
@@ -1088,7 +1088,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [luxuryLawn3, luxuryLawn4],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1096,7 +1096,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_4",
     slug: "ee_luxury_lawn_4",
-    name: "Luxury Lawn Essential 4",
+    name: "Saira Cutwork Lawn Suit",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 2604,
@@ -1106,7 +1106,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [luxuryLawn5, embLawn3],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1114,7 +1114,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_5",
     slug: "ee_luxury_lawn_5",
-    name: "Luxury Lawn Essential 5",
+    name: "Zeenat Soft Lawn Edit",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3678,
@@ -1124,7 +1124,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [luxuryLawn6, embLawn4],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1132,7 +1132,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_6",
     slug: "ee_luxury_lawn_6",
-    name: "Luxury Lawn Essential 6",
+    name: "Mina Blush Lawn Suit",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3734,
@@ -1142,7 +1142,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [embLawn5, coralSuit],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1150,7 +1150,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_7",
     slug: "ee_luxury_lawn_7",
-    name: "Luxury Lawn Essential 7",
+    name: "Haya Mint Lawn 3-Piece",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3730,
@@ -1160,7 +1160,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [embLawn6, greenSuit],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1168,7 +1168,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_8",
     slug: "ee_luxury_lawn_8",
-    name: "Luxury Lawn Essential 8",
+    name: "Eliza Ivory Lawn Suit",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3973,
@@ -1178,7 +1178,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [embLawn7, brownSuit],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1186,7 +1186,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_9",
     slug: "ee_luxury_lawn_9",
-    name: "Luxury Lawn Essential 9",
+    name: "Rumi Aqua Lawn Set",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3748,
@@ -1196,7 +1196,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [aquaSuit, luxuryLawn2],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1204,7 +1204,7 @@ export const products: Product[] = [
   {
     id: "ee_luxury_lawn_10",
     slug: "ee_luxury_lawn_10",
-    name: "Luxury Lawn Essential 10",
+    name: "Dania Jade Lawn Suit",
     category: "Luxury Lawn",
     brand: "Sawera Pret",
     price: 3991,
@@ -1214,7 +1214,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [jadeSuit, luxuryLawn1],
     description: "Everyday essential luxury lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1222,7 +1222,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_1",
     slug: "ee_printed_lawn_1",
-    name: "Printed Lawn Essential 1",
+    name: "Naira Printed Lawn Suit",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 3763,
@@ -1232,7 +1232,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [digitalPrint1, digitalPrint2],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1240,7 +1240,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_2",
     slug: "ee_printed_lawn_2",
-    name: "Printed Lawn Essential 2",
+    name: "Roshni Block Print Lawn",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 2545,
@@ -1250,7 +1250,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit20, coralSuit],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1258,7 +1258,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_3",
     slug: "ee_printed_lawn_3",
-    name: "Printed Lawn Essential 3",
+    name: "Lina Yellow Printed Lawn",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 3032,
@@ -1268,7 +1268,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [digitalPrint4, mustardSuit],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1276,7 +1276,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_4",
     slug: "ee_printed_lawn_4",
-    name: "Printed Lawn Essential 4",
+    name: "Amaya Sky Printed Suit",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 2515,
@@ -1286,7 +1286,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [aquaSuit, digitalPrint2],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1294,7 +1294,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_5",
     slug: "ee_printed_lawn_5",
-    name: "Printed Lawn Essential 5",
+    name: "Sana Garden Print Lawn",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 4256,
@@ -1304,7 +1304,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [greenSuit, digitalPrint1],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1312,7 +1312,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_6",
     slug: "ee_printed_lawn_6",
-    name: "Printed Lawn Essential 6",
+    name: "Maira Coral Print Set",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 3780,
@@ -1322,7 +1322,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [coralSuit, digitalPrint3],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1330,7 +1330,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_7",
     slug: "ee_printed_lawn_7",
-    name: "Printed Lawn Essential 7",
+    name: "Zara Brown Printed Lawn",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 3805,
@@ -1340,7 +1340,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [brownSuit, digitalPrint2],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1348,7 +1348,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_8",
     slug: "ee_printed_lawn_8",
-    name: "Printed Lawn Essential 8",
+    name: "Iqra Mustard Print Suit",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 3073,
@@ -1358,7 +1358,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [mustardSuit, digitalPrint4],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1366,7 +1366,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_9",
     slug: "ee_printed_lawn_9",
-    name: "Printed Lawn Essential 9",
+    name: "Areeba Jade Printed Set",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 2996,
@@ -1376,7 +1376,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [jadeSuit, digitalPrint1],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1384,7 +1384,7 @@ export const products: Product[] = [
   {
     id: "ee_printed_lawn_10",
     slug: "ee_printed_lawn_10",
-    name: "Printed Lawn Essential 10",
+    name: "Nimra Blue Printed Lawn",
     category: "Printed Lawn",
     brand: "Sawera Pret",
     price: 4266,
@@ -1394,7 +1394,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit19, aquaSuit],
     description: "Everyday essential printed lawn piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1402,7 +1402,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_1",
     slug: "ee_festive_chiffon_1",
-    name: "Festive Chiffon Essential 1",
+    name: "Rania Chiffon Festive Suit",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 2837,
@@ -1412,7 +1412,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [festive1, festive2],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1420,7 +1420,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_2",
     slug: "ee_festive_chiffon_2",
-    name: "Festive Chiffon Essential 2",
+    name: "Inaya Embroidered Chiffon",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 3793,
@@ -1430,7 +1430,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [festive3, festive4],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1438,7 +1438,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_3",
     slug: "ee_festive_chiffon_3",
-    name: "Festive Chiffon Essential 3",
+    name: "Mahnoor Festive Chiffon",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 2868,
@@ -1448,7 +1448,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [festive5, festive6],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1456,7 +1456,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_4",
     slug: "ee_festive_chiffon_4",
-    name: "Festive Chiffon Essential 4",
+    name: "Afsheen Formal Chiffon",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 2692,
@@ -1466,7 +1466,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit23, festive1],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1474,7 +1474,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_5",
     slug: "ee_festive_chiffon_5",
-    name: "Festive Chiffon Essential 5",
+    name: "Zimal Pearl Chiffon Suit",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 4004,
@@ -1484,7 +1484,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit24, festive2],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1492,7 +1492,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_6",
     slug: "ee_festive_chiffon_6",
-    name: "Festive Chiffon Essential 6",
+    name: "Laila Evening Chiffon",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 2736,
@@ -1502,7 +1502,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit21, festive3],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1510,7 +1510,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_7",
     slug: "ee_festive_chiffon_7",
-    name: "Festive Chiffon Essential 7",
+    name: "Sahar Soft Chiffon Set",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 3577,
@@ -1520,7 +1520,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit22, festive4],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1528,7 +1528,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_8",
     slug: "ee_festive_chiffon_8",
-    name: "Festive Chiffon Essential 8",
+    name: "Nawal Rosette Chiffon",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 2939,
@@ -1538,7 +1538,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit20, festive5],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1546,7 +1546,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_9",
     slug: "ee_festive_chiffon_9",
-    name: "Festive Chiffon Essential 9",
+    name: "Emaan Festive Net Suit",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 3415,
@@ -1556,7 +1556,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [festive4, festive6],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1564,7 +1564,7 @@ export const products: Product[] = [
   {
     id: "ee_festive_chiffon_10",
     slug: "ee_festive_chiffon_10",
-    name: "Festive Chiffon Essential 10",
+    name: "Mishal Chiffon Occasion Suit",
     category: "Festive Chiffon",
     brand: "Sawera Pret",
     price: 4335,
@@ -1574,7 +1574,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [festive6, saleSuit24],
     description: "Everyday essential festive chiffon piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1582,7 +1582,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_1",
     slug: "ee_ready_to_wear_1",
-    name: "Everyday Essential 1",
+    name: "Aina Everyday Kurti Set",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 4263,
@@ -1592,7 +1592,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [pretSuit1, pretSuit2],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1600,7 +1600,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_2",
     slug: "ee_ready_to_wear_2",
-    name: "Everyday Essential 2",
+    name: "Misha Cambric Co-ord",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 2752,
@@ -1610,7 +1610,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [pretSuit3, pretSuit4],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1618,7 +1618,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_3",
     slug: "ee_ready_to_wear_3",
-    name: "Everyday Essential 3",
+    name: "Elan Daily Cotton Suit",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 3370,
@@ -1628,7 +1628,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit11, pretSuit5],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1636,7 +1636,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_4",
     slug: "ee_ready_to_wear_4",
-    name: "Everyday Essential 4",
+    name: "Sofi Block Print Kurta",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 2666,
@@ -1646,7 +1646,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit12, digitalPrint3],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1654,7 +1654,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_5",
     slug: "ee_ready_to_wear_5",
-    name: "Everyday Essential 5",
+    name: "Hiba Chikankari Kurti",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 4294,
@@ -1664,7 +1664,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit13, pretSuit1],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1672,7 +1672,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_6",
     slug: "ee_ready_to_wear_6",
-    name: "Everyday Essential 6",
+    name: "Nyla Floral Co-ord Set",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 2620,
@@ -1682,7 +1682,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit14, pretSuit4],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1690,7 +1690,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_7",
     slug: "ee_ready_to_wear_7",
-    name: "Everyday Essential 7",
+    name: "Ameera Jacquard Kurta",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 3929,
@@ -1700,7 +1700,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit15, embLawn4],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1708,7 +1708,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_8",
     slug: "ee_ready_to_wear_8",
-    name: "Everyday Essential 8",
+    name: "Zoya Silk Kaftan",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 3933,
@@ -1718,7 +1718,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [aquaSuit, aquaSuit],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1726,7 +1726,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_9",
     slug: "ee_ready_to_wear_9",
-    name: "Everyday Essential 9",
+    name: "Tara Linen Daily Set",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 4040,
@@ -1736,7 +1736,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit16, pretSuit2],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1744,7 +1744,7 @@ export const products: Product[] = [
   {
     id: "ee_ready_to_wear_10",
     slug: "ee_ready_to_wear_10",
-    name: "Everyday Essential 10",
+    name: "Leena Cotton Pret Suit",
     category: "Everyday Essentials",
     brand: "Sawera Pret",
     price: 3125,
@@ -1754,7 +1754,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit18, greenSuit],
     description: "Everyday essential piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1762,7 +1762,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_1",
     slug: "ee_bridal_couture_1",
-    name: "Bridal & Couture Essential 1",
+    name: "Maira Couture Formal Suit",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 3941,
@@ -1772,7 +1772,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [bridal1, bridal2],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1780,7 +1780,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_2",
     slug: "ee_bridal_couture_2",
-    name: "Bridal & Couture Essential 2",
+    name: "Zehra Gharara Edit",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 3113,
@@ -1790,7 +1790,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [bridal3, bridal1],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1798,7 +1798,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_3",
     slug: "ee_bridal_couture_3",
-    name: "Bridal & Couture Essential 3",
+    name: "Areesha Organza Formal",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 4035,
@@ -1808,7 +1808,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [bridal2, bridal2],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1816,7 +1816,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_4",
     slug: "ee_bridal_couture_4",
-    name: "Bridal & Couture Essential 4",
+    name: "Haniya Soft Couture Set",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 3218,
@@ -1826,7 +1826,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit22, bridal3],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1834,7 +1834,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_5",
     slug: "ee_bridal_couture_5",
-    name: "Bridal & Couture Essential 5",
+    name: "Narmeen Tissue Formal",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 4178,
@@ -1844,7 +1844,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit23, bridal2],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1852,7 +1852,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_6",
     slug: "ee_bridal_couture_6",
-    name: "Bridal & Couture Essential 6",
+    name: "Safina Pearl Formal Suit",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 2570,
@@ -1862,7 +1862,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit15, bridal1],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1870,7 +1870,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_7",
     slug: "ee_bridal_couture_7",
-    name: "Bridal & Couture Essential 7",
+    name: "Laiba Rose Couture Suit",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 2834,
@@ -1880,7 +1880,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit13, bridal2],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1888,7 +1888,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_8",
     slug: "ee_bridal_couture_8",
-    name: "Bridal & Couture Essential 8",
+    name: "Nisha Golden Formal Set",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 2651,
@@ -1898,7 +1898,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit14, bridal3],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1906,7 +1906,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_9",
     slug: "ee_bridal_couture_9",
-    name: "Bridal & Couture Essential 9",
+    name: "Aiza Ivory Couture Suit",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 3028,
@@ -1916,7 +1916,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit17, bridal1],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1924,7 +1924,7 @@ export const products: Product[] = [
   {
     id: "ee_bridal_couture_10",
     slug: "ee_bridal_couture_10",
-    name: "Bridal & Couture Essential 10",
+    name: "Sabeen Festive Couture",
     category: "Bridal & Couture",
     brand: "Sawera Pret",
     price: 2513,
@@ -1934,7 +1934,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit12, bridal2],
     description: "Everyday essential bridal & couture piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1942,7 +1942,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_1",
     slug: "ee_winter_festive_1",
-    name: "Winter Festive Essential 1",
+    name: "Abeer Karandi Winter Suit",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 3931,
@@ -1952,7 +1952,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [winterSuit1, winterSuit2],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1960,7 +1960,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_2",
     slug: "ee_winter_festive_2",
-    name: "Winter Festive Essential 2",
+    name: "Mina Velvet Shawl Set",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 4221,
@@ -1970,7 +1970,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [winterSuit3, winterSuit2],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1978,7 +1978,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_3",
     slug: "ee_winter_festive_3",
-    name: "Winter Festive Essential 3",
+    name: "Ruba Khaddar Festive Suit",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 2655,
@@ -1988,7 +1988,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit10, winterSuit1],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -1996,7 +1996,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_4",
     slug: "ee_winter_festive_4",
-    name: "Winter Festive Essential 4",
+    name: "Noor Wool Shawl Suit",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 4349,
@@ -2006,7 +2006,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit9, winterSuit2],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -2014,7 +2014,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_5",
     slug: "ee_winter_festive_5",
-    name: "Winter Festive Essential 5",
+    name: "Zara Plum Winter Set",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 4362,
@@ -2024,7 +2024,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit8, winterSuit3],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -2032,7 +2032,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_6",
     slug: "ee_winter_festive_6",
-    name: "Winter Festive Essential 6",
+    name: "Hira Jacquard Winter Suit",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 4127,
@@ -2042,7 +2042,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit7, winterSuit2],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -2050,7 +2050,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_7",
     slug: "ee_winter_festive_7",
-    name: "Winter Festive Essential 7",
+    name: "Sana Midnight Karandi",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 3351,
@@ -2060,7 +2060,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit6, winterSuit1],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -2068,7 +2068,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_8",
     slug: "ee_winter_festive_8",
-    name: "Winter Festive Essential 8",
+    name: "Esha Forest Winter Suit",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 2971,
@@ -2078,7 +2078,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit5, winterSuit2],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -2086,7 +2086,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_9",
     slug: "ee_winter_festive_9",
-    name: "Winter Festive Essential 9",
+    name: "Dua Caramel Khaddar Set",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 3621,
@@ -2096,7 +2096,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit4, winterSuit3],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -2104,7 +2104,7 @@ export const products: Product[] = [
   {
     id: "ee_winter_festive_10",
     slug: "ee_winter_festive_10",
-    name: "Winter Festive Essential 10",
+    name: "Alina Winter Festive Suit",
     category: "Winter Festive",
     brand: "Sawera Pret",
     price: 4474,
@@ -2114,7 +2114,7 @@ export const products: Product[] = [
     badge: "Sale",
     colors: ["Classic"],
     sizes: ["S", "M", "L"],
-    images: [saleSuit1, saleSuit2],
+    images: [saleSuit3, winterSuit2],
     description: "Everyday essential winter festive piece, perfect for daily wear.",
     fabric: "Premium Blend",
     stock: 50
@@ -2150,3 +2150,4 @@ export const blogPosts = [
   { slug: "block-print-renaissance", title: "The Block Print Renaissance", category: "Trends", image: "/images/printed_lawn_blue.png", excerpt: "How artisan hand block-printing is making a bold comeback in Pakistani luxury lawn collections." },
   { slug: "eid-dressing-guide", title: "Eid Dressing: A Complete Guide", category: "Editorial", image: "/images/imgi_203_PakistaniFashionLawnSuitforFestiveWear.jpg", excerpt: "From sehri to Eid night, a curated style guide for every occasion of the festive season." }
 ];
+
