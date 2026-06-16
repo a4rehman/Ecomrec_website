@@ -38,11 +38,6 @@ export default function Home() {
             <h1 className="font-serif text-6xl leading-none md:text-8xl">Sawera Collection</h1>
             <p className="brand-script mt-4 text-lg text-white/86">Made for Her. Inspired by Grace</p>
             <p className="mt-6 max-w-xl text-lg leading-8 text-white/86">Luxury women&apos;s fashion crafted with elegance, confidence, and a soft feminine grace.</p>
-            <div className="mt-8 grid max-w-xl grid-cols-3 border-y border-white/24 py-4 text-center">
-              {["Soft Luxury", "Modest Elegance", "Premium Craft"].map((item) => (
-                <span className="tracked-luxury px-2 text-[10px] text-white/78" key={item}>{item}</span>
-              ))}
-            </div>
             <div className="mt-9 flex flex-wrap gap-4">
               <Link href="/shop"><Button>Shop Now <ArrowRight size={16} /></Button></Link>
               <Link href="/shop?sort=new"><Button variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-foreground">New Arrivals</Button></Link>
