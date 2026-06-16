@@ -49,7 +49,9 @@ function ShopContent() {
 
       // 2. Search & filter controls
       return (
-        (category === "All" || p.category === category) &&
+        (category === "All" || 
+         (category === "Trending" && (p.rating >= 4.8 || p.badge === "Bestseller")) || 
+         p.category === category) &&
         (brand === "All" || p.brand === brand) &&
         p.price <= max &&
         p.name.toLowerCase().includes(query.toLowerCase())
@@ -61,7 +63,8 @@ function ShopContent() {
   // Filter available categories and brands for dropdown dynamically
   const availableCategories = useMemo(() => {
     const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : p.price < 5000);
-    return [...new Set(list.map(p => p.category))];
+    const cats = [...new Set(list.map(p => p.category))];
+    return ["Trending", ...cats];
   }, [products, priceTier]);
 
   const availableBrands = useMemo(() => {

@@ -2128,6 +2128,7 @@ export const categories = [
   "Everyday Essentials",
   "Bridal & Couture",
   "Winter Festive",
+  "Trending",
   "Sale"
 ];
 
