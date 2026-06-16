@@ -1,4 +1,3 @@
-// src/components/ui/ImageCarousel.tsx
 "use client";
 
 import Image from "next/image";
@@ -6,29 +5,25 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface ImageCarouselProps {
-  images: string[]; // array of image URLs
+  images: string[];
   alt?: string;
 }
 
 export default function ImageCarousel({ images, alt = "Carousel image" }: ImageCarouselProps) {
   const [index, setIndex] = useState(0);
 
-  // Debug: log images length
-  console.log("ImageCarousel images:", images);
-
-  // Cycle images every 5 seconds
   useEffect(() => {
+    if (!images || images.length <= 1) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
     }, 5000);
     return () => clearInterval(timer);
   }, [images]);
 
-  if (!images || images.length === 0) {
-    return null;
-  }
+  if (!images || images.length === 0) return null;
 
-  return <div className="absolute inset-0 z-0">
+  return (
+    <div className="absolute inset-0 z-0 overflow-hidden">
       <AnimatePresence initial={false} mode="wait">
         <motion.div
           key={index}
