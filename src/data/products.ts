@@ -2176,6 +2176,7 @@ export const products: Product[] = [
 ];
 
 export const categories = [
+  "New Arrivals",
   "Luxury Lawn",
   "Printed Lawn",
   "Festive Chiffon",
