@@ -8,7 +8,7 @@ import { products as catalogProducts } from "@/data/products";
 
 const PRODUCTS_STORAGE_KEY = "jahanara_products";
 const PRODUCTS_STORAGE_VERSION_KEY = "jahanara_products_version";
-const PRODUCTS_STORAGE_VERSION = "2026-06-13-essential-image-refresh";
+const PRODUCTS_STORAGE_VERSION = "2026-06-16-sharp-products-update";
 
 function StateHydrator({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
