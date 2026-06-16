@@ -27,11 +27,17 @@ export default function Home() {
   });
 
   const hero = filteredProducts[0] || products[0];
-
+  // Collect a few hero images for the carousel (first three products)
+  const heroImages = [
+    hero.images[0],
+    filteredProducts[1]?.images[0],
+    filteredProducts[2]?.images[0]
+  ].filter(Boolean);
+  
   return (
     <>
       <section className="relative min-h-[calc(100svh-180px)] overflow-hidden bg-foreground">
-        <ImageCarousel images={hero.images} alt="Sawera Collection luxury women's fashion" />
+        <ImageCarousel images={heroImages} alt="Sawera Collection luxury women's fashion" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#2a1818]/76 via-[#6f4144]/34 to-white/10" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
         <div className="container-lux relative flex min-h-[calc(100svh-180px)] items-center pb-12 pt-20">

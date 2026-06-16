@@ -3,6 +3,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ImageCarouselProps {
   images: string[]; // array of image URLs
@@ -25,13 +26,26 @@ export default function ImageCarousel({ images, alt = "Carousel image" }: ImageC
   }
 
   return (
-    <Image
-      src={images[index]}
-      alt={alt}
-      fill
-      priority
-      sizes="100vw"
-      className="animate-[floatSlow_9s_ease-in-out_infinite] scale-105 object-cover object-[50%_18%]"
-    />
+    <div className="relative w-full h-full overflow-hidden">
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={index}
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "-100%" }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={images[index]}
+            alt={alt}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
