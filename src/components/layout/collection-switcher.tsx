@@ -16,7 +16,7 @@ export function CollectionSwitcher() {
   };
 
   return (
-    <div className="flex items-center justify-center border-b border-line bg-white/60 py-2.5 text-xs backdrop-blur-xl">
+    <div className="flex items-center justify-center border-b border-line bg-white/60 py-1.5 text-xs backdrop-blur-xl">
       <div className="flex rounded-full border border-line bg-white/70 p-1 shadow-sm">
         <button
           onClick={() => handleToggle("premium")}

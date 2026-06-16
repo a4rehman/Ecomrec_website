@@ -18,26 +18,23 @@ export function Header() {
   return (
     <>
       {/* Top free‑shipping marquee */}
-      <div className="h-10 bg-[#191919] text-white">
+      <div className="h-7 bg-[#191919] text-white">
         <AnnouncementMarquee />
       </div>
 
       {/* Main navigation bar */}
       <header className="sticky top-0 z-40 border-b border-line bg-background/88 backdrop-blur-xl">
-        <div className="container-lux grid h-16 grid-cols-3 items-center">
+        <div className="container-lux grid h-12 grid-cols-3 items-center">
           <button
             onClick={() => setOpen(true)}
             className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-wide"
           >
-            <Menu size={30} strokeWidth={1.6} /> Menu
+            <Menu size={22} strokeWidth={1.6} /> Menu
           </button>
 
           <Link href="/" className="justify-self-center text-center">
-            <span className="block font-serif text-4xl tracking-[.28em]">SAWERA</span>
-            <span className="tracked-luxury block text-[10px] text-muted">COLLECTION</span>
-            <span className="block text-[9px] italic text-muted/80 mt-1 font-serif tracking-widest">
-              Made for Her. Inspired by Grace
-            </span>
+            <span className="block font-serif text-2xl tracking-[.28em]">SAWERA</span>
+            <span className="tracked-luxury block text-[9px] text-muted">COLLECTION</span>
           </Link>
 
           <nav className="flex items-center gap-5 justify-self-end">
