@@ -15,6 +15,8 @@ export type Product = {
   description: string;
   fabric: string;
   stock: number;
+  salePrice?: number;
+  saleEnd?: string; // ISO date string for countdown
 };
 
 // Real Pakistani suit images from public/images

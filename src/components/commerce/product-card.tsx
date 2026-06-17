@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, ShoppingBag, Star } from "lucide-react";
+import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { motion } from "framer-motion";
 import { Product } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
@@ -23,7 +24,16 @@ export function ProductCard({ product }: { product: Product }) {
           <Link href={`/product/${product.slug}`} className="font-medium">{product.name}</Link>
           <p className="mt-1 text-sm text-muted">{product.category}</p>
           <p className="mt-2 flex items-center gap-1 text-xs"><Star size={13} fill="currentColor" /> {product.rating} ({product.reviews})</p>
-          <p className="mt-2 font-semibold">{formatPrice(product.price)} {product.compareAt && <s className="ml-2 text-sm font-normal text-muted">{formatPrice(product.compareAt)}</s>}</p>
+          {product.salePrice && product.saleEnd ? (
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-sm line-through text-muted">{formatPrice(product.price)}</span>
+              <span className="font-semibold text-accent">{formatPrice(product.salePrice)}</span>
+            </div>
+          ) : (
+            <p className="mt-2 font-semibold">{formatPrice(product.price)}{product.compareAt && <s className="ml-2 text-sm font-normal text-muted">{formatPrice(product.compareAt)}</s>}</p>
+          )}
+          {product.saleEnd && <CountdownTimer endDate={product.saleEnd} size="sm" />}
+
         </div>
         <div className="flex gap-2">
           <button className="focus-ring" onClick={() => dispatch(toggleWishlist(product.id))} aria-label="Wishlist"><Heart size={20} fill={wished ? "currentColor" : "none"} /></button>

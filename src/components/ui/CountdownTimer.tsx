@@ -18,19 +18,22 @@ function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export function CountdownTimer() {
-  const [endDate] = useState(() => {
+export function CountdownTimer({ endDate, size = "lg" }: { endDate?: string; size?: "sm" | "lg" }) {
+  const [initialEndDate] = useState<Date>(() => {
+    if (endDate) {
+      return new Date(endDate);
+    }
     const end = new Date();
     end.setHours(end.getHours() + 48);
     end.setMinutes(0, 0, 0);
     return end;
   });
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => getTimeLeft(endDate));
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => getTimeLeft(initialEndDate));
 
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(getTimeLeft(endDate)), 1000);
+    const timer = setInterval(() => setTimeLeft(getTimeLeft(initialEndDate)), 1000);
     return () => clearInterval(timer);
-  }, [endDate]);
+  }, [initialEndDate]);
 
   const units: [string, keyof TimeLeft][] = [
     [pad(timeLeft.hours), "hours"],
@@ -39,6 +42,15 @@ export function CountdownTimer() {
   ];
 
   const labels = ["Hours", "Minutes", "Seconds"];
+
+  if (size === "sm") {
+    return (
+      <div className="mt-3 flex items-center justify-between gap-1 border border-accent/25 bg-accent/[0.04] px-2.5 py-1.5 rounded-sm text-[10px] uppercase tracking-wider text-accent font-medium font-mono">
+        <span>Ends In:</span>
+        <span className="tabular-nums font-semibold">{pad(timeLeft.hours)}h {pad(timeLeft.minutes)}m {pad(timeLeft.seconds)}s</span>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-3 gap-3 text-center">

@@ -22,6 +22,11 @@ function ShopContent() {
   const [max, setMax] = useState(100000);
   const [sort, setSort] = useState("featured");
 
+  // Reset sort to default when category or brand changes
+  useEffect(() => {
+    setSort("featured");
+  }, [category, brand]);
+
   // Determine price bounds based on active tier
   const minLimit = priceTier === "simple" ? 1000 : 5000;
   const maxLimit = priceTier === "simple" ? 5000 : 100000;

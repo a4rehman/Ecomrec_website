@@ -40,6 +40,8 @@ export default function AdminPage() {
   const [description, setDescription] = useState("");
   const [fabric, setFabric] = useState("Premium Lawn");
   const [stock, setStock] = useState(10);
+  const [salePrice, setSalePrice] = useState<number>(0);
+  const [saleEnd, setSaleEnd] = useState(""); // ISO date string
   const [colorsInput, setColorsInput] = useState("Pastel Mint, Powder Pink, Ivory");
   const [sizesSelected, setSizesSelected] = useState<string[]>(["Unstitched", "M", "L"]);
   const [imageFiles, setImageFiles] = useState<string[]>([]);
@@ -143,6 +145,8 @@ export default function AdminPage() {
     setDescription("");
     setFabric("Premium Lawn");
     setStock(10);
+    setSalePrice(0);
+    setSaleEnd("");
     setColorsInput("Pastel Mint, Powder Pink, Ivory");
     setSizesSelected(["Unstitched", "M", "L"]);
     setImageFiles([]);
@@ -163,6 +167,8 @@ export default function AdminPage() {
     setDescription(p.description);
     setFabric(p.fabric);
     setStock(p.stock);
+    setSalePrice(p.salePrice || 0);
+    setSaleEnd(p.saleEnd || "");
     setColorsInput(p.colors.join(", "));
     setSizesSelected(p.sizes);
     setImageFiles(p.images);
@@ -242,7 +248,9 @@ export default function AdminPage() {
       images: finalImages,
       description,
       fabric,
-      stock: Number(stock)
+      stock: Number(stock),
+      salePrice: salePrice > 0 ? Number(salePrice) : undefined,
+      saleEnd: saleEnd || undefined
     };
 
     if (editMode) {
@@ -377,6 +385,18 @@ export default function AdminPage() {
                   <label className="block text-sm font-medium">
                     Compare At Price (PKR)
                     <Input className="mt-2" type="number" min="0" value={compareAt || ""} onChange={(e) => setCompareAt(Number(e.target.value))} />
+                  </label>
+                </div>
+
+                {/* Promotion & Sale Settings */}
+                <div className="grid gap-6 sm:grid-cols-2 border border-line/50 rounded p-4 bg-background/30">
+                  <label className="block text-sm font-medium">
+                    Sale Price (PKR) - Optional
+                    <Input className="mt-2" type="number" min="0" value={salePrice || ""} onChange={(e) => setSalePrice(Number(e.target.value))} />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Sale End Date (Local Date/Time) - Optional
+                    <Input className="mt-2" type="datetime-local" value={saleEnd} onChange={(e) => setSaleEnd(e.target.value)} />
                   </label>
                 </div>
 
