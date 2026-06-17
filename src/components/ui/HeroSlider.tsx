@@ -229,11 +229,6 @@ export function HeroSlider({ products }: HeroSliderProps) {
         ))}
       </div>
 
-      <div className="absolute right-6 top-6 z-20 flex items-center gap-2 rounded-full bg-black/30 px-4 py-2 text-xs text-white/70 backdrop-blur-md">
-        <span className="font-serif text-base font-bold text-white">{String(current + 1).padStart(2, "0")}</span>
-        <span className="text-white/40">/</span>
-        <span>{String(slides.length).padStart(2, "0")}</span>
-      </div>
     </section>
   );
 }
