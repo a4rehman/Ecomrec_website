@@ -19,19 +19,16 @@ const imageVariants: Variants = {
   enter: (dir: number) => ({
     scale: 1.15,
     opacity: 0,
-    filter: "blur(15px)",
     x: dir > 0 ? "2%" : "-2%",
   }),
   center: {
     scale: 1,
     opacity: 1,
-    filter: "blur(0px)",
     x: "0%",
   },
   exit: (dir: number) => ({
     scale: 0.95,
     opacity: 0,
-    filter: "blur(10px)",
     x: dir > 0 ? "-2%" : "2%",
   }),
 };
@@ -49,19 +46,17 @@ const textContainerVariants: Variants = {
 
 // Elegant text entry combining opacity, y-translation, scale, and soft blur
 const textChildVariants: Variants = {
-  hidden: { opacity: 0, y: 35, scale: 0.97, filter: "blur(12px)" },
+  hidden: { opacity: 0, y: 35, scale: 0.97 },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const },
   },
   exit: {
     opacity: 0,
     y: -25,
     scale: 0.98,
-    filter: "blur(8px)",
     transition: { duration: 0.4, ease: "easeIn" },
   },
 };
