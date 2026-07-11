@@ -61,6 +61,32 @@ export default function Home() {
         <ProductStrip products={bestSellers} />
       </FadeIn>
 
+      <FadeIn className="py-8">
+        <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
+          <Image
+            src="/home_page_images/banner_luxury_lawn.png"
+            alt="Sawera Luxury Lawn Banner"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-y-0 left-8 md:left-16 flex flex-col justify-center text-white z-10 max-w-md md:max-w-xl">
+            <p className="tracked-luxury text-xs text-white/80 uppercase">The Heritage Collection</p>
+            <h2 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl text-white">Luxury Lawn '26</h2>
+            <p className="mt-4 text-xs md:text-sm text-white/90 leading-relaxed font-light hidden sm:block">
+              Intricately detailed resham embroidery, premium fabrics, and signature silhouettes crafted for summer grace.
+            </p>
+            <div className="mt-6">
+              <Link href="/shop?category=Luxury%20Lawn">
+                <Button className="bg-white text-black hover:bg-black hover:text-white transition-all text-xs font-semibold px-6 py-2 h-auto rounded-none">
+                  Shop Luxury Lawn
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+
       <FadeIn className="container-lux py-16">
         <SectionHeading
           eyebrow="Star Style"
@@ -76,6 +102,32 @@ export default function Home() {
           {premiumNewArrivals.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
+        </div>
+      </FadeIn>
+
+      <FadeIn className="py-8">
+        <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
+          <Image
+            src="/home_page_images/banner_festive_collection.png"
+            alt="Sawera Festive Collection Banner"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-y-0 right-8 md:right-16 flex flex-col justify-center text-right text-white z-10 max-w-md md:max-w-xl ml-auto">
+            <p className="tracked-luxury text-xs text-white/80 uppercase">Bespoke Couture</p>
+            <h2 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl text-white">Festive Formals</h2>
+            <p className="mt-4 text-xs md:text-sm text-white/90 leading-relaxed font-light hidden sm:block">
+              Opulent chiffon, raw silk, and organza ensembles embellished with handcrafted tilla, gota, and dabka work.
+            </p>
+            <div className="mt-6 flex justify-end">
+              <Link href="/shop?category=Festive%20Chiffon">
+                <Button className="bg-white text-black hover:bg-black hover:text-white transition-all text-xs font-semibold px-6 py-2 h-auto rounded-none">
+                  Explore Couture
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </FadeIn>
 
@@ -133,6 +185,32 @@ export default function Home() {
           text="Express shipping on selected unstitched lawn and festive sets — perfect for tailors and custom fits."
         />
         <ProductStrip products={unstitchedDresses} />
+      </FadeIn>
+
+      <FadeIn className="py-8">
+        <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
+          <Image
+            src="/home_page_images/banner_summer_edit.png"
+            alt="Sawera Summer Edit Banner"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/15" />
+          <div className="absolute inset-y-0 left-8 md:left-16 flex flex-col justify-center text-white z-10 max-w-md md:max-w-xl">
+            <p className="tracked-luxury text-xs text-white/80 uppercase">Atelier Summer Edit</p>
+            <h2 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl text-white">The Garden Edit</h2>
+            <p className="mt-4 text-xs md:text-sm text-white/90 leading-relaxed font-light hidden sm:block">
+              Lightweight cambric cotton and fine printed lawn ensembles detailed with soft pastel colors and floral prints.
+            </p>
+            <div className="mt-6">
+              <Link href="/shop?category=Printed%20Lawn">
+                <Button className="bg-white text-black hover:bg-black hover:text-white transition-all text-xs font-semibold px-6 py-2 h-auto rounded-none">
+                  View Printed Lawn
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </FadeIn>
 
       <FadeIn className="container-lux py-16">
