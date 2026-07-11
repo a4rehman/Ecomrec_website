@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Menu, Moon, Search, ShoppingBag, Sun, User, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +15,19 @@ export function Header() {
   const { cart, wishlist, darkMode, user } = useSelector((s: RootState) => s.commerce);
   const dispatch = useDispatch();
 
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        setScrollProgress((window.scrollY / totalScroll) * 100);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
       {/* Top free‑shipping marquee */}
@@ -23,23 +36,29 @@ export function Header() {
       </div>
 
       {/* Main navigation bar */}
-      <header className="sticky top-0 z-40 border-b border-line bg-background/88 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-line bg-background/88 backdrop-blur-xl transition-all duration-300">
+        {/* Subtle scroll progress indicator */}
+        <div 
+          className="absolute bottom-0 left-0 h-[2px] bg-accent transition-all duration-100 ease-out z-50"
+          style={{ width: `${scrollProgress}%` }}
+        />
+
         <div className="container-lux grid h-20 md:h-24 grid-cols-3 items-center overflow-visible">
           <button
             onClick={() => setOpen(true)}
-            className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-wide"
+            className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-wide transition duration-300 hover:text-accent hover:scale-105"
           >
             <Menu size={22} strokeWidth={1.6} /> Menu
           </button>
 
-          <Link href="/" className="justify-self-center flex flex-col items-center text-center">
+          <Link href="/" className="justify-self-center flex flex-col items-center text-center transition duration-500 hover:opacity-90">
             <span className="block font-serif text-4xl tracking-[.28em]">SAWERA</span>
             <span className="tracked-luxury block text-[10px] text-gray-500">COLLECTION</span>
             <span className="block text-[9px] italic text-gray-500/80 mt-1 font-serif tracking-widest">Made for Her. Inspired by Grace</span>
           </Link>
 
           <nav className="flex items-center gap-5 justify-self-end">
-            <Link className="hidden sm:block" href="/shop">
+            <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/shop">
               <Search strokeWidth={1.7} />
             </Link>
 
@@ -49,39 +68,39 @@ export function Header() {
                 {user.role === "admin" && (
                   <Link
                     href="/admin"
-                    className="text-accent border border-accent/40 rounded px-2.5 py-1.5 text-[10px] font-bold hover:bg-accent hover:text-white transition"
+                    className="text-accent border border-accent/40 rounded px-2.5 py-1.5 text-[10px] font-bold hover:bg-accent hover:text-white transition duration-300"
                   >
                     Admin
                   </Link>
                 )}
                 <button
                   onClick={() => dispatch(logoutUser())}
-                  className="text-muted hover:text-foreground text-[10px] underline cursor-pointer"
+                  className="text-muted hover:text-foreground text-[10px] underline cursor-pointer transition duration-300"
                 >
                   Logout
                 </button>
               </div>
             ) : (
-              <Link className="hidden sm:block" href="/login">
+              <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/login">
                 <User strokeWidth={1.7} />
               </Link>
             )}
 
-            <Link className="relative hidden sm:block" href="/wishlist">
+            <Link className="relative hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/wishlist">
               <Heart strokeWidth={1.7} />
               {wishlist.length > 0 && (
-                <b className="absolute -right-2 -top-2 text-[10px]">{wishlist.length}</b>
+                <b className="absolute -right-2 -top-2 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{wishlist.length}</b>
               )}
             </Link>
 
-            <Link className="relative" href="/cart">
+            <Link className="relative transition duration-300 hover:scale-110 hover:text-accent" href="/cart">
               <ShoppingBag strokeWidth={1.7} />
               {cart.length > 0 && (
-                <b className="absolute -right-2 -top-2 text-[10px]">{cart.length}</b>
+                <b className="absolute -right-2 -top-2 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{cart.length}</b>
               )}
             </Link>
 
-            <button className="focus-ring" onClick={() => dispatch(toggleDarkMode())} aria-label="Toggle dark mode">
+            <button className="focus-ring transition duration-300 hover:scale-110 hover:text-accent" onClick={() => dispatch(toggleDarkMode())} aria-label="Toggle dark mode">
               {darkMode ? <Sun strokeWidth={1.7} /> : <Moon strokeWidth={1.7} />}
             </button>
           </nav>
