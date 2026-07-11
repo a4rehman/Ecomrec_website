@@ -54,6 +54,22 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
     ? product.sizes.filter((s) => s !== "Unstitched")
     : ["Unstitched"];
 
+  const handleColorChange = (c: string) => {
+    setColor(c);
+    const idx = product.colors.indexOf(c);
+    if (idx !== -1 && product.images[idx]) {
+      setImage(product.images[idx]);
+    }
+  };
+
+  const handleImageClick = (src: string) => {
+    setImage(src);
+    const idx = product.images.indexOf(src);
+    if (idx !== -1 && product.colors[idx]) {
+      setColor(product.colors[idx]);
+    }
+  };
+
   useEffect(() => {
     // Reset selections on product change
     setImage(product.images[0]);
@@ -73,7 +89,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
             {product.images.map((src) => (
               <button
                 className="relative aspect-square w-24 overflow-hidden border border-line"
-                onClick={() => setImage(src)}
+                onClick={() => handleImageClick(src)}
                 key={src}
               >
                 <Image src={src} alt={product.name} fill sizes="96px" className="object-cover" />
@@ -114,7 +130,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
               {product.colors.map((c) => (
                 <button
                   key={c}
-                  onClick={() => setColor(c)}
+                  onClick={() => handleColorChange(c)}
                   className={`border px-4 py-2 text-sm ${color === c ? "border-foreground bg-foreground text-background" : "border-line"}`}
                 >
                   {c}

@@ -150,11 +150,7 @@ export function CartDrawer() {
                 className="w-full"
                 onClick={() => {
                   dispatch(closeCartDrawer());
-                  if (user) {
-                    router.push("/checkout");
-                  } else {
-                    router.push("/login?redirect=/checkout");
-                  }
+                  router.push("/checkout");
                 }}
               >
                 Checkout

@@ -19,12 +19,13 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cart, products, user } = useSelector((s: RootState) => s.commerce);
 
-  // Redirect to login if not authenticated
+  // Pre-fill user details if logged in (guest checkout is allowed)
   useEffect(() => {
-    if (!user) {
-      router.replace("/login?redirect=/checkout");
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
     }
-  }, [user, router]);
+  }, [user]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
