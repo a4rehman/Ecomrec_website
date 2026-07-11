@@ -117,7 +117,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Blush Pink", "Soft Rose"],
     sizes: ["Unstitched", "XS", "S", "M", "L", "XL"],
-    images: ["/home_page_images/hero_slider_2.png"],
+    images: ["/home_page_images/hero_slider_pink_sitting.png"],
     description: "An elegant pastel blush pink printed lawn suit detailed with micro floral prints, paired with a gorgeous flowy silk dupatta. Perfectly tailored for summer grace.",
     fabric: "Premium Fine Printed Lawn + Silk Dupatta",
     stock: 20
