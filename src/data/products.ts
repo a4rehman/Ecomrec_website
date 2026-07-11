@@ -99,7 +99,7 @@ export const products: Product[] = [
     badge: "Trending",
     colors: ["Scarlet Red", "Crimson"],
     sizes: ["Unstitched", "XS", "S", "M", "L", "XL"],
-    images: ["/images/hero_lawn_red.png"],
+    images: ["/home_page_images/hero_slider_1.png"],
     description: "A breathtaking crimson red luxury unstitched lawn ensemble featuring intricate black resham embroidery details on the neckline and sleeves, paired with a matching crimson dupatta.",
     fabric: "Premium Embroidered Lawn + Chiffon Dupatta",
     stock: 15
@@ -117,7 +117,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Blush Pink", "Soft Rose"],
     sizes: ["Unstitched", "XS", "S", "M", "L", "XL"],
-    images: ["/images/hero_lawn_pink.png"],
+    images: ["/home_page_images/hero_slider_2.png"],
     description: "An elegant pastel blush pink printed lawn suit detailed with micro floral prints, paired with a gorgeous flowy silk dupatta. Perfectly tailored for summer grace.",
     fabric: "Premium Fine Printed Lawn + Silk Dupatta",
     stock: 20
@@ -135,7 +135,7 @@ export const products: Product[] = [
     badge: "Bestseller",
     colors: ["Royal Black", "Midnight Gold"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: ["/images/hero_lawn_black.png"],
+    images: ["/home_page_images/hero_slider_3.png"],
     description: "An opulent floor-length flared black chiffon peshwas adorned with detailed gold tilla resham work and intricate floral borders. Perfect for festive celebrations.",
     fabric: "Pure Embroidered Chiffon & Silk lining",
     stock: 12
@@ -153,7 +153,7 @@ export const products: Product[] = [
     badge: "New",
     colors: ["Pastel Mint", "Powder Pink", "Ivory"],
     sizes: ["Unstitched", "XS", "S", "M", "L", "XL"],
-    images: ["/images/hero_lawn.png", embLawn1],
+    images: ["/home_page_images/hero_slider_4.png", embLawn1],
     description: "An exquisite 3-piece embroidered lawn suit. Features a heavily detailed organza neckline patch, digital printed pure silk dupatta, and matching dyed trousers fabric.",
     fabric: "Premium Lawn with Silk Dupatta",
     stock: 24
@@ -171,7 +171,7 @@ export const products: Product[] = [
     badge: "Bestseller",
     colors: ["Crimson Red", "Emerald Green", "Royal Blue"],
     sizes: ["XS", "S", "M", "L", "XL"],
-    images: ["/images/festive_peshwas.png", festive1],
+    images: ["/home_page_images/hero_slider_5.png", festive1],
     description: "A traditional floor-length chiffon Peshwas with a total flow of 12 panels, detailed gold tilla embroidery, hand-crafted gota borders, and a matching embellished net dupatta.",
     fabric: "Pure Chiffon & Net Dupatta",
     stock: 12
