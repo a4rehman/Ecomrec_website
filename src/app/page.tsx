@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Eye, ShieldCheck, Sparkles, Truck } from "lucide-react";
+import { Eye, ShieldCheck, Sparkles, Truck } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductCard } from "@/components/commerce/product-card";
 import { SectionHeading } from "@/components/commerce/section-heading";
 import { blogPosts, categories, testimonials } from "@/data/products";
 import { Button } from "@/components/ui/button";
+import { PremiumHeroSlider } from "@/components/ui/premium-hero-slider";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
@@ -29,27 +30,7 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative min-h-[calc(100svh-180px)] overflow-hidden bg-foreground">
-        {hero && <Image src={hero.images[0]} alt="Sawera Collection luxury women's fashion" fill priority sizes="100vw" className="animate-[floatSlow_9s_ease-in-out_infinite] scale-105 object-cover object-[50%_18%]" />}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#2a1818]/76 via-[#6f4144]/34 to-white/10" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
-        <div className="container-lux relative flex min-h-[calc(100svh-180px)] items-center pb-12 pt-20">
-          <motion.div variants={reveal} initial="hidden" animate="show" transition={{ duration: 0.8, ease: "easeOut" }} className="max-w-3xl text-white">
-            <h1 className="font-serif text-6xl leading-none md:text-8xl">Sawera Collection</h1>
-            <p className="brand-script mt-4 text-lg text-white/86">Made for Her. Inspired by Grace</p>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-white/86">Luxury women&apos;s fashion crafted with elegance, confidence, and a soft feminine grace.</p>
-            <div className="mt-8 grid max-w-xl grid-cols-3 border-y border-white/24 py-4 text-center">
-              {["Soft Luxury", "Modest Elegance", "Premium Craft"].map((item) => (
-                <span className="tracked-luxury px-2 text-[10px] text-white/78" key={item}>{item}</span>
-              ))}
-            </div>
-            <div className="mt-9 flex flex-wrap gap-4">
-              <Link href="/shop"><Button>Shop Now <ArrowRight size={16} /></Button></Link>
-              <Link href="/shop?sort=new"><Button variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-foreground">New Arrivals</Button></Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <PremiumHeroSlider />
       <div className="overflow-hidden border-y border-line bg-foreground py-4 text-background">
         <div className="animate-[marquee_24s_linear_infinite] whitespace-nowrap tracked-luxury text-xs">SAWERA COLLECTION - MADE FOR HER. INSPIRED BY GRACE - NEW ARRIVALS - MODEST FASHION - BLUSH EDITS - PREMIUM PRET - FESTIVE FORMALS - </div>
       </div>
