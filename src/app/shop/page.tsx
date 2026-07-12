@@ -90,7 +90,7 @@ function ShopContent() {
         </aside>
         <div>
           <div className="mb-6 flex items-center justify-between border-b border-line pb-4"><p className="text-sm text-muted">{filtered.length} products</p><select className="h-11 border border-line bg-background px-3" value={sort} onChange={(e) => setSort(e.target.value)}><option value="featured">Featured</option><option value="price-asc">Price low to high</option><option value="price-desc">Price high to low</option></select></div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>{filtered.length === 0 && <div className="premium-surface mt-6 p-8 text-center"><h2 className="font-serif text-3xl">No pieces found</h2><p className="mt-2 text-muted">Try clearing a filter or searching for another style.</p><Button variant="outline" className="mt-5" onClick={() => { setQuery(""); setCategory("All"); setBrand("All"); setMax(maxLimit); }}>Clear filters</Button></div>}
           <div className="mt-12 flex justify-center gap-2">{[1, 2, 3].map((n) => <button className="h-11 w-11 border border-line hover:bg-foreground hover:text-background" key={n}>{n}</button>)}</div>
         </div>
       </div>

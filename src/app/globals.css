@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fffaf9;
-  --foreground: #2a2625;
-  --muted: #7b7370;
-  --line: #eadad8;
+  --background: #fdfaf7;
+  --foreground: #28201f;
+  --muted: #746967;
+  --line: #e9dfd9;
   --panel: rgba(255, 255, 255, 0.82);
-  --accent: #c98386;
-  --accent-2: #f4dfe0;
+  --accent: #a96067;
+  --accent-2: #f4e4e2;
   --rose-gold: #c98a87;
   --blush: #f8ecec;
   --soft-grey: #756f6c;
@@ -52,6 +52,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, sans-serif;
   letter-spacing: 0;
+  line-height: 1.5;
 }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
@@ -105,12 +106,25 @@ button, input, select, textarea { font: inherit; }
 .lux-sheen:hover::after {
   transform: translateX(120%);
 }
-.focus-ring:focus-visible {
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), a { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .52; }
+.focus-ring:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 .container-lux { width: min(100% - 32px, 1440px); margin-inline: auto; }
 ::selection { background: var(--accent); color: white; }
+img { max-width: 100%; }
+@media (min-width: 768px) { .container-lux { width: min(100% - 64px, 1440px); } }
+@media (max-width: 640px) {
+  .tracked-luxury { letter-spacing: .16em; }
+  .premium-surface, .glass { border-radius: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

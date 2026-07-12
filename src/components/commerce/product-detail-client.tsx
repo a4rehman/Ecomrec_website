@@ -72,7 +72,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
           <div className="order-2 flex gap-3 md:order-1 md:flex-col">
             {product.images.map((src) => (
               <button
-                className="relative aspect-square w-24 overflow-hidden border border-line"
+                className={`focus-ring relative aspect-square w-24 overflow-hidden border ${image === src ? "border-accent ring-1 ring-accent" : "border-line"}`} aria-label={`View ${product.name} image`} aria-pressed={image === src}
                 onClick={() => setImage(src)}
                 key={src}
               >
@@ -115,7 +115,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
                 <button
                   key={c}
                   onClick={() => setColor(c)}
-                  className={`border px-4 py-2 text-sm ${color === c ? "border-foreground bg-foreground text-background" : "border-line"}`}
+                  className={`focus-ring border px-4 py-2 text-sm transition ${color === c ? "border-foreground bg-foreground text-background" : "border-line hover:border-accent"}`} aria-pressed={color === c}
                 >
                   {c}
                 </button>
@@ -129,7 +129,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
               <div className="flex gap-2">
                 <button
                   onClick={() => handleStyleChange("Unstitched")}
-                  className={`border px-4 py-2 text-sm ${suitStyle === "Unstitched" ? "border-foreground bg-foreground text-background animate-pulse" : "border-line"}`}
+                  className={`border px-4 py-2 text-sm ${suitStyle === "Unstitched" ? "border-foreground bg-foreground text-background" : "border-line"}`}
                 >
                   Unstitched Fabric
                 </button>
@@ -152,7 +152,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
                 <button
                   key={s}
                   onClick={() => setSize(s)}
-                  className={`min-w-12 border px-4 py-2 text-sm ${size === s ? "border-foreground bg-foreground text-background" : "border-line"}`}
+                  className={`focus-ring min-w-12 border px-4 py-2 text-sm transition ${size === s ? "border-foreground bg-foreground text-background" : "border-line hover:border-accent"}`} aria-pressed={size === s}
                 >
                   {s}
                 </button>

@@ -21,7 +21,7 @@ export function Header() {
       <CollectionSwitcher />
       <header className="sticky top-0 z-40 border-b border-line bg-background/88 backdrop-blur-xl">
         <div className="container-lux grid h-24 grid-cols-3 items-center">
-          <button onClick={() => setOpen(true)} className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-wide">
+          <button onClick={() => setOpen(true)} className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-[.14em]" aria-label="Open navigation menu" aria-expanded={open} aria-controls="site-navigation">
             <Menu size={30} strokeWidth={1.6} /> Menu
           </button>
           <Link href="/" className="justify-self-center text-center">
@@ -56,11 +56,11 @@ export function Header() {
         {open && (
           <>
             <motion.div className="fixed inset-0 z-50 bg-black/35" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
-            <motion.aside className="fixed left-0 top-0 z-50 h-dvh w-[min(480px,92vw)] overflow-y-auto bg-background p-9 shadow-2xl" initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "spring", damping: 28, stiffness: 260 }}>
-              <button onClick={() => setOpen(false)} className="focus-ring mb-10"><X size={28} strokeWidth={1.4} /></button>
+            <motion.aside id="site-navigation" aria-label="Main navigation" className="fixed left-0 top-0 z-50 h-dvh w-[min(480px,92vw)] overflow-y-auto bg-background p-6 shadow-2xl sm:p-9" initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "spring", damping: 28, stiffness: 260 }}>
+              <button onClick={() => setOpen(false)} className="focus-ring mb-10" aria-label="Close navigation menu"><X size={28} strokeWidth={1.4} /></button>
               <div className="space-y-0">
                 {categories.map((cat, i) => (
-                  <Link key={cat} href={`/shop?category=${encodeURIComponent(cat.replace("'26", "").trim())}`} onClick={() => setOpen(false)} className="group flex min-h-20 items-center justify-between border-b border-line text-base tracking-[.28em] uppercase">
+                  <Link key={cat} href={`/shop?category=${encodeURIComponent(cat.replace("'26", "").trim())}`} onClick={() => setOpen(false)} className="group flex min-h-16 items-center justify-between border-b border-line text-sm tracking-[.2em] uppercase sm:min-h-20 sm:text-base sm:tracking-[.28em]">
                     <span className={cat === "Sale" ? "text-red-600" : ""}>{cat}</span>
                     {i === 0 && <span className="bg-rose-400 px-2 py-1 text-[10px] font-bold tracking-widest text-white">NEW</span>}
                   </Link>
