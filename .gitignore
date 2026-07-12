@@ -246,3 +246,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 >>>>>>> origin/main
+src/app/api/auth/forgot-password 
