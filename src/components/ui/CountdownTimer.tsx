@@ -30,10 +30,17 @@ export function CountdownTimer({ endDate, size = "lg" }: { endDate?: string; siz
   });
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => getTimeLeft(initialEndDate));
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => setTimeLeft(getTimeLeft(initialEndDate)), 1000);
     return () => clearInterval(timer);
   }, [initialEndDate]);
+
+  if (!mounted) {
+    return null; // Or return a skeleton loader if preferred
+  }
 
   const units: [string, keyof TimeLeft][] = [
     [pad(timeLeft.hours), "hours"],

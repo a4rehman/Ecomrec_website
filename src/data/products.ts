@@ -87,24 +87,6 @@ const saleSuit24  = "/images/imgi_158_aa9fa22b7deee46ca5e3caaa83a24eb7.jpg";
 
 export const products: Product[] = [
   {
-    id: "p0_red",
-    slug: "sawera-scarlet-luxury-lawn",
-    name: "Sawera Scarlet Luxury Lawn",
-    category: "Luxury Lawn",
-    brand: "Sawera Heritage",
-    price: 16800,
-    compareAt: 21500,
-    rating: 5.0,
-    reviews: 185,
-    badge: "Trending",
-    colors: ["Scarlet Red", "Crimson"],
-    sizes: ["Unstitched", "XS", "S", "M", "L", "XL"],
-    images: ["/home_page_images/hero_slider_1.png"],
-    description: "A breathtaking crimson red luxury unstitched lawn ensemble featuring intricate black resham embroidery details on the neckline and sleeves, paired with a matching crimson dupatta.",
-    fabric: "Premium Embroidered Lawn + Chiffon Dupatta",
-    stock: 15
-  },
-  {
     id: "p0_pink",
     slug: "zoya-blush-floral-lawn",
     name: "Zoya Blush Floral Lawn",

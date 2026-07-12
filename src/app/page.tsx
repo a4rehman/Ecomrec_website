@@ -11,6 +11,7 @@ import { blogPosts, categories, getProductsByBadge, getProductsByCategory, testi
 import { HeroSlider } from "@/components/ui/HeroSlider";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
