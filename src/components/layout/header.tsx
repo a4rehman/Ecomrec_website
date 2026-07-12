@@ -35,10 +35,11 @@ export function Header() {
         <AnnouncementMarquee />
       </div>
 
+      <CollectionSwitcher />
       {/* Main navigation bar */}
       <header className="sticky top-0 z-40 border-b border-line bg-background/88 backdrop-blur-xl transition-all duration-300">
         {/* Subtle scroll progress indicator */}
-        <div 
+        <div
           className="absolute bottom-0 left-0 h-[2px] bg-accent transition-all duration-100 ease-out z-50"
           style={{ width: `${scrollProgress}%` }}
         />
@@ -47,6 +48,9 @@ export function Header() {
           <button
             onClick={() => setOpen(true)}
             className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-wide transition duration-300 hover:text-accent hover:scale-105"
+            aria-label="Open navigation menu"
+            aria-expanded={open}
+            aria-controls="site-navigation"
           >
             <Menu size={22} strokeWidth={1.6} /> Menu
           </button>
@@ -105,28 +109,23 @@ export function Header() {
             </button>
           </nav>
         </div>
-        <CollectionSwitcher />
       </header>
 
       {/* Mobile drawer */}
       <AnimatePresence>
         {open && (
           <>
-            <motion.div
-              className="fixed inset-0 z-50 bg-black/35"
-              onClick={() => setOpen(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
+            <motion.div className="fixed inset-0 z-50 bg-black/35" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
             <motion.aside
+              id="site-navigation"
+              aria-label="Main navigation"
               className="fixed left-0 top-0 z-50 h-dvh w-[min(480px,92vw)] overflow-y-auto bg-background p-9 shadow-2xl"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 260 }}
             >
-              <button onClick={() => setOpen(false)} className="focus-ring mb-10">
+              <button onClick={() => setOpen(false)} className="focus-ring mb-10" aria-label="Close navigation menu">
                 <X size={28} strokeWidth={1.4} />
               </button>
               <div className="space-y-0">

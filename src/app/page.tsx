@@ -8,7 +8,6 @@ import { ProductCard } from "@/components/commerce/product-card";
 import { ProductStrip } from "@/components/commerce/product-strip";
 import { SectionHeading } from "@/components/commerce/section-heading";
 import { blogPosts, categories, getProductsByBadge, getProductsByCategory, testimonials } from "@/data/products";
-import { Button } from "@/components/ui/button";
 import { HeroSlider } from "@/components/ui/HeroSlider";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { FadeIn } from "@/components/ui/FadeIn";
@@ -45,7 +44,6 @@ export default function Home() {
   return (
     <>
       <HeroSlider products={sliderProducts} />
-
       <div className="overflow-hidden border-y border-line bg-foreground py-4 text-background">
         <div className="flex animate-[marquee_28s_linear_infinite] whitespace-nowrap">
           {[0, 1].map((i) => (
