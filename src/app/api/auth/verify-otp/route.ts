@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { isValidEmail, isValidOtp, normalizeEmail } from "@/lib/auth-validation";
-import { getPasswordResetOtpsCollection } from "@/lib/mongodb";
+import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { ApiResponse } from "@/types/auth";
 
@@ -28,40 +28,48 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "Enter a valid email and 6 digit OTP." }, { status: 400 });
     }
 
-    const otps = await getPasswordResetOtpsCollection();
-    const resetRecord = await otps.findOne({
-      email,
-      consumedAt: { $exists: false },
-      expiresAt: { $gt: new Date() }
-    }, { sort: { createdAt: -1 } });
+    const resetRecord = await prisma.passwordResetOtp.findFirst({
+      where: {
+        email,
+        consumedAt: null,
+        expiresAt: { gt: new Date() }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
 
     if (!resetRecord) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "OTP is invalid or expired." }, { status: 400 });
     }
 
     if (resetRecord.attempts >= 5) {
-      await otps.updateOne({ _id: resetRecord._id }, { $set: { consumedAt: new Date() } });
+      await prisma.passwordResetOtp.update({
+        where: { id: resetRecord.id },
+        data: { consumedAt: new Date() }
+      });
       return NextResponse.json<ApiResponse>({ ok: false, message: "Too many invalid OTP attempts. Request a new OTP." }, { status: 429 });
     }
 
     const isValid = await bcrypt.compare(otp, resetRecord.otpHash);
     if (!isValid) {
-      await otps.updateOne({ _id: resetRecord._id }, { $inc: { attempts: 1 } });
+      await prisma.passwordResetOtp.update({
+        where: { id: resetRecord.id },
+        data: { attempts: { increment: 1 } }
+      });
       return NextResponse.json<ApiResponse>({ ok: false, message: "OTP is invalid or expired." }, { status: 400 });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenHash = await bcrypt.hash(resetToken, 12);
 
-    await otps.updateOne(
-      { _id: resetRecord._id },
-      {
-        $set: {
-          resetTokenHash,
-          resetTokenExpiresAt: new Date(Date.now() + RESET_TOKEN_EXPIRES_IN_MS)
-        }
+    await prisma.passwordResetOtp.update({
+      where: { id: resetRecord.id },
+      data: {
+        resetTokenHash,
+        resetTokenExpiresAt: new Date(Date.now() + RESET_TOKEN_EXPIRES_IN_MS)
       }
-    );
+    });
 
     return NextResponse.json<ApiResponse<{ resetToken: string }>>({
       ok: true,

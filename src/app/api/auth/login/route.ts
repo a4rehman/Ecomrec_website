@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
-import { getUsersCollection } from "@/lib/mongodb";
+import { prisma } from "@/lib/db";
 import { isValidEmail, normalizeEmail } from "@/lib/auth-validation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { ApiResponse, AuthUser } from "@/types/auth";
@@ -25,8 +25,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "Email and password are required." }, { status: 400 });
     }
 
-    const users = await getUsersCollection();
-    const user = await users.findOne({ email });
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
 
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "Invalid email or password." }, { status: 401 });
@@ -36,10 +37,10 @@ export async function POST(request: NextRequest) {
       ok: true,
       message: "Logged in successfully.",
       data: {
-        id: String(user._id),
+        id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role
+        role: user.role as any
       }
     });
   } catch (error) {

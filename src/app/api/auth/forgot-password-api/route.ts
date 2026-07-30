@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { sendPasswordResetOtpEmail } from "@/lib/auth-email";
 import { generateSixDigitOtp, isValidEmail, normalizeEmail } from "@/lib/auth-validation";
-import { getPasswordResetOtpsCollection, getUsersCollection } from "@/lib/mongodb";
+import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { ApiResponse } from "@/types/auth";
 
@@ -27,8 +27,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "Enter a valid email address." }, { status: 400 });
     }
 
-    const users = await getUsersCollection();
-    const user = await users.findOne({ email });
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
     const genericMessage = "If this email is registered, a 6 digit OTP has been sent.";
 
     if (!user) {
@@ -38,19 +39,27 @@ export async function POST(request: NextRequest) {
     const otp = generateSixDigitOtp();
     const otpHash = await bcrypt.hash(otp, 12);
     const now = new Date();
-    const otps = await getPasswordResetOtpsCollection();
 
-    await otps.updateMany(
-      { email, consumedAt: { $exists: false } },
-      { $set: { consumedAt: now } }
-    );
+    // Mark previous active OTPs as consumed
+    await prisma.passwordResetOtp.updateMany({
+      where: {
+        email,
+        consumedAt: null
+      },
+      data: {
+        consumedAt: now
+      }
+    });
 
-    await otps.insertOne({
-      email,
-      otpHash,
-      attempts: 0,
-      createdAt: now,
-      expiresAt: new Date(now.getTime() + OTP_EXPIRES_IN_MS)
+    // Create a new OTP
+    await prisma.passwordResetOtp.create({
+      data: {
+        email,
+        otpHash,
+        attempts: 0,
+        createdAt: now,
+        expiresAt: new Date(now.getTime() + OTP_EXPIRES_IN_MS)
+      }
     });
 
     await sendPasswordResetOtpEmail(email, otp);

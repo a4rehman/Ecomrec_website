@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
-import { getUsersCollection } from "@/lib/mongodb";
+import { prisma } from "@/lib/db";
 import { isValidEmail, normalizeEmail, validatePassword } from "@/lib/auth-validation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { ApiResponse, AuthUser } from "@/types/auth";
@@ -36,32 +36,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<ApiResponse>({ ok: false, message: passwordError }, { status: 400 });
     }
 
-    const users = await getUsersCollection();
-    const existingUser = await users.findOne({ email });
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
 
     if (existingUser) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "An account with this email already exists." }, { status: 409 });
     }
 
-    const now = new Date();
     const passwordHash = await bcrypt.hash(password, 12);
-    const result = await users.insertOne({
-      email,
-      name: `${firstName} ${lastName}`,
-      passwordHash,
-      role: "user",
-      createdAt: now,
-      updatedAt: now
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name: `${firstName} ${lastName}`,
+        passwordHash,
+        role: "user"
+      }
     });
 
     return NextResponse.json<ApiResponse<AuthUser>>({
       ok: true,
       message: "Account created successfully.",
       data: {
-        id: String(result.insertedId),
-        email,
-        name: `${firstName} ${lastName}`,
-        role: "user"
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role as any
       }
     });
   } catch (error) {

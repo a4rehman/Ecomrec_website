@@ -46,7 +46,7 @@ export async function sendOrderNotification(data: OrderNotificationData): Promis
     await transporter.sendMail({
       from: `"${FROM_NAME}" <${SMTP_USER}>`,
       to: ADMIN_EMAIL,
-      subject: `[${data.actionType === "new" ? "NEW ORDER" : "ORDER UPDATE"}] #${data.orderId} — ${data.customerName}`,
+      subject: `[${data.actionType === "Placed" ? "NEW ORDER" : "ORDER UPDATE"}] #${data.orderId} — ${data.customerName}`,
       html: `
         <div style="font-family:Arial,sans-serif;color:#222;max-width:560px;margin:0 auto;padding:28px 20px">
           <h2 style="margin-bottom:4px">Sawera Collection</h2>

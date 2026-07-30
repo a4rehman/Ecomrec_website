@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { isValidEmail, normalizeEmail, validatePassword } from "@/lib/auth-validation";
-import { getPasswordResetOtpsCollection, getUsersCollection } from "@/lib/mongodb";
+import { prisma } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { ApiResponse } from "@/types/auth";
 
@@ -31,31 +31,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<ApiResponse>({ ok: false, message: passwordError }, { status: 400 });
     }
 
-    const otps = await getPasswordResetOtpsCollection();
-    const resetRecord = await otps.findOne({
-      email,
-      resetTokenHash: { $exists: true },
-      resetTokenExpiresAt: { $gt: new Date() },
-      consumedAt: { $exists: false }
-    }, { sort: { createdAt: -1 } });
+    const resetRecord = await prisma.passwordResetOtp.findFirst({
+      where: {
+        email,
+        resetTokenHash: { not: null },
+        resetTokenExpiresAt: { gt: new Date() },
+        consumedAt: null
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
 
     if (!resetRecord?.resetTokenHash || !(await bcrypt.compare(resetToken, resetRecord.resetTokenHash))) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "Reset session is invalid or expired." }, { status: 400 });
     }
 
-    const users = await getUsersCollection();
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const result = await users.updateOne(
-      { email },
-      { $set: { passwordHash, updatedAt: new Date() } }
-    );
+    const userUpdate = await prisma.user.updateMany({
+      where: { email },
+      data: { passwordHash }
+    });
 
-    if (!result.matchedCount) {
+    if (userUpdate.count === 0) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "Reset session is invalid." }, { status: 400 });
     }
 
-    await otps.updateOne({ _id: resetRecord._id }, { $set: { consumedAt: new Date() } });
+    await prisma.passwordResetOtp.update({
+      where: { id: resetRecord.id },
+      data: { consumedAt: new Date() }
+    });
 
     return NextResponse.json<ApiResponse>({ ok: true, message: "Password reset successfully. You can now log in." });
   } catch (error) {
