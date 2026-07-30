@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { products } from "@/data/products";
 import { BrandLogo } from "@/components/layout/brand-logo";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: "Learn about Sawera Collection — a premium Pakistani women's fashion brand crafting elegant lawn, festive, and formal wear with passion and grace.",
+  alternates: { canonical: "https://www.saweracollection.com/about" },
+  openGraph: { title: "About Sawera Collection", description: "Premium women's fashion brand in Pakistan." }
+};
 
 export default function AboutPage() {
   return (
