@@ -5,7 +5,7 @@ import { Mail, MapPin, Phone, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { BrandLogo } from "@/components/layout/brand-logo";
-import { sendContactNotification } from "@/lib/emailjs";
+import { EmailSendResult } from "@/types/email";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -20,13 +20,12 @@ export default function ContactPage() {
     setStatusMessage("");
     setIsSending(true);
 
-    const result = await sendContactNotification({
-      name,
-      email,
-      phone,
-      message,
-      dateTime: new Date().toLocaleString()
+    const res = await fetch("/api/notify/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, message, dateTime: new Date().toLocaleString() }),
     });
+    const result: EmailSendResult = await res.json();
 
     setStatusMessage(result.message);
     setIsSending(false);
@@ -64,10 +63,10 @@ export default function ContactPage() {
               <MapPin /> Sawera Collection, 88-B Block, Gulberg III, Lahore, Pakistan
             </p>
             <p className="flex gap-3">
-              <Phone /> +92 300 1234567 (WhatsApp Helpline)
+              <a href="https://wa.me/923066378857" target="_blank" rel="noopener noreferrer" className="hover:underline">+92 306 6378857 (WhatsApp Helpline)</a>
             </p>
             <p className="flex gap-3">
-              <Mail /> care@saweracollection.com
+              <Mail /> <a href="mailto:support@saweracollection.com" className="hover:underline">support@saweracollection.com</a>
             </p>
             <p className="flex gap-3">
               <Share2 /> @saweracollection

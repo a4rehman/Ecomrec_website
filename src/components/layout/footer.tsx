@@ -32,7 +32,8 @@ export function Footer() {
           <p className="mb-6 max-w-sm text-muted">Receive private collection previews, graceful styling notes, and exclusive Sawera offers.</p>
           <div className="flex max-w-md flex-col gap-4"><Input type="email" name="email" autoComplete="email" aria-label="Email address" placeholder="Email address" /><Button variant="outline">Subscribe</Button></div>
           <div className="mt-7 text-sm leading-7 text-muted">
-            <p>care@saweracollection.com</p>
+            <p><a href="mailto:support@saweracollection.com" className="hover:text-accent transition">support@saweracollection.com</a></p>
+            <p><a href="https://wa.me/923066378857" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition">+92 306 6378857 (WhatsApp)</a></p>
             <p>Lahore, Pakistan</p>
           </div>
         </section>

@@ -8,8 +8,7 @@ import { Product } from "@/data/products";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
-import { sendOrderNotification } from "@/lib/emailjs";
-import { OrderNotificationData } from "@/types/email";
+import { OrderNotificationData, EmailSendResult } from "@/types/email";
 import Image from "next/image";
 import Link from "next/link";
 import { 
@@ -190,7 +189,12 @@ export default function AdminPage() {
       const notificationData = buildAdminOrderNotificationData(id, "Cancelled");
       if (!notificationData) return;
 
-      const notification = await sendOrderNotification(notificationData);
+      const notifyRes = await fetch("/api/notify/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(notificationData),
+      });
+      const notification: EmailSendResult = await notifyRes.json();
       if (notification.ok) {
         showToast(`Order #${id} cancelled and admin email sent.`);
       } else {

@@ -9,8 +9,7 @@ import { CartClient } from "@/components/commerce/cart-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
-import { sendOrderNotification } from "@/lib/emailjs";
-import { OrderNotificationData } from "@/types/email";
+import { OrderNotificationData, EmailSendResult } from "@/types/email";
 import Link from "next/link";
 import { CheckCircle2, RotateCcw, ShoppingBag, Truck } from "lucide-react";
 
@@ -122,7 +121,12 @@ export default function CheckoutPage() {
 
     dispatch(createOrder(newOrder));
     setPlacedOrderNotificationData(notificationData);
-    const notification = await sendOrderNotification(notificationData);
+    const notifyRes = await fetch("/api/notify/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(notificationData),
+    });
+    const notification: EmailSendResult = await notifyRes.json();
     setEmailMessage(notification.message);
     dispatch(clearCart());
     setGeneratedId(orderId);
@@ -133,11 +137,16 @@ export default function CheckoutPage() {
     if (!placedOrderNotificationData) return;
 
     setRequestMessage("");
-    const notification = await sendOrderNotification({
-      ...placedOrderNotificationData,
-      actionType,
-      dateTime: new Date().toLocaleString()
+    const notifyRes = await fetch("/api/notify/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...placedOrderNotificationData,
+        actionType,
+        dateTime: new Date().toLocaleString()
+      }),
     });
+    const notification: EmailSendResult = await notifyRes.json();
     setRequestMessage(notification.message);
   };
 
