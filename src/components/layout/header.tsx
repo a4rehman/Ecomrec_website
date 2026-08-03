@@ -69,12 +69,19 @@ export function Header() {
             {user ? (
               <div className="hidden sm:flex items-center gap-3 text-xs tracking-wider uppercase font-medium">
                 <span className="text-muted">Hi, {user.name.split(" ")[0]}</span>
-                {user.role === "admin" && (
+                {user.role === "admin" ? (
                   <Link
                     href="/admin"
                     className="text-accent border border-accent/40 rounded px-2.5 py-1.5 text-[10px] font-bold hover:bg-accent hover:text-white transition duration-300"
                   >
                     Admin
+                  </Link>
+                ) : (
+                  <Link
+                    href="/dashboard"
+                    className="text-accent border border-accent/40 rounded px-2.5 py-1.5 text-[10px] font-bold hover:bg-accent hover:text-white transition duration-300"
+                  >
+                    My Orders
                   </Link>
                 )}
                 <button
@@ -157,9 +164,13 @@ export function Header() {
                     <div className="text-xs uppercase tracking-wider font-semibold text-muted">
                       Hi, {user.name}
                     </div>
-                    {user.role === "admin" && (
+                    {user.role === "admin" ? (
                       <Link href="/admin" onClick={() => setOpen(false)} className="text-accent text-sm uppercase tracking-wider font-medium">
                         Admin Dashboard
+                      </Link>
+                    ) : (
+                      <Link href="/dashboard" onClick={() => setOpen(false)} className="text-accent text-sm uppercase tracking-wider font-medium">
+                        My Orders & Dashboard
                       </Link>
                     )}
                     <button
