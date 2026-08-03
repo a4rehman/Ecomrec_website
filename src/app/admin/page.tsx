@@ -80,7 +80,7 @@ export default function AdminPage() {
     };
   };
 
-  // Authenticate user
+  // Authenticate user & Fetch orders from MySQL DB
   useEffect(() => {
     const storedUser = localStorage.getItem("jahanara_user");
     if (!storedUser) {
@@ -94,11 +94,44 @@ export default function AdminPage() {
         router.push("/login");
       } else {
         setAuthorized(true);
+        // Fetch real orders from Hostinger MySQL DB
+        fetch("/api/orders")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.ok && data.orders) {
+              dispatch(setOrders(data.orders));
+            }
+          })
+          .catch((err) => console.error("Error fetching orders:", err));
       }
     } catch (e) {
       router.push("/login");
     }
-  }, [user, router]);
+  }, [user, router, dispatch]);
+
+  const handleOrderStatusChange = async (id: string, newStatus: string) => {
+    dispatch(updateOrderStatus({ id, status: newStatus }));
+    try {
+      await fetch(`/api/orders/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+    } catch (err) {
+      console.error("Failed to update order status:", err);
+    }
+  };
+
+  const handleDeleteOrderClick = async (id: string) => {
+    dispatch(deleteOrder(id));
+    try {
+      await fetch(`/api/orders/${id}`, {
+        method: "DELETE"
+      });
+    } catch (err) {
+      console.error("Failed to delete order:", err);
+    }
+  };
 
   const handleSizeToggle = (sz: string) => {
     if (sizesSelected.includes(sz)) {

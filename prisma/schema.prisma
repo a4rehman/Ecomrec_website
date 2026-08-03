@@ -32,3 +32,35 @@ model PasswordResetOtp {
 
   @@map("password_reset_otps")
 }
+
+model Order {
+  id        String      @id
+  name      String
+  email     String
+  address   String
+  city      String
+  zip       String
+  phone     String
+  total     Float
+  status    String      @default("Processing")
+  method    String      @default("cod")
+  date      String
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String @id @default(uuid())
+  orderId     String
+  productId   String
+  productName String
+  qty         Int
+  size        String?
+  color       String?
+  unitPrice   Float
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}

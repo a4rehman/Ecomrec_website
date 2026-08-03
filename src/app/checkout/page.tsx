@@ -121,6 +121,32 @@ export default function CheckoutPage() {
 
     dispatch(createOrder(newOrder));
     setPlacedOrderNotificationData(notificationData);
+
+    // Save order to Hostinger MySQL Database
+    try {
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newOrder,
+          method: payMethod,
+          items: cart.map((item) => {
+            const product = products.find((prod) => prod.id === item.id);
+            return {
+              id: item.id,
+              name: product?.name || "Product",
+              qty: item.qty,
+              size: item.size,
+              color: item.color,
+              price: product?.price || 0
+            };
+          })
+        })
+      });
+    } catch (err) {
+      console.error("Failed to save order to database:", err);
+    }
+
     const notifyRes = await fetch("/api/notify/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
