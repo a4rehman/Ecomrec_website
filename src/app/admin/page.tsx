@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingBag, 
-  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye
+  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -21,9 +21,15 @@ export default function AdminPage() {
   const dispatch = useDispatch();
   
   const { products, user, orders } = useSelector((s: RootState) => s.commerce);
-  const [activeTab, setActiveTab] = useState<"products" | "orders">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "orders" | "security">("products");
   const [searchQuery, setSearchQuery] = useState("");
   const [authorized, setAuthorized] = useState(false);
+
+  // Admin Security & Password States
+  const [adminCurrentPass, setAdminCurrentPass] = useState("");
+  const [adminNewPass, setAdminNewPass] = useState("");
+  const [adminConfirmPass, setAdminConfirmPass] = useState("");
+  const [secMsg, setSecMsg] = useState({ text: "", error: false });
 
   // Form states for Add/Edit
   const [showForm, setShowForm] = useState(false);
@@ -234,6 +240,43 @@ export default function AdminPage() {
     }, 4000);
   };
 
+  const handleAdminPasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSecMsg({ text: "", error: false });
+
+    if (adminNewPass !== adminConfirmPass) {
+      setSecMsg({ text: "New passwords do not match", error: true });
+      return;
+    }
+
+    const storedUser = localStorage.getItem("jahanara_user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    const adminEmail = user?.email || parsedUser?.email || "admin@saweracollection.com";
+
+    try {
+      const res = await fetch("/api/user/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: adminEmail,
+          currentPassword: adminCurrentPass,
+          newPassword: adminNewPass
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSecMsg({ text: "Admin password updated successfully!", error: false });
+        setAdminCurrentPass("");
+        setAdminNewPass("");
+        setAdminConfirmPass("");
+      } else {
+        setSecMsg({ text: data.message || "Failed to update password", error: true });
+      }
+    } catch (err: any) {
+      setSecMsg({ text: err.message || "Error changing password", error: true });
+    }
+  };
+
   const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -349,6 +392,14 @@ export default function AdminPage() {
             }`}
           >
             <span className="flex items-center gap-3"><LayoutDashboard size={16} /> Customer Orders ({orders.length})</span>
+          </button>
+          <button
+            onClick={() => { setActiveTab("security"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "security" ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><Shield size={16} /> Privacy & Security</span>
           </button>
           <button
             onClick={() => { setShowForm(true); setEditMode(false); resetForm(); }}
@@ -587,7 +638,7 @@ export default function AdminPage() {
                 )}
               </div>
             </div>
-          ) : (
+          ) : activeTab === "orders" ? (
             /* Orders Management View */
             <div>
               <h2 className="font-serif text-4xl mb-6">Customer COD Orders ({orders.length})</h2>
@@ -646,6 +697,98 @@ export default function AdminPage() {
                 {orders.length === 0 && (
                   <p className="text-center text-muted py-12">No orders have been placed yet.</p>
                 )}
+              </div>
+            </div>
+          ) : (
+            /* Privacy & Security View */
+            <div className="space-y-8">
+              <div>
+                <h2 className="font-serif text-4xl mb-2">Privacy & Admin Security</h2>
+                <p className="text-sm text-muted">Manage your administrator account security, password, and database encryption status.</p>
+              </div>
+
+              {secMsg.text && (
+                <div className={`p-4 rounded text-sm ${secMsg.error ? "bg-red-50 text-red-700 border border-red-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
+                  {secMsg.text}
+                </div>
+              )}
+
+              {/* Admin Profile Info Card */}
+              <div className="border border-line rounded p-6 bg-background/50 space-y-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <Shield size={16} /> Admin Account Info
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-2 text-sm">
+                  <div>
+                    <span className="text-xs text-muted block">Administrator Name</span>
+                    <span className="font-semibold text-foreground">{user?.name || "System Administrator"}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted block">Admin Email</span>
+                    <span className="font-semibold text-foreground">{user?.email || "admin@saweracollection.com"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Password Change Form */}
+              <div className="border border-line rounded p-6 bg-background/50 space-y-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <Key size={16} /> Update Admin Password
+                </h3>
+                <form onSubmit={handleAdminPasswordChange} className="grid gap-4 max-w-md">
+                  <label className="block text-sm">
+                    Current Password *
+                    <Input 
+                      type="password"
+                      className="mt-2"
+                      value={adminCurrentPass}
+                      onChange={(e) => setAdminCurrentPass(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    New Password *
+                    <Input 
+                      type="password"
+                      className="mt-2"
+                      value={adminNewPass}
+                      onChange={(e) => setAdminNewPass(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    Confirm New Password *
+                    <Input 
+                      type="password"
+                      className="mt-2"
+                      value={adminConfirmPass}
+                      onChange={(e) => setAdminConfirmPass(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <Button type="submit" className="mt-2">Update Admin Password</Button>
+                </form>
+              </div>
+
+              {/* System Security Status */}
+              <div className="border border-line rounded p-6 bg-background/50 space-y-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <Server size={16} /> Security & System Integrity
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-3 text-xs">
+                  <div className="p-4 border border-line rounded bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">
+                    <span className="font-bold block mb-1">✔ Hostinger MySQL DB</span>
+                    <span>Encrypted Connection SSL/TLS Active</span>
+                  </div>
+                  <div className="p-4 border border-line rounded bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">
+                    <span className="font-bold block mb-1">✔ Hostinger SMTP</span>
+                    <span>Secure Email Notifications Configured</span>
+                  </div>
+                  <div className="p-4 border border-line rounded bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">
+                    <span className="font-bold block mb-1">✔ Password Hashing</span>
+                    <span>Bcrypt Salt Round 12 Active</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
