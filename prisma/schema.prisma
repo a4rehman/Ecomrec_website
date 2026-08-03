@@ -13,6 +13,10 @@ model User {
   name         String
   passwordHash String
   role         String   @default("user") // "admin" or "user"
+  phone        String?
+  address      String?
+  city         String?
+  zip          String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
