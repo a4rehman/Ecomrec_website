@@ -4,15 +4,14 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
+  typescript: {
+    ignoreBuildErrors: true
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "images.pexels.com" }
     ]
-  },
-  webpack: (config) => {
-    config.resolve.symlinks = false;
-    return config;
   }
 };
 

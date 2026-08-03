@@ -118,30 +118,6 @@ export default function AdminPage() {
     }
   }, [activeTab, authorized]);
 
-  const handleOrderStatusChange = async (id: string, newStatus: string) => {
-    dispatch(updateOrderStatus({ id, status: newStatus }));
-    try {
-      await fetch(`/api/orders/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus })
-      });
-    } catch (err) {
-      console.error("Failed to update order status:", err);
-    }
-  };
-
-  const handleDeleteOrderClick = async (id: string) => {
-    dispatch(deleteOrder(id));
-    try {
-      await fetch(`/api/orders/${id}`, {
-        method: "DELETE"
-      });
-    } catch (err) {
-      console.error("Failed to delete order:", err);
-    }
-  };
-
   const handleSizeToggle = (sz: string) => {
     if (sizesSelected.includes(sz)) {
       setSizesSelected(sizesSelected.filter((s) => s !== sz));
@@ -227,28 +203,27 @@ export default function AdminPage() {
     dispatch(updateOrderStatus({ id, status }));
     showToast(`Order #${id} status updated to ${status}`);
 
-    if (status === "Cancelled") {
-      const notificationData = buildAdminOrderNotificationData(id, "Cancelled");
-      if (!notificationData) return;
-
-      const notifyRes = await fetch("/api/notify/order", {
-        method: "POST",
+    // Sync to database (also sends customer email)
+    try {
+      await fetch(`/api/orders/${id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(notificationData),
+        body: JSON.stringify({ status })
       });
-      const notification: EmailSendResult = await notifyRes.json();
-      if (notification.ok) {
-        showToast(`Order #${id} cancelled and admin email sent.`);
-      } else {
-        showToast(`Order #${id} cancelled. ${notification.message}`);
-      }
+    } catch (err) {
+      console.error("Failed to sync status to DB:", err);
     }
   };
 
-  const handleDeleteOrderClick = (id: string) => {
+  const handleDeleteOrderClick = async (id: string) => {
     if (confirm("Are you sure you want to delete this order?")) {
       dispatch(deleteOrder(id));
       showToast("Order deleted successfully!");
+      try {
+        await fetch(`/api/orders/${id}`, { method: "DELETE" });
+      } catch (err) {
+        console.error("Failed to delete order from DB:", err);
+      }
     }
   };
 
