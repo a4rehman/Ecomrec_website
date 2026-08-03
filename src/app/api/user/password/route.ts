@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { validatePassword } from "@/lib/auth-validation";
+import { validatePassword, normalizeEmail } from "@/lib/auth-validation";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, currentPassword, newPassword } = body;
+    const email = normalizeEmail(String(body.email || ""));
+    const { currentPassword, newPassword } = body;
 
     if (!email || !currentPassword || !newPassword) {
       return NextResponse.json({ ok: false, message: "All fields are required" }, { status: 400 });

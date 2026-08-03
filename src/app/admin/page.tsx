@@ -26,6 +26,7 @@ export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
 
   // Admin Security & Password States
+  const [adminProfile, setAdminProfile] = useState<{ name: string; email: string } | null>(null);
   const [adminCurrentPass, setAdminCurrentPass] = useState("");
   const [adminNewPass, setAdminNewPass] = useState("");
   const [adminConfirmPass, setAdminConfirmPass] = useState("");
@@ -111,6 +112,7 @@ export default function AdminPage() {
         router.push("/login");
       } else {
         setAuthorized(true);
+        setAdminProfile({ name: parsedUser.name || "Administrator", email: parsedUser.email || "" });
         fetchOrdersFromDb();
       }
     } catch (e) {
@@ -249,9 +251,15 @@ export default function AdminPage() {
       return;
     }
 
+    // Always read fresh email from localStorage to avoid stale Redux state
     const storedUser = localStorage.getItem("jahanara_user");
     const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-    const adminEmail = user?.email || parsedUser?.email || "admin@saweracollection.com";
+    const adminEmail = (parsedUser?.email || user?.email || "").trim().toLowerCase();
+
+    if (!adminEmail) {
+      setSecMsg({ text: "Cannot determine admin email. Please log out and log back in.", error: true });
+      return;
+    }
 
     try {
       const res = await fetch("/api/user/password", {
@@ -721,11 +729,11 @@ export default function AdminPage() {
                 <div className="grid gap-4 sm:grid-cols-2 text-sm">
                   <div>
                     <span className="text-xs text-muted block">Administrator Name</span>
-                    <span className="font-semibold text-foreground">{user?.name || "System Administrator"}</span>
+                    <span className="font-semibold text-foreground">{adminProfile?.name || user?.name || "—"}</span>
                   </div>
                   <div>
-                    <span className="text-xs text-muted block">Admin Email</span>
-                    <span className="font-semibold text-foreground">{user?.email || "admin@saweracollection.com"}</span>
+                    <span className="text-xs text-muted block">Admin Email (used for login)</span>
+                    <span className="font-semibold text-foreground">{adminProfile?.email || user?.email || "—"}</span>
                   </div>
                 </div>
               </div>
