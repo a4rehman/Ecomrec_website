@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -40,14 +43,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userEmail = searchParams.get("email");
+
+    const whereCondition = userEmail ? { email: userEmail } : {};
+
     const orders = await prisma.order.findMany({
+      where: whereCondition,
       orderBy: { createdAt: "desc" },
       include: { items: true }
     });
 
-    // Map Prisma items format back to store Line structure
     const formattedOrders = orders.map((o) => ({
       id: o.id,
       name: o.name,
@@ -59,11 +67,15 @@ export async function GET() {
       total: o.total,
       status: o.status,
       date: o.date,
+      method: o.method,
+      createdAt: o.createdAt,
       items: o.items.map((item) => ({
         id: item.productId,
+        name: item.productName,
         qty: item.qty,
         size: item.size || undefined,
-        color: item.color || undefined
+        color: item.color || undefined,
+        price: item.unitPrice
       }))
     }));
 

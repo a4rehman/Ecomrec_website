@@ -80,6 +80,17 @@ export default function AdminPage() {
     };
   };
 
+  const fetchOrdersFromDb = () => {
+    fetch("/api/orders", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.orders) {
+          dispatch(setOrders(data.orders));
+        }
+      })
+      .catch((err) => console.error("Error fetching orders:", err));
+  };
+
   // Authenticate user & Fetch orders from MySQL DB
   useEffect(() => {
     const storedUser = localStorage.getItem("jahanara_user");
@@ -94,20 +105,18 @@ export default function AdminPage() {
         router.push("/login");
       } else {
         setAuthorized(true);
-        // Fetch real orders from Hostinger MySQL DB
-        fetch("/api/orders")
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.ok && data.orders) {
-              dispatch(setOrders(data.orders));
-            }
-          })
-          .catch((err) => console.error("Error fetching orders:", err));
+        fetchOrdersFromDb();
       }
     } catch (e) {
       router.push("/login");
     }
   }, [user, router, dispatch]);
+
+  useEffect(() => {
+    if (authorized && activeTab === "orders") {
+      fetchOrdersFromDb();
+    }
+  }, [activeTab, authorized]);
 
   const handleOrderStatusChange = async (id: string, newStatus: string) => {
     dispatch(updateOrderStatus({ id, status: newStatus }));
