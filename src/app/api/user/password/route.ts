@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { validatePassword, normalizeEmail } from "@/lib/auth-validation";
 
+const DEFAULT_ADMIN_EMAIL = "admin@saweracollection.com";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -18,9 +20,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, message: passwordErr }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    // If default admin user is not in DB yet, auto-provision admin user upon initial password change
+    if (!user && email === DEFAULT_ADMIN_EMAIL) {
+      if (currentPassword !== "admin") {
+        return NextResponse.json({ ok: false, message: "Current password is incorrect" }, { status: 400 });
+      }
+
+      const initialAdminHash = await bcrypt.hash(newPassword, 12);
+      user = await prisma.user.create({
+        data: {
+          email: DEFAULT_ADMIN_EMAIL,
+          name: "Administrator",
+          passwordHash: initialAdminHash,
+          role: "admin"
+        }
+      });
+
+      return NextResponse.json({ ok: true, message: "Admin password updated and saved in DB successfully!" }, { status: 200 });
+    }
+
     if (!user) {
-      return NextResponse.json({ ok: false, message: "User not found" }, { status: 404 });
+      return NextResponse.json({ ok: false, message: "User account not found in database." }, { status: 404 });
     }
 
     const match = await bcrypt.compare(currentPassword, user.passwordHash);
