@@ -42,7 +42,22 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
         return;
       }
 
-      // 1. Admin login check
+      // 1. Try DB Login first (supports updated passwords in Hostinger MySQL)
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const result = await response.json() as ApiResponse<AuthUser>;
+
+      if (response.ok && result.ok && result.data) {
+        dispatch(loginUser(result.data));
+        localStorage.setItem("jahanara_user", JSON.stringify(result.data));
+        router.push(result.data.role === "admin" ? "/admin" : redirectTo);
+        return;
+      }
+
+      // 2. Initial Admin fallback login (if admin user has not changed password in DB yet)
       if (email.toLowerCase() === "admin@saweracollection.com" && password === "admin") {
         const adminUser = { id: "admin-demo", email: "admin@saweracollection.com", name: "Administrator", role: "admin" as const };
         dispatch(loginUser(adminUser));
@@ -51,21 +66,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
         return;
       }
 
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const result = await response.json() as ApiResponse<AuthUser>;
-
-      if (!response.ok || !result.ok || !result.data) {
-        setError(result.message || "Invalid email or password.");
-        return;
-      }
-
-      dispatch(loginUser(result.data));
-      localStorage.setItem("jahanara_user", JSON.stringify(result.data));
-      router.push(redirectTo);
+      setError(result.message || "Invalid email or password.");
+      return;
     } else if (mode === "register") {
       if (!firstName || !lastName) {
         setError("First and last name are required.");
