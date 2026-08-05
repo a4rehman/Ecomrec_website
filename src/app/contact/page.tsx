@@ -46,10 +46,10 @@ export default function ContactPage() {
       </div>
       <div className="grid gap-10 lg:grid-cols-2">
         <form className="premium-surface grid gap-4 p-6" onSubmit={handleSubmit}>
-          <Input placeholder="Name" value={name} onChange={(event) => setName(event.target.value)} required />
-          <Input placeholder="E-mail" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
-          <Input placeholder="Phone number" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} />
-          <Textarea placeholder="Message" value={message} onChange={(event) => setMessage(event.target.value)} required />
+          <Input placeholder="Name" aria-label="Your name" value={name} onChange={(event) => setName(event.target.value)} required />
+          <Input placeholder="E-mail" type="email" aria-label="Your email address" value={email} onChange={(event) => setEmail(event.target.value)} required />
+          <Input placeholder="Phone number" type="tel" aria-label="Your phone number" value={phone} onChange={(event) => setPhone(event.target.value)} />
+          <Textarea placeholder="Message" aria-label="Your message" value={message} onChange={(event) => setMessage(event.target.value)} required />
           {statusMessage && (
             <div className={`rounded border p-3 text-sm ${statusMessage.includes("successfully") ? "border-green-200 bg-green-50 text-green-700" : "border-yellow-200 bg-yellow-50 text-yellow-800"}`}>
               {statusMessage}

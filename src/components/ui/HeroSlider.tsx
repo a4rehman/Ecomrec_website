@@ -131,9 +131,8 @@ export function HeroSlider({ products }: HeroSliderProps) {
               fill
               priority={current === 0}
               loading={current === 0 ? "eager" : "lazy"}
-              sizes="100vw"
-              quality={100}
-              unoptimized={true}
+              sizes="110vw"
+              quality={85}
               className="object-cover object-[50%_18%]"
             />
           </motion.div>

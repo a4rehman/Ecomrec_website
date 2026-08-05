@@ -2,6 +2,14 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Order Cancellation",
+  description:
+    "Understand Sawera Collection's order cancellation policy — cancel within 24 hours of placing your order with no penalty.",
+  alternates: { canonical: "https://www.saweracollection.com/order-cancellation" },
+  openGraph: {
+    title: "Order Cancellation | Sawera Collection",
+    description: "How to cancel an order at Sawera Collection.",
+    url: "https://www.saweracollection.com/order-cancellation"
+  }
 };
 
 export default function OrderCancellationPage() {

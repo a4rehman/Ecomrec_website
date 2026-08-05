@@ -62,7 +62,7 @@ export function Header() {
           </Link>
 
           <nav className="flex items-center gap-5 justify-self-end">
-            <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/shop">
+            <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/shop" aria-label="Search products">
               <Search strokeWidth={1.7} />
             </Link>
 
@@ -92,19 +92,19 @@ export function Header() {
                 </button>
               </div>
             ) : (
-              <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/login">
+              <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/login" aria-label="Login or create account">
                 <User strokeWidth={1.7} />
               </Link>
             )}
 
-            <Link className="relative hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/wishlist">
+            <Link className="relative hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/wishlist" aria-label={`Wishlist, ${wishlist.length} items`}>
               <Heart strokeWidth={1.7} />
               {wishlist.length > 0 && (
                 <b className="absolute -right-2 -top-2 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{wishlist.length}</b>
               )}
             </Link>
 
-            <Link className="relative transition duration-300 hover:scale-110 hover:text-accent" href="/cart">
+            <Link className="relative transition duration-300 hover:scale-110 hover:text-accent" href="/cart" aria-label={`Shopping bag, ${cart.length} items`}>
               <ShoppingBag strokeWidth={1.7} />
               {cart.length > 0 && (
                 <b className="absolute -right-2 -top-2 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{cart.length}</b>

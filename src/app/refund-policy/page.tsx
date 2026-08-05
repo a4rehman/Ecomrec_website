@@ -2,6 +2,14 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Refund Policy",
+  description:
+    "Learn about refunds at Sawera Collection — clear terms for cancelled orders, returns and refund processing for online purchases in Pakistan.",
+  alternates: { canonical: "https://www.saweracollection.com/refund-policy" },
+  openGraph: {
+    title: "Refund Policy | Sawera Collection",
+    description: "Refund terms for online orders at Sawera Collection.",
+    url: "https://www.saweracollection.com/refund-policy"
+  }
 };
 
 export default function RefundPolicyPage() {

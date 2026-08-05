@@ -2,6 +2,14 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
+  description:
+    "How Sawera Collection collects, uses and protects your personal information when you shop premium women's fashion online in Pakistan.",
+  alternates: { canonical: "https://www.saweracollection.com/privacy-policy" },
+  openGraph: {
+    title: "Privacy Policy | Sawera Collection",
+    description: "How Sawera Collection protects your personal information.",
+    url: "https://www.saweracollection.com/privacy-policy"
+  }
 };
 
 export default function PrivacyPolicyPage() {

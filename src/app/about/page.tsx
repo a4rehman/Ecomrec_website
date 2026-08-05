@@ -6,8 +6,21 @@ import { BrandLogo } from "@/components/layout/brand-logo";
 export const metadata: Metadata = {
   title: "About Us",
   description: "Learn about Sawera Collection — a premium Pakistani women's fashion brand crafting elegant lawn, festive, and formal wear with passion and grace.",
+  keywords: ["about sawera collection", "pakistani fashion brand", "women's clothing lahore", "luxury lawn brand pakistan"],
   alternates: { canonical: "https://www.saweracollection.com/about" },
-  openGraph: { title: "About Sawera Collection", description: "Premium women's fashion brand in Pakistan." }
+  openGraph: {
+    title: "About Sawera Collection",
+    description: "Premium women's fashion brand in Pakistan — luxury lawn, festive & formal wear.",
+    url: "https://www.saweracollection.com/about",
+    type: "website",
+    siteName: "Sawera Collection",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Sawera Collection" }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Sawera Collection",
+    description: "Premium women's fashion brand in Pakistan."
+  }
 };
 
 export default function AboutPage() {

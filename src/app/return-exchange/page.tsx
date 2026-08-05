@@ -2,6 +2,14 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Return & Exchange",
+  description:
+    "Shop worry-free at Sawera Collection — our easy return and exchange policy for women's suits, dresses and festive wear in Pakistan.",
+  alternates: { canonical: "https://www.saweracollection.com/return-exchange" },
+  openGraph: {
+    title: "Return & Exchange | Sawera Collection",
+    description: "Easy returns and exchanges on all Sawera Collection orders.",
+    url: "https://www.saweracollection.com/return-exchange"
+  }
 };
 
 export default function ReturnExchangePage() {

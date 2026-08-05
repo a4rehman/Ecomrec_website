@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Heart, Star, ZoomIn } from "lucide-react";
 import { Product } from "@/data/products";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { productImageAlt } from "@/lib/seo";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, RootState, toggleWishlist, viewProduct, openCartDrawer } from "@/store/store";
 import { ProductCard } from "./product-card";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import Link from "next/link";
 
 export function ProductDetailClient({ initialProduct, slug }: { initialProduct?: Product; slug: string }) {
@@ -62,6 +63,28 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
   const [color, setColor] = useState(product.colors[0]);
   const dispatch = useDispatch();
   const wished = useSelector((s: RootState) => s.commerce.wishlist.includes(product.id));
+  const recentlyViewedIds = useSelector((s: RootState) => s.commerce.recentlyViewed);
+
+  const relatedProducts = useMemo(() => {
+    const sameCategory = products.filter((p) => p.id !== product.id && p.category === product.category);
+    const priceTierFiltered = products.filter(
+      (p) =>
+        p.id !== product.id &&
+        p.category !== product.category &&
+        (priceTier === "premium" ? p.price >= 5000 : priceTier === "simple" ? p.price < 5000 : true)
+    );
+    return [...sameCategory, ...priceTierFiltered].slice(0, 4);
+  }, [products, product.id, product.category, priceTier]);
+
+  const recentlyViewed = useMemo(
+    () =>
+      recentlyViewedIds
+        .filter((id) => id !== product.id)
+        .map((id) => products.find((p) => p.id === id))
+        .filter((p): p is Product => Boolean(p))
+        .slice(0, 4),
+    [recentlyViewedIds, products, product.id]
+  );
 
   // Stitching selectors logic
   const hasUnstitched = product.sizes.includes("Unstitched");
@@ -110,6 +133,14 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
 
   return (
     <section className="container-lux py-12">
+      <Breadcrumbs
+        items={[
+          { name: "Home", href: "/" },
+          { name: "Shop", href: "/shop" },
+          { name: product.category, href: `/shop?category=${encodeURIComponent(product.category)}` },
+          { name: product.name, href: `/product/${product.slug}` }
+        ]}
+      />
       <div className="grid gap-10 lg:grid-cols-[1.15fr_.85fr]">
         <div className="grid gap-4 md:grid-cols-[96px_1fr]">
           <div className="order-2 flex gap-3 md:order-1 md:flex-col">
@@ -280,15 +311,24 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
       </div>
       <section className="mt-20">
         <h2 className="font-serif text-5xl">Related Products</h2>
+        <p className="mt-2 text-muted">More {product.category} suits and similar styles from the Sawera Collection.</p>
         <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
-          {products
-            .filter((p) => p.id !== product.id && (priceTier === "premium" ? p.price >= 5000 : priceTier === "simple" ? p.price < 5000 : true))
-            .slice(0, 4)
-            .map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+          {relatedProducts.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
       </section>
+
+      {recentlyViewed.length > 0 && (
+        <section className="mt-20">
+          <h2 className="font-serif text-5xl">Recently Viewed</h2>
+          <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
+            {recentlyViewed.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </section>
   );
 }

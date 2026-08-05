@@ -78,3 +78,66 @@ export const categorySeoContent: Record<string, CategorySeoContent> = {
 export function getCategorySeoContent(category: string): CategorySeoContent | null {
   return categorySeoContent[category] || null;
 }
+
+export type CategoryMeta = {
+  title: string;
+  description: string;
+};
+
+export const categoryMeta: Record<string, CategoryMeta> = {
+  All: {
+    title: "Women's Suits Online Pakistan | Shop All Collections | Sawera Collection",
+    description:
+      "Shop all Sawera Collection women's suits online in Pakistan — luxury lawn, printed lawn, festive chiffon, bridal & everyday wear. Free nationwide delivery."
+  },
+  "Luxury Lawn": {
+    title: "Luxury Lawn Suits for Women | 3 Piece Embroidered Lawn | Sawera Collection",
+    description:
+      "Buy premium luxury lawn suits for women in Pakistan. 3 piece embroidered lawn with resham work, printed dupatta & trouser fabric. Fast nationwide delivery."
+  },
+  "Printed Lawn": {
+    title: "Printed Lawn Suits Online | Women's Cotton Lawn 3 Piece | Sawera Collection",
+    description:
+      "Shop printed lawn suits online in Pakistan — floral, digital & block print cotton lawn 3 piece suits for women. Comfortable, breathable & affordable."
+  },
+  "Festive Chiffon": {
+    title: "Festive Chiffon Dresses | Eid & Evening Formals | Sawera Collection",
+    description:
+      "Browse festive chiffon dresses for Eid, weddings & evening events. Heavy tilla, zari & gota embroidered 2 & 3 piece suits with embellished dupattas."
+  },
+  "Everyday Essentials": {
+    title: "Everyday Cotton Suits & Kurtis for Women | Sawera Collection",
+    description:
+      "Shop everyday essentials — cotton suits, kurtis, co-ords & cambric wear for women. Comfortable casual wear with quality fabrics at great prices."
+  },
+  "Bridal & Couture": {
+    title: "Bridal Dresses & Couture Suits | Wedding Wear Pakistan | Sawera Collection",
+    description:
+      "Discover bridal dresses, lehengas, ghararas & couture suits for weddings in Pakistan. Heavily embellished premium silk & organza ensembles."
+  },
+  "Winter Festive": {
+    title: "Winter Festive Collection | Khaddar & Velvet Suits | Sawera Collection",
+    description:
+      "Shop winter festive wear for women in Pakistan — khaddar suits, velvet shawls & karandi sets with rich festive detailing for the colder months."
+  },
+  Sale: {
+    title: "Sale — Pakistani Suits at Best Prices | Sawera Collection",
+    description:
+      "Shop the Sawera Collection sale — premium Pakistani suits, dresses & co-ord sets at reduced prices. Limited stock, nationwide delivery."
+  },
+  Trending: {
+    title: "Trending Pakistani Suits & Dresses | Best Sellers | Sawera Collection",
+    description:
+      "Discover trending Pakistani suits & dresses loved by customers — bestselling luxury lawn, festive styles & new arrivals from Sawera Collection."
+  }
+};
+
+export function getCategoryMeta(category: string): CategoryMeta {
+  return (
+    categoryMeta[category] || {
+      title: "Shop Women's Suits Online | Sawera Collection",
+      description:
+        "Browse Sawera Collection's full range of premium women's fashion — lawn, formal, festive & casual wear. Shop online in Pakistan with fast delivery."
+    }
+  );
+}

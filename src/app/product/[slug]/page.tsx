@@ -14,23 +14,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!product) return { title: "Product Not Found" };
 
   const image = product.images[0];
-  const price = product.salePrice && product.salePrice > 0 ? product.salePrice : product.price;
+
+  const description = `${product.name} by ${product.brand} — ${product.description} Available in ${product.colors.join(", ")}. ${product.fabric}. Free delivery across Pakistan in 2-4 business days.`;
 
   return {
-    title: product.name,
-    description: product.description,
+    title: `${product.name} | ${product.category} | Sawera Collection`,
+    description,
+    keywords: [product.name, product.category, product.brand, product.fabric, "pakistani women's suits", "buy online pakistan"],
     alternates: { canonical: `${SITE_URL}/product/${product.slug}` },
     openGraph: {
       title: `${product.name} | Sawera Collection`,
-      description: product.description,
+      description,
       url: `${SITE_URL}/product/${product.slug}`,
       type: "website",
-      images: [{ url: image, alt: product.name }]
+      siteName: "Sawera Collection",
+      images: [{ url: image, width: 1200, height: 1600, alt: product.name }]
     },
     twitter: {
       card: "summary_large_image",
-      title: product.name,
-      description: product.description,
+      title: `${product.name} | Sawera Collection`,
+      description,
       images: [image]
     }
   };
@@ -49,6 +52,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       breadcrumbSchema([
         { name: "Home", path: "/" },
         { name: "Shop", path: "/shop" },
+        { name: product.category, path: `/shop?category=${encodeURIComponent(product.category)}` },
         { name: product.name, path: `/product/${product.slug}` }
       ])
     ]

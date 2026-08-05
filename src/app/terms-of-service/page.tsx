@@ -2,6 +2,14 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
+  description:
+    "Read the terms and conditions governing purchases from Sawera Collection — premium women's fashion delivered across Pakistan.",
+  alternates: { canonical: "https://www.saweracollection.com/terms-of-service" },
+  openGraph: {
+    title: "Terms of Service | Sawera Collection",
+    description: "Terms and conditions for shopping at Sawera Collection.",
+    url: "https://www.saweracollection.com/terms-of-service"
+  }
 };
 
 export default function TermsOfServicePage() {

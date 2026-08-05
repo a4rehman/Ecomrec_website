@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, ShieldCheck, Sparkles, Truck } from "lucide-react";
+import { BadgeCheck, Banknote, Eye, MessageCircle, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { motion } from "framer-motion";
 import { ProductCard } from "@/components/commerce/product-card";
 import { ProductStrip } from "@/components/commerce/product-strip";
@@ -12,6 +12,7 @@ import { HeroSlider } from "@/components/ui/HeroSlider";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { Button } from "@/components/ui/button";
+import { faqSchema } from "@/lib/seo";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
@@ -19,9 +20,12 @@ const MARQUEE_TEXT =
   "SAWERA COLLECTION · MADE FOR HER. INSPIRED BY GRACE · NEW ARRIVALS · MODEST FASHION · BLUSH EDITS · PREMIUM PRET · FESTIVE FORMALS · ";
 
 const trustBadges = [
-  [Truck, "Worldwide Express Delivery"],
-  [ShieldCheck, "Secure Payment Options"],
-  [Sparkles, "Luxury Feminine Detail"],
+  [Truck, "Free Shipping in Pakistan"],
+  [Banknote, "Cash on Delivery Available"],
+  [RotateCcw, "Easy Returns & Exchanges"],
+  [ShieldCheck, "Secure Checkout"],
+  [BadgeCheck, "100% Original Products"],
+  [MessageCircle, "WhatsApp Support"],
 ] as const;
 
 export default function Home() {
@@ -44,6 +48,31 @@ export default function Home() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            faqSchema([
+              {
+                q: "Do you offer tailoring and stitching services?",
+                a: "Yes, we offer premium professional stitching for both local and international orders. You can choose from standard sizes (XS to XL) or select custom tailoring during checkout by submitting your measurements. Stitching typically adds 7-10 business days to fulfillment."
+              },
+              {
+                q: "How fast is shipping, both domestically and internationally?",
+                a: "Domestic delivery within Pakistan takes 2-4 business days. International express shipping via DHL/FedEx takes 5-7 business days to the USA, UK, Canada, and UAE. Custom-stitched suits require additional processing time."
+              },
+              {
+                q: "What is included in the Unstitched fabric options?",
+                a: "Our 3-piece Unstitched suits include full running fabric for the shirt/kameez (typically 3 meters), matching dyed trousers fabric (2.5 meters), and a fully woven or printed dupatta (2.5 meters). Any separate embroidered borders, necklines, or lace trims are packaged separately for your tailor to attach."
+              },
+              {
+                q: "How should I care for suits with heavy tilla and zari work?",
+                a: "We strongly recommend dry cleaning for all products containing delicate hand-embroidery, gota borders, tilla work, or premium silk/chiffon fabrics. Iron on low heat on the reverse side of the embroidery to avoid damage."
+              }
+            ])
+          )
+        }}
+      />
       <HeroSlider products={sliderProducts} />
       <div className="overflow-hidden border-y border-line bg-foreground py-4 text-background">
         <div className="flex animate-[marquee_28s_linear_infinite] whitespace-nowrap">
@@ -64,8 +93,9 @@ export default function Home() {
         <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
           <Image
             src="/home_page_images/banner_luxury_lawn.png"
-            alt="Sawera Luxury Lawn Banner"
+            alt="Sawera Luxury Lawn Collection banner — embroidered 3 piece lawn suits for women"
             fill
+            sizes="100vw"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/20" />
@@ -108,8 +138,9 @@ export default function Home() {
         <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
           <Image
             src="/home_page_images/banner_festive_collection.png"
-            alt="Sawera Festive Collection Banner"
+            alt="Sawera Festive Formals Collection banner — chiffon and raw silk dresses"
             fill
+            sizes="100vw"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/35" />
@@ -146,10 +177,10 @@ export default function Home() {
       <section className="container-lux grid gap-4 py-10 md:grid-cols-4">
         {categories.slice(0, 4).map((cat, i) => (
           <FadeIn key={cat} delay={i * 0.08}>
-            <Link href="/shop" className="lux-sheen group relative block min-h-80 overflow-hidden rounded-3xl bg-neutral-100 shadow-sm">
+            <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="lux-sheen group relative block min-h-80 overflow-hidden rounded-3xl bg-neutral-100 shadow-sm">
               <Image
                 src={(filteredProducts[i % filteredProducts.length] || products[0]).images[0]}
-                alt={cat}
+                alt={`${cat} suits for women by Sawera Collection`}
                 fill
                 sizes="25vw"
                 className="object-cover transition duration-700 group-hover:scale-110"
@@ -190,8 +221,9 @@ export default function Home() {
         <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
           <Image
             src="/home_page_images/banner_summer_edit.png"
-            alt="Sawera Summer Edit Banner"
+            alt="Sawera Garden Edit banner — lightweight cotton lawn suits in pastel florals"
             fill
+            sizes="100vw"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/15" />

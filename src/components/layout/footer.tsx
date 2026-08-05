@@ -11,11 +11,22 @@ export function Footer() {
         <section>
           <BrandLogo className="items-start" imageClassName="w-48" showTagline />
           <p className="mt-6 max-w-sm leading-8 text-muted">A luxury feminine fashion house for women, girls, modest fashion buyers, and premium clothing customers.</p>
-          <div className="mt-7 flex gap-3 text-accent" aria-label="Sawera communication"><span className="grid h-10 w-10 place-items-center rounded-full border border-line" title="Share"><Share2 size={18} /></span><span className="grid h-10 w-10 place-items-center rounded-full border border-line" title="Message"><MessageCircle size={18} /></span><span className="grid h-10 w-10 place-items-center rounded-full border border-line" title="Send"><Send size={18} /></span></div>
+          <div className="mt-7 flex gap-3 text-accent" aria-label="Sawera Collection on social media">
+            <a href="https://www.instagram.com/saweracollection" target="_blank" rel="noopener noreferrer" aria-label="Sawera Collection on Instagram" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="Instagram"><Share2 size={18} /></a>
+            <a href="https://wa.me/923066378857" target="_blank" rel="noopener noreferrer" aria-label="Chat with Sawera Collection on WhatsApp" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="WhatsApp"><MessageCircle size={18} /></a>
+            <a href="https://www.facebook.com/saweracollection" target="_blank" rel="noopener noreferrer" aria-label="Sawera Collection on Facebook" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="Facebook"><Send size={18} /></a>
+          </div>
         </section>
         <section>
           <h3 className="tracked-luxury mb-7 text-sm">Quick Links</h3>
-          {["Home", "Shop", "New Arrivals", "Collections", "About Us", "Contact"].map((p) => <Link className="mb-4 block text-muted transition hover:text-accent" href={p === "Home" ? "/" : p === "Contact" ? "/contact" : p === "About Us" ? "/about" : "/shop"} key={p}>{p}</Link>)}
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/">Home</Link>
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/shop">Shop</Link>
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/shop?category=Luxury%20Lawn">Luxury Lawn</Link>
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/shop?category=Festive%20Chiffon">Festive Formals</Link>
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/shop?category=Bridal%20%26%20Couture">Bridal &amp; Couture</Link>
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/blog">Blog</Link>
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/about">About Us</Link>
+          <Link className="mb-4 block text-muted transition hover:text-accent" href="/contact">Contact</Link>
         </section>
         <section>
           <h3 className="tracked-luxury mb-7 text-sm">Policies</h3>

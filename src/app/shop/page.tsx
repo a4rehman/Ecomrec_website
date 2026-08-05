@@ -1,129 +1,67 @@
-"use client";
+import type { Metadata } from "next";
+import { products } from "@/data/products";
+import { getCategoryMeta } from "@/data/seo-content";
+import { breadcrumbSchema, collectionSchema, SITE_URL } from "@/lib/seo";
+import { ShopContent } from "@/components/commerce/shop-content";
 
-import { useMemo, useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal } from "lucide-react";
-import { ProductCard } from "@/components/commerce/product-card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { formatPrice } from "@/lib/utils";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { getCategorySeoContent } from "@/data/seo-content";
+type ShopParams = Promise<{ category?: string }>;
 
-function ShopContent() {
-  const searchParams = useSearchParams();
-  const catParam = searchParams.get("category");
+const categoryPath = (category: string) =>
+  category && category !== "All" ? `/shop?category=${encodeURIComponent(category)}` : "/shop";
 
-  const { products, priceTier } = useSelector((state: RootState) => state.commerce);
+export async function generateMetadata({ searchParams }: { searchParams: ShopParams }): Promise<Metadata> {
+  const { category } = await searchParams;
+  const meta = getCategoryMeta(category || "All");
 
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
-  const [brand, setBrand] = useState("All");
-  const [max, setMax] = useState(100000);
-  const [sort, setSort] = useState("featured");
-
-  // Reset sort to default when category or brand changes
-  useEffect(() => {
-    setSort("featured");
-  }, [category, brand]);
-
-  // Determine price bounds based on active tier
-  const minLimit = priceTier === "simple" ? 1000 : 5000;
-  const maxLimit = priceTier === "simple" ? 5000 : 100000;
-
-  useEffect(() => {
-    if (catParam) {
-      setCategory(catParam);
+  return {
+    title: meta.title,
+    description: meta.description,
+    keywords: ["women fashion", "lawn suits", "pakistani dresses", "online shopping", ...(category ? [category.toLowerCase()] : [])],
+    alternates: { canonical: `${SITE_URL}${categoryPath(category || "All")}` },
+    openGraph: {
+      title: meta.title,
+      description: meta.description,
+      url: `${SITE_URL}${categoryPath(category || "All")}`,
+      type: "website",
+      siteName: "Sawera Collection",
+      images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Sawera Collection" }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: meta.title,
+      description: meta.description,
+      images: ["/og-image.jpg"]
     }
-  }, [catParam]);
-
-  // Adjust price state if it goes out of active range limits
-  useEffect(() => {
-    if (priceTier === "simple" && max > 5000) {
-      setMax(5000);
-    } else if (priceTier === "premium" && max < 5000) {
-      setMax(100000);
-    }
-  }, [priceTier, max]);
-
-  const filtered = useMemo(() => {
-    const list = products.filter((p) => {
-      // 1. Price tier filter
-      if (priceTier === "premium" && p.price < 5000) return false;
-      if (priceTier === "simple" && p.price >= 5000) return false;
-
-      // 2. Search & filter controls
-      return (
-        (category === "All" || 
-         (category === "Trending" && (p.rating >= 4.8 || p.badge === "Bestseller")) || 
-         p.category === category) &&
-        (brand === "All" || p.brand === brand) &&
-        p.price <= max &&
-        p.name.toLowerCase().includes(query.toLowerCase())
-      );
-    });
-    return [...list].sort((a, b) => sort === "price-asc" ? a.price - b.price : sort === "price-desc" ? b.price - a.price : b.rating - a.rating);
-  }, [products, query, category, brand, max, sort, priceTier]);
-
-  // Filter available categories and brands for dropdown dynamically
-  const availableCategories = useMemo(() => {
-    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : p.price < 5000);
-    const cats = [...new Set(list.map(p => p.category))];
-    return ["Trending", ...cats];
-  }, [products, priceTier]);
-
-  const availableBrands = useMemo(() => {
-    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : p.price < 5000);
-    return [...new Set(list.map(p => p.brand))];
-  }, [products, priceTier]);
-
-  return (
-    <section className="container-lux py-14">
-      <div className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-        <div>
-          <p className="tracked-luxury text-xs text-accent">Shop</p>
-          <h1 className="font-serif text-6xl">
-            {priceTier === "premium" ? "Luxury Atelier" : priceTier === "simple" ? "Everyday Essentials" : "Collections"}
-          </h1>
-        </div>
-        <div className="relative max-w-md flex-1"><Search className="absolute left-3 top-3.5 text-muted" size={18} /><Input placeholder="Search products" className="pl-10" value={query} onChange={(e) => setQuery(e.target.value)} /></div>
-      </div>
-      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-        <aside className="glass h-fit p-5">
-          <h2 className="mb-5 flex items-center gap-2 tracked-luxury text-xs"><SlidersHorizontal size={16} /> Filters</h2>
-          <label className="mb-4 block text-sm">Category<select className="mt-2 h-11 w-full border border-line bg-background px-3" value={category} onChange={(e) => setCategory(e.target.value)}><option>All</option>{availableCategories.map((c) => <option key={c}>{c}</option>)}</select></label>
-          <label className="mb-4 block text-sm">Brand<select className="mt-2 h-11 w-full border border-line bg-background px-3" value={brand} onChange={(e) => setBrand(e.target.value)}><option>All</option>{availableBrands.map((b) => <option key={b}>{b}</option>)}</select></label>
-          <label className="mb-4 block text-sm">Max price: {formatPrice(max)}<input type="range" min={minLimit} max={maxLimit} step={priceTier === "simple" ? 200 : 1000} value={max} onChange={(e) => setMax(Number(e.target.value))} className="mt-3 w-full accent-[var(--accent)]" /></label>
-          <Button variant="outline" className="w-full" onClick={() => { setQuery(""); setCategory("All"); setBrand("All"); setMax(maxLimit); }}>Reset</Button>
-        </aside>
-        <div>
-          <div className="mb-6 flex items-center justify-between border-b border-line pb-4"><p className="text-sm text-muted">{filtered.length} products</p><select className="h-11 border border-line bg-background px-3" value={sort} onChange={(e) => setSort(e.target.value)}><option value="featured">Featured</option><option value="price-asc">Price low to high</option><option value="price-desc">Price high to low</option></select></div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>{filtered.length === 0 && <div className="premium-surface mt-6 p-8 text-center"><h2 className="font-serif text-3xl">No pieces found</h2><p className="mt-2 text-muted">Try clearing a filter or searching for another style.</p><Button variant="outline" className="mt-5" onClick={() => { setQuery(""); setCategory("All"); setBrand("All"); setMax(maxLimit); }}>Clear filters</Button></div>}
-          <div className="mt-12 flex justify-center gap-2">{[1, 2, 3].map((n) => <button className="h-11 w-11 border border-line hover:bg-foreground hover:text-background" key={n}>{n}</button>)}</div>
-
-          {(() => {
-            const seoContent = getCategorySeoContent(category);
-            if (!seoContent) return null;
-            return (
-              <div className="mt-16 border-t border-line pt-10">
-                <h2 className="font-serif text-3xl mb-4">{seoContent.heading}</h2>
-                {seoContent.paragraphs.map((para, idx) => (
-                  <p key={idx} className="mb-4 leading-7 text-muted max-w-3xl">{para}</p>
-                ))}
-              </div>
-            );
-          })()}
-        </div>
-      </div>
-    </section>
-  );
+  };
 }
 
-export default function ShopPage() {
+export default async function ShopPage({ searchParams }: { searchParams: ShopParams }) {
+  const { category } = await searchParams;
+  const activeCategory = category || "All";
+  const meta = getCategoryMeta(activeCategory);
+
+  const count = activeCategory === "All"
+    ? products.length
+    : activeCategory === "Trending"
+      ? products.filter((p) => p.rating >= 4.8 || p.badge === "Bestseller").length
+      : products.filter((p) => p.category === activeCategory).length;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      collectionSchema(meta.title, meta.description, categoryPath(activeCategory), count),
+      breadcrumbSchema([
+        { name: "Home", path: "/" },
+        { name: "Shop", path: "/shop" },
+        ...(activeCategory !== "All" ? [{ name: activeCategory, path: categoryPath(activeCategory) }] : [])
+      ])
+    ]
+  };
+
   return (
-    <Suspense fallback={<div className="container-lux py-24 text-center">Loading collections...</div>}>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ShopContent />
-    </Suspense>
+    </>
   );
 }
