@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CartDrawer } from "@/components/commerce/cart-drawer";
 import { Analytics } from "@vercel/analytics/next";
+import { organizationSchema, websiteSchema } from "@/lib/seo";
 
 const sans = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-sans", display: "swap" });
 const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
@@ -45,7 +46,8 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.svg",
-    shortcut: "/favicon.svg"
+    shortcut: "/favicon.svg",
+    apple: "/sawera-logo.png"
   },
   alternates: {
     canonical: siteUrl
@@ -56,6 +58,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${sans.variable} ${serif.variable} antialiased`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <Providers>
           <Header />
           <CartDrawer />

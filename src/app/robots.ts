@@ -6,7 +6,19 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/dashboard", "/api/", "/checkout", "/cart"]
+        disallow: [
+          "/admin",
+          "/dashboard",
+          "/api/",
+          "/checkout",
+          "/cart",
+          "/wishlist",
+          "/login",
+          "/register",
+          "/forgot-password",
+          "/verify-otp",
+          "/reset-password"
+        ]
       }
     ],
     sitemap: "https://www.saweracollection.com/sitemap.xml"
