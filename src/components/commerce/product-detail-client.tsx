@@ -6,6 +6,7 @@ import { Heart, Star, ZoomIn } from "lucide-react";
 import { Product } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
+import { productImageAlt } from "@/lib/seo";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, RootState, toggleWishlist, viewProduct, openCartDrawer } from "@/store/store";
 import { ProductCard } from "./product-card";
@@ -27,6 +28,32 @@ export function ProductDetailClient({ initialProduct, slug }: { initialProduct?:
   }
 
   return <ProductDetailContent product={product} priceTier={priceTier} products={products} />;
+}
+
+function getProductOccasion(category: string) {
+  const map: Record<string, string> = {
+    "Bridal & Couture": "Weddings, mehndi and bridal events",
+    "Festive Chiffon": "Eid, festive gatherings and evening formals",
+    "Luxury Lawn": "Daytime formals and elegant summer events",
+    "Printed Lawn": "Everyday wear and casual summer outings",
+    "Winter Festive": "Winter formals and festive evenings",
+    "Everyday Essentials": "Casual daily wear and office style",
+    Sale: "Everyday wear and special occasions"
+  };
+  return map[category] || "Versatile occasions, from casual to formal";
+}
+
+function getProductSeason(category: string) {
+  const map: Record<string, string> = {
+    "Luxury Lawn": "Summer",
+    "Printed Lawn": "Summer",
+    "Winter Festive": "Winter",
+    "Festive Chiffon": "All season",
+    "Bridal & Couture": "All season",
+    "Everyday Essentials": "All season",
+    Sale: "All season"
+  };
+  return map[category] || "All season";
 }
 
 function ProductDetailContent({ product, priceTier, products }: { product: Product; priceTier: string; products: Product[] }) {
@@ -94,14 +121,14 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
                 onClick={() => handleImageClick(src)}
                 key={src}
               >
-                <Image src={src} alt={product.name} fill sizes="96px" className="object-cover" />
+                <Image src={src} alt={productImageAlt(product)} fill sizes="96px" className="object-cover" />
               </button>
             ))}
           </div>
           <div className="relative order-1 aspect-[4/5] overflow-hidden bg-neutral-100 md:order-2">
             <Image
               src={image}
-              alt={product.name}
+              alt={productImageAlt(product)}
               fill
               priority
               sizes="60vw"
@@ -215,6 +242,39 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
             <p>Fabric: {product.fabric}</p>
             <p>Stock: {product.stock} pieces available</p>
             <p>Shipping: 2-4 business days (unstiched) / 9-14 days (stitched)</p>
+            <p>
+              <Link href="/shop" className="text-accent underline">View all {product.category}</Link>
+            </p>
+          </div>
+
+          <div className="mt-8 border-t border-line pt-6">
+            <h2 className="tracked-luxury text-xs text-accent font-semibold mb-4">Product Details &amp; Care</h2>
+            <dl className="grid gap-3 text-sm">
+              <div className="grid grid-cols-[110px_1fr] gap-2">
+                <dt className="text-muted">Fabric</dt>
+                <dd className="text-foreground">{product.fabric}</dd>
+              </div>
+              <div className="grid grid-cols-[110px_1fr] gap-2">
+                <dt className="text-muted">Design</dt>
+                <dd className="text-foreground">{product.description}</dd>
+              </div>
+              <div className="grid grid-cols-[110px_1fr] gap-2">
+                <dt className="text-muted">Colors</dt>
+                <dd className="text-foreground">{product.colors.join(", ")}</dd>
+              </div>
+              <div className="grid grid-cols-[110px_1fr] gap-2">
+                <dt className="text-muted">Occasion</dt>
+                <dd className="text-foreground">{getProductOccasion(product.category)}</dd>
+              </div>
+              <div className="grid grid-cols-[110px_1fr] gap-2">
+                <dt className="text-muted">Season</dt>
+                <dd className="text-foreground">{getProductSeason(product.category)}</dd>
+              </div>
+              <div className="grid grid-cols-[110px_1fr] gap-2">
+                <dt className="text-muted">Care</dt>
+                <dd className="text-foreground">Dry clean only. Store in breathable cotton fabric to protect embroidery. Avoid direct sunlight and harsh detergents.</dd>
+              </div>
+            </dl>
           </div>
         </div>
       </div>

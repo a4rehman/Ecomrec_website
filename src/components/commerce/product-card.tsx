@@ -7,6 +7,7 @@ import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { motion } from "framer-motion";
 import { Product } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
+import { productImageAlt } from "@/lib/seo";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, RootState, toggleWishlist, openCartDrawer } from "@/store/store";
 
@@ -22,7 +23,7 @@ export function ProductCard({ product }: { product: Product }) {
     <motion.article initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} className="group">
       <div className="relative overflow-hidden bg-[#f5f1ee]">
         <Link href={`/product/${product.slug}`} className="block aspect-[3/4] focus-ring">
-          <Image src={product.images[0]} alt={product.name} fill sizes="(max-width:768px) 50vw, (max-width:1280px) 33vw, 25vw" className="object-cover transition duration-700 ease-out group-hover:scale-105" />
+          <Image src={product.images[0]} alt={productImageAlt(product)} fill sizes="(max-width:768px) 50vw, (max-width:1280px) 33vw, 25vw" className="object-cover transition duration-700 ease-out group-hover:scale-105" />
         </Link>
         {product.badge && <span className="absolute left-3 top-3 bg-background/92 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[.18em] shadow-sm">{product.badge}</span>}
         <button className="focus-ring absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-background/92 shadow-sm transition hover:bg-foreground hover:text-background" onClick={() => dispatch(toggleWishlist(product.id))} aria-label={wished ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}><Heart size={18} strokeWidth={1.6} fill={wished ? "currentColor" : "none"} /></button>

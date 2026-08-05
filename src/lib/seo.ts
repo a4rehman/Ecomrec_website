@@ -98,3 +98,44 @@ export const breadcrumbSchema = (items: { name: string; path: string }[]) => ({
     item: `${SITE_URL}${item.path}`
   }))
 });
+
+export const productImageAlt = (product: { name: string; category: string; colors?: string[] }) => {
+  const color = product.colors?.[0] ? ` in ${product.colors[0].toLowerCase()}` : "";
+  return `Pakistani women's ${product.category.toLowerCase()} suit${color} - ${product.name}`;
+};
+
+export const productFaqSchema = (product: Product) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: `What fabric is the ${product.name} made from?`,
+      acceptedAnswer: { "@type": "Answer", text: `${product.fabric} — available in premium quality for a luxurious feel and finish.` }
+    },
+    {
+      "@type": "Question",
+      name: "Do you deliver this suit across Pakistan?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, Sawera Collection delivers nationwide and worldwide. Standard delivery takes 2-4 business days across Pakistan."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "Can I return or exchange this product?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes, we offer an easy return and exchange policy. Please see our return & exchange policy for full details."
+      }
+    },
+    {
+      "@type": "Question",
+      name: `How much does the ${product.name} cost?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `The price is PKR ${product.price}${product.salePrice && product.salePrice > 0 ? `, currently on sale for PKR ${product.salePrice}` : ""}. All prices are in Pakistani Rupees.`
+      }
+    }
+  ]
+});

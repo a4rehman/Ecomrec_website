@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { products } from "@/data/products";
 import { ProductDetailClient } from "@/components/commerce/product-detail-client";
-import { breadcrumbSchema, productSchema, SITE_URL } from "@/lib/seo";
+import { breadcrumbSchema, productFaqSchema, productSchema, SITE_URL } from "@/lib/seo";
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -45,6 +45,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     "@context": "https://schema.org",
     "@graph": [
       productSchema(product),
+      productFaqSchema(product),
       breadcrumbSchema([
         { name: "Home", path: "/" },
         { name: "Shop", path: "/shop" },

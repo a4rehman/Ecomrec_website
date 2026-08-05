@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Product } from "@/data/products";
+import { productImageAlt } from "@/lib/seo";
 
 export function ProductStrip({
   products,
@@ -30,7 +31,7 @@ export function ProductStrip({
               <div className="lux-sheen relative aspect-[3/4] overflow-hidden rounded-2xl bg-neutral-100">
                 <Image
                   src={product.images[0]}
-                  alt={product.name}
+                  alt={productImageAlt(product)}
                   fill
                   sizes="(max-width:768px) 176px, 220px"
                   className="object-cover transition duration-700 group-hover:scale-105"
