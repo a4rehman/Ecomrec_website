@@ -17,6 +17,7 @@ model User {
   address      String?
   city         String?
   zip          String?
+  emailVerified Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -33,6 +34,7 @@ model PasswordResetOtp {
   consumedAt          DateTime?
   resetTokenHash      String?
   resetTokenExpiresAt DateTime?
+  purpose             String    @default("password_reset") // "password_reset" | "register"
 
   @@map("password_reset_otps")
 }

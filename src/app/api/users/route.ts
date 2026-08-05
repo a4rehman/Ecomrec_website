@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
         role: true,
         phone: true,
         city: true,
+        emailVerified: true,
         createdAt: true
       }
     });

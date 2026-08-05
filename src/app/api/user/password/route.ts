@@ -34,7 +34,8 @@ export async function POST(request: NextRequest) {
           email: DEFAULT_ADMIN_EMAIL,
           name: "Administrator",
           passwordHash: initialAdminHash,
-          role: "admin"
+          role: "admin",
+          emailVerified: true
         }
       });
 

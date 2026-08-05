@@ -25,7 +25,7 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [authorized, setAuthorized] = useState(false);
 
-  const [users, setUsers] = useState<{ id: string; name: string; email: string; role: string; phone: string | null; city: string | null; createdAt: string }[]>([]);
+  const [users, setUsers] = useState<{ id: string; name: string; email: string; role: string; phone: string | null; city: string | null; emailVerified: boolean; createdAt: string }[]>([]);
 
   // Admin Security & Password States
   const [adminProfile, setAdminProfile] = useState<{ name: string; email: string } | null>(null);
@@ -109,6 +109,24 @@ export default function AdminPage() {
         }
       })
       .catch((err) => console.error("Error fetching users:", err));
+  };
+
+  const handleDeleteUserClick = async (id: string, name: string) => {
+    if (confirm(`Delete user "${name}"? This cannot be undone.`)) {
+      try {
+        const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.ok) {
+          showToast("User deleted successfully!");
+          fetchUsersFromDb();
+        } else {
+          alert(data.message || "Failed to delete user.");
+        }
+      } catch (err) {
+        console.error("Failed to delete user:", err);
+        alert("Failed to delete user.");
+      }
+    }
   };
 
   // Authenticate user & Fetch orders from MySQL DB
@@ -748,9 +766,11 @@ export default function AdminPage() {
                       <th className="py-4 font-medium">Name</th>
                       <th className="py-4 font-medium">Email</th>
                       <th className="py-4 font-medium">Role</th>
+                      <th className="py-4 font-medium">Verification</th>
                       <th className="py-4 font-medium">Phone</th>
                       <th className="py-4 font-medium">City</th>
                       <th className="py-4 font-medium">Joined</th>
+                      <th className="py-4 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -767,10 +787,32 @@ export default function AdminPage() {
                             {u.role}
                           </span>
                         </td>
+                        <td className="py-4">
+                          {u.emailVerified ? (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200">
+                              Verified
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-300 border border-yellow-200">
+                              Pending
+                            </span>
+                          )}
+                        </td>
                         <td className="py-4 text-sm text-muted">{u.phone || "—"}</td>
                         <td className="py-4 text-sm text-muted">{u.city || "—"}</td>
                         <td className="py-4 text-sm text-muted">
                           {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}
+                        </td>
+                        <td className="py-4 text-right">
+                          {u.role !== "admin" && (
+                            <button
+                              onClick={() => handleDeleteUserClick(u.id, u.name)}
+                              className="p-2 border border-red-200 text-red-600 rounded hover:bg-red-50 transition inline-block"
+                              title="Delete user"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}

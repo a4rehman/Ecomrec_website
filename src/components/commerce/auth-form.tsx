@@ -20,6 +20,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -50,10 +51,16 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
       });
       const result = await response.json() as ApiResponse<AuthUser>;
 
-      if (response.ok && result.ok && result.data) {
+      if (result.ok && result.data && response.ok) {
         dispatch(loginUser(result.data));
         localStorage.setItem("jahanara_user", JSON.stringify(result.data));
         router.push(result.data.role === "admin" ? "/admin" : redirectTo);
+        return;
+      }
+
+      // Email not verified yet -> send to verification page
+      if (response.status === 403 && (result as any).data?.needsVerification) {
+        router.push(`/verify-otp?purpose=register&email=${encodeURIComponent((result as any).data.email)}`);
         return;
       }
 
@@ -89,18 +96,17 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, firstName, lastName, password })
+        body: JSON.stringify({ email, firstName, lastName, password, phone })
       });
       const result = await response.json() as ApiResponse<AuthUser>;
 
-      if (!response.ok || !result.ok || !result.data) {
+      if (!response.ok || !result.ok) {
         setError(result.message || "Could not create your account.");
         return;
       }
 
-      dispatch(loginUser(result.data));
-      localStorage.setItem("jahanara_user", JSON.stringify(result.data));
-      router.push("/shop");
+      setSuccess(result.message || "Account created. Please verify your email.");
+      router.push(`/verify-otp?purpose=register&email=${encodeURIComponent(email.trim().toLowerCase())}`);
     } else if (mode === "forgot") {
       router.push("/forgot-password");
     } else if (mode === "reset") {
@@ -138,6 +144,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
           )}
           
           <Input placeholder="E-mail" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+
+          {mode === "register" && (
+            <Input placeholder="Phone (optional)" type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
+          )}
           
           {mode !== "forgot" && (
             <Input placeholder={mode === "reset" ? "New password" : "Password"} type="password" value={password} onChange={e => setPassword(e.target.value)} />

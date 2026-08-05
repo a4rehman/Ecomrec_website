@@ -33,6 +33,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "Invalid email or password." }, { status: 401 });
     }
 
+    if (!user.emailVerified) {
+      return NextResponse.json<ApiResponse>(
+        { ok: false, message: "Please verify your email first. A verification code has been sent to your inbox.", data: { needsVerification: true, email: user.email } as any },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json<ApiResponse<AuthUser>>({
       ok: true,
       message: "Logged in successfully.",

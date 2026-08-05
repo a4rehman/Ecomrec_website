@@ -1,9 +1,12 @@
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isValidEmail, normalizeEmail, validatePassword } from "@/lib/auth-validation";
+import { isValidEmail, normalizeEmail, validatePassword, generateSixDigitOtp } from "@/lib/auth-validation";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { ApiResponse, AuthUser } from "@/types/auth";
+import { ApiResponse } from "@/types/auth";
+import { sendRegistrationOtpEmail } from "@/lib/auth-email";
+
+const OTP_EXPIRES_IN_MS = 10 * 60 * 1000;
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "local";
@@ -22,6 +25,7 @@ export async function POST(request: NextRequest) {
     const firstName = String(body.firstName || "").trim();
     const lastName = String(body.lastName || "").trim();
     const password = String(body.password || "");
+    const phone = String(body.phone || "").trim() || null;
 
     if (!firstName || !lastName) {
       return NextResponse.json<ApiResponse>({ ok: false, message: "First and last name are required." }, { status: 400 });
@@ -45,24 +49,48 @@ export async function POST(request: NextRequest) {
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         name: `${firstName} ${lastName}`,
         passwordHash,
-        role: "user"
+        role: "user",
+        phone,
+        emailVerified: false
       }
     });
 
-    return NextResponse.json<ApiResponse<AuthUser>>({
-      ok: true,
-      message: "Account created successfully.",
+    const otp = generateSixDigitOtp();
+    const otpHash = await bcrypt.hash(otp, 12);
+    const now = new Date();
+
+    await prisma.passwordResetOtp.updateMany({
+      where: {
+        email,
+        purpose: "register",
+        consumedAt: null
+      },
       data: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role as any
+        consumedAt: now
       }
+    });
+
+    await prisma.passwordResetOtp.create({
+      data: {
+        email,
+        otpHash,
+        attempts: 0,
+        createdAt: now,
+        expiresAt: new Date(now.getTime() + OTP_EXPIRES_IN_MS),
+        purpose: "register"
+      }
+    });
+
+    await sendRegistrationOtpEmail(email, otp);
+
+    return NextResponse.json<ApiResponse>({
+      ok: true,
+      message: "Account created. A 6 digit verification code has been sent to your email. Please verify your account to activate it."
     });
   } catch (error) {
     console.error("Register failed:", error);
