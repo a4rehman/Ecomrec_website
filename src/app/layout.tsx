@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Sawera Collection" }],
   creator: "Sawera Collection",
   publisher: "Sawera Collection",
+  verification: {
+    google: "No25eAQCPUZaYStZfV7k7UufgSbwsr_Rsal5jVmicPA"
+  },
   robots: {
     index: true,
     follow: true,
