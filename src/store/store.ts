@@ -1,5 +1,6 @@
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Product, products as initialProducts } from "@/data/products";
+import { metaPixelMiddleware } from "@/lib/metaPixel";
 
 type Line = { id: string; qty: number; size?: string; color?: string };
 export type User = { id?: string; email: string; name: string; role: "admin" | "user" };
@@ -123,6 +124,9 @@ export const {
   deleteOrder
 } = commerceSlice.actions;
 
-export const store = configureStore({ reducer: { commerce: commerceSlice.reducer } });
+export const store = configureStore({
+  reducer: { commerce: commerceSlice.reducer },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(metaPixelMiddleware)
+});
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { EmailSendResult } from "@/types/email";
+import { contact as trackContact } from "@/lib/metaPixel";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -31,6 +32,7 @@ export default function ContactPage() {
     setIsSending(false);
 
     if (result.ok) {
+      trackContact();
       setName("");
       setEmail("");
       setPhone("");

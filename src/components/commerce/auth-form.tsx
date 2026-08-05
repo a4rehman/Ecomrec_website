@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { ApiResponse, AuthUser } from "@/types/auth";
+import { completeRegistration as trackCompleteRegistration } from "@/lib/metaPixel";
 
 export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "reset" }) {
   const router = useRouter();
@@ -107,6 +108,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
       }
 
       setSuccess(result.message || "Account created. Please verify your email.");
+      trackCompleteRegistration();
       router.push(`/verify-otp?purpose=register&email=${encodeURIComponent(email.trim().toLowerCase())}`);
     } else if (mode === "forgot") {
       router.push("/forgot-password");

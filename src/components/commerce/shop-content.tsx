@@ -10,6 +10,7 @@ import { formatPrice } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { getCategorySeoContent } from "@/data/seo-content";
+import { search as trackSearch } from "@/lib/metaPixel";
 
 function ShopContentInner() {
   const searchParams = useSearchParams();
@@ -46,6 +47,14 @@ function ShopContentInner() {
       setMax(100000);
     }
   }, [priceTier, max]);
+
+  // Debounced Meta `Search` event when the visitor types in the search box
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) return;
+    const timer = setTimeout(() => trackSearch(q), 600);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const filtered = useMemo(() => {
     const list = products.filter((p) => {

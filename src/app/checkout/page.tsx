@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { CartClient } from "@/components/commerce/cart-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
+import { initiateCheckout as trackInitiateCheckout } from "@/lib/metaPixel";
 import { OrderNotificationData, EmailSendResult } from "@/types/email";
 import Link from "next/link";
 import { CheckCircle2, RotateCcw, ShoppingBag, Truck } from "lucide-react";
@@ -17,6 +18,20 @@ export default function CheckoutPage() {
   const dispatch = useDispatch();
   const router = useRouter();
   const { cart, products, user } = useSelector((s: RootState) => s.commerce);
+
+  const subtotal = cart.reduce((acc, item) => {
+    const p = products.find((prod) => prod.id === item.id);
+    return acc + (p ? p.price * item.qty : 0);
+  }, 0);
+
+  // Meta `InitiateCheckout` — fire once when the visitor reaches checkout
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (checkoutTracked.current) return;
+    checkoutTracked.current = true;
+    if (cart.length > 0) trackInitiateCheckout(cart, products, subtotal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Pre-fill user details if logged in (guest checkout is allowed)
   useEffect(() => {
@@ -45,11 +60,6 @@ export default function CheckoutPage() {
   const [emailMessage, setEmailMessage] = useState("");
   const [requestMessage, setRequestMessage] = useState("");
   const [placedOrderNotificationData, setPlacedOrderNotificationData] = useState<OrderNotificationData | null>(null);
-
-  const subtotal = cart.reduce((acc, item) => {
-    const p = products.find((prod) => prod.id === item.id);
-    return acc + (p ? p.price * item.qty : 0);
-  }, 0);
 
   const buildOrderNotificationData = (orderId: string, actionType: OrderNotificationData["actionType"]): OrderNotificationData => {
     const orderedProducts = cart

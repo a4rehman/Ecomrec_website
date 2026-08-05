@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CartDrawer } from "@/components/commerce/cart-drawer";
 import { Analytics } from "@vercel/analytics/next";
+import { MetaPixel } from "@/components/layout/meta-pixel";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 
 const sans = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-sans", display: "swap" });
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main>{children}</main>
           <Footer />
           <Analytics />
+          <MetaPixel />
         </Providers>
       </body>
     </html>
