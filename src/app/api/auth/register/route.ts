@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         name: `${firstName} ${lastName}`,
@@ -86,14 +86,35 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    await sendRegistrationOtpEmail(email, otp);
+    try {
+      await sendRegistrationOtpEmail(email, otp);
+    } catch (emailError: any) {
+      // Rollback the pending account so it does not linger half-created
+      await prisma.passwordResetOtp.deleteMany({ where: { email, purpose: "register" } });
+      await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
+      console.error("Registration OTP email failed:", emailError);
+      return NextResponse.json<ApiResponse>({
+        ok: false,
+        message: "We could not send the verification email. Please check that the email address is correct and try again.",
+        detail: String(emailError?.message || emailError)
+      } as any, { status: 500 });
+    }
 
     return NextResponse.json<ApiResponse>({
       ok: true,
       message: "Account created. A 6 digit verification code has been sent to your email. Please verify your account to activate it."
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Register failed:", error);
-    return NextResponse.json<ApiResponse>({ ok: false, message: "Registration failed. Please try again." }, { status: 500 });
+    // Prisma validation errors usually mean the database schema is out of sync
+    const detail = String(error?.message || error);
+    const needsDbSync = detail.includes("emailVerified") || detail.includes("purpose") || detail.includes("Unknown argument");
+    return NextResponse.json<ApiResponse>({
+      ok: false,
+      message: needsDbSync
+        ? "Registration could not be completed because the database is not up to date. Please run 'npx prisma db push' on the server."
+        : "Registration failed. Please try again.",
+      detail
+    } as any, { status: 500 });
   }
 }

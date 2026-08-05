@@ -101,7 +101,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" | "forgot" | "re
       const result = await response.json() as ApiResponse<AuthUser>;
 
       if (!response.ok || !result.ok) {
-        setError(result.message || "Could not create your account.");
+        const detail = (result as any).detail;
+        setError(detail ? `${result.message || "Could not create your account."} (${detail})` : result.message || "Could not create your account.");
         return;
       }
 
