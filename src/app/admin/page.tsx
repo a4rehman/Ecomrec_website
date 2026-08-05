@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingBag, 
-  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server
+  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -21,9 +21,11 @@ export default function AdminPage() {
   const dispatch = useDispatch();
   
   const { products, user, orders } = useSelector((s: RootState) => s.commerce);
-  const [activeTab, setActiveTab] = useState<"products" | "orders" | "security">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "orders" | "users" | "security">("products");
   const [searchQuery, setSearchQuery] = useState("");
   const [authorized, setAuthorized] = useState(false);
+
+  const [users, setUsers] = useState<{ id: string; name: string; email: string; role: string; phone: string | null; city: string | null; createdAt: string }[]>([]);
 
   // Admin Security & Password States
   const [adminProfile, setAdminProfile] = useState<{ name: string; email: string } | null>(null);
@@ -98,6 +100,17 @@ export default function AdminPage() {
       .catch((err) => console.error("Error fetching orders:", err));
   };
 
+  const fetchUsersFromDb = () => {
+    fetch("/api/users", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.users) {
+          setUsers(data.users);
+        }
+      })
+      .catch((err) => console.error("Error fetching users:", err));
+  };
+
   // Authenticate user & Fetch orders from MySQL DB
   useEffect(() => {
     const storedUser = localStorage.getItem("jahanara_user");
@@ -123,6 +136,12 @@ export default function AdminPage() {
   useEffect(() => {
     if (authorized && activeTab === "orders") {
       fetchOrdersFromDb();
+    }
+  }, [activeTab, authorized]);
+
+  useEffect(() => {
+    if (authorized && activeTab === "users") {
+      fetchUsersFromDb();
     }
   }, [activeTab, authorized]);
 
@@ -400,6 +419,14 @@ export default function AdminPage() {
             }`}
           >
             <span className="flex items-center gap-3"><LayoutDashboard size={16} /> Customer Orders ({orders.length})</span>
+          </button>
+          <button
+            onClick={() => { setActiveTab("users"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "users" ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><Users size={16} /> Registered Users ({users.length})</span>
           </button>
           <button
             onClick={() => { setActiveTab("security"); setShowForm(false); }}
@@ -704,6 +731,53 @@ export default function AdminPage() {
                 </table>
                 {orders.length === 0 && (
                   <p className="text-center text-muted py-12">No orders have been placed yet.</p>
+                )}
+              </div>
+            </div>
+          ) : activeTab === "users" ? (
+            /* Registered Users View */
+            <div>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h2 className="font-serif text-4xl">Registered Users ({users.length})</h2>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-line text-xs uppercase tracking-wider text-muted">
+                      <th className="py-4 font-medium">Name</th>
+                      <th className="py-4 font-medium">Email</th>
+                      <th className="py-4 font-medium">Role</th>
+                      <th className="py-4 font-medium">Phone</th>
+                      <th className="py-4 font-medium">City</th>
+                      <th className="py-4 font-medium">Joined</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((u) => (
+                      <tr key={u.id} className="border-b border-line/60 hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition">
+                        <td className="py-4 font-medium">{u.name}</td>
+                        <td className="py-4 text-sm text-muted">{u.email}</td>
+                        <td className="py-4">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+                            u.role === "admin"
+                              ? "bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-300 border border-purple-200"
+                              : "bg-neutral-100 dark:bg-neutral-900 text-muted border border-line"
+                          }`}>
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="py-4 text-sm text-muted">{u.phone || "—"}</td>
+                        <td className="py-4 text-sm text-muted">{u.city || "—"}</td>
+                        <td className="py-4 text-sm text-muted">
+                          {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {users.length === 0 && (
+                  <p className="text-center text-muted py-12">No users have registered yet.</p>
                 )}
               </div>
             </div>
