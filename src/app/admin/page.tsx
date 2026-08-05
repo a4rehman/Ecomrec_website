@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingBag, 
-  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users
+  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp
 } from "lucide-react";
 
 export default function AdminPage() {
@@ -21,7 +21,7 @@ export default function AdminPage() {
   const dispatch = useDispatch();
   
   const { products, user, orders } = useSelector((s: RootState) => s.commerce);
-  const [activeTab, setActiveTab] = useState<"products" | "orders" | "users" | "security">("products");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "orders" | "users" | "security">("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [authorized, setAuthorized] = useState(false);
 
@@ -145,6 +145,7 @@ export default function AdminPage() {
         setAuthorized(true);
         setAdminProfile({ name: parsedUser.name || "Administrator", email: parsedUser.email || "" });
         fetchOrdersFromDb();
+        fetchUsersFromDb();
       }
     } catch (e) {
       router.push("/login");
@@ -152,13 +153,13 @@ export default function AdminPage() {
   }, [user, router, dispatch]);
 
   useEffect(() => {
-    if (authorized && activeTab === "orders") {
+    if (authorized && (activeTab === "orders" || activeTab === "dashboard")) {
       fetchOrdersFromDb();
     }
   }, [activeTab, authorized]);
 
   useEffect(() => {
-    if (authorized && activeTab === "users") {
+    if (authorized && (activeTab === "users" || activeTab === "dashboard")) {
       fetchUsersFromDb();
     }
   }, [activeTab, authorized]);
@@ -423,6 +424,14 @@ export default function AdminPage() {
         {/* Admin Navigation */}
         <aside className="space-y-2">
           <button
+            onClick={() => { setActiveTab("dashboard"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "dashboard" && !showForm ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><LayoutDashboard size={16} /> Dashboard</span>
+          </button>
+          <button
             onClick={() => { setActiveTab("products"); setShowForm(false); }}
             className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
               activeTab === "products" && !showForm ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
@@ -626,6 +635,117 @@ export default function AdminPage() {
                   </Button>
                 </div>
               </form>
+            </div>
+          ) : activeTab === "dashboard" ? (
+            /* Dashboard Overview */
+            <div>
+              <h2 className="font-serif text-4xl mb-2">Dashboard Overview</h2>
+              <p className="text-sm text-muted mb-8">Welcome back! Here&apos;s what&apos;s happening with your store today.</p>
+
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4 mb-8">
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <Wallet size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Total Sales</span>
+                  </div>
+                  <p className="font-serif text-3xl">{formatPrice(orders.reduce((sum, o) => sum + o.total, 0))}</p>
+                  <p className="text-xs text-muted mt-2">Across all COD orders</p>
+                </div>
+
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <LayoutDashboard size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Total Orders</span>
+                  </div>
+                  <p className="font-serif text-3xl">{orders.length}</p>
+                  <p className="text-xs text-muted mt-2">
+                    {orders.filter((o) => o.status === "Processing").length} pending, {orders.filter((o) => o.status === "Shipped").length} shipped
+                  </p>
+                </div>
+
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <Package size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Active Products</span>
+                  </div>
+                  <p className="font-serif text-3xl">{products.length}</p>
+                  <p className="text-xs text-muted mt-2">{products.filter((p) => p.stock > 0).length} currently in stock</p>
+                </div>
+
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <Users size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Total Customers</span>
+                  </div>
+                  <p className="font-serif text-3xl">{users.length}</p>
+                  <p className="text-xs text-muted mt-2">
+                    {users.filter((u) => u.createdAt && Date.now() - new Date(u.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000).length} new this week
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <TrendingUp size={14} /> Recent Orders
+                </h3>
+                <button
+                  onClick={() => setActiveTab("orders")}
+                  className="text-xs text-accent underline"
+                >
+                  View all orders
+                </button>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-line text-xs uppercase tracking-wider text-muted">
+                      <th className="py-4 font-medium">Order ID</th>
+                      <th className="py-4 font-medium">Customer</th>
+                      <th className="py-4 font-medium">Date</th>
+                      <th className="py-4 font-medium">Total</th>
+                      <th className="py-4 font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.slice(0, 5).map((o) => (
+                      <tr key={o.id} className="border-b border-line/60 hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition">
+                        <td className="py-4 font-semibold text-accent">#{o.id}</td>
+                        <td className="py-4">
+                          <div className="text-sm font-medium">{o.name}</div>
+                          <div className="text-xs text-muted max-w-[180px] truncate">{o.email || "Email not provided"}</div>
+                        </td>
+                        <td className="py-4 text-sm text-muted">{o.date}</td>
+                        <td className="py-4 text-sm font-semibold">{formatPrice(o.total)}</td>
+                        <td className="py-4">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded border ${
+                            o.status === "Delivered"
+                              ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-200"
+                              : o.status === "Cancelled"
+                              ? "bg-red-50 text-red-700 border-red-200"
+                              : o.status === "Shipped"
+                              ? "bg-blue-50 text-blue-700 border-blue-200"
+                              : "bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-300 border-yellow-200"
+                          }`}>
+                            {o.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {orders.length === 0 && (
+                  <p className="text-center text-muted py-12">No orders have been placed yet.</p>
+                )}
+              </div>
             </div>
           ) : activeTab === "products" ? (
             /* Products List View */
