@@ -62,11 +62,47 @@ export const productSchema = (product: Product) => ({
     url: `${SITE_URL}/product/${product.slug}`,
     priceCurrency: "PKR",
     price: product.salePrice && product.salePrice > 0 ? product.salePrice : product.price,
+    validFrom: "2025-01-01T00:00:00Z",
     priceValidUntil: product.saleEnd
       ? new Date(product.saleEnd).toISOString()
       : new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
     availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    itemCondition: "https://schema.org/NewCondition"
+    itemCondition: "https://schema.org/NewCondition",
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "PK",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 7,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/FreeReturn"
+    },
+    shippingDetails: {
+      "@type": "OfferShippingDetails",
+      shippingRate: {
+        "@type": "MonetaryAmount",
+        value: 0,
+        currency: "PKR"
+      },
+      shippingDestination: {
+        "@type": "DefinedRegion",
+        addressCountry: "PK"
+      },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: {
+          "@type": "QuantitativeValue",
+          minValue: 0,
+          maxValue: 1,
+          unitCode: "DAY"
+        },
+        transitTime: {
+          "@type": "QuantitativeValue",
+          minValue: 2,
+          maxValue: 4,
+          unitCode: "DAY"
+        }
+      }
+    }
   },
   aggregateRating: {
     "@type": "AggregateRating",

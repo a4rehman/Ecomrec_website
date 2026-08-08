@@ -64,10 +64,9 @@ export async function POST(request: NextRequest) {
     const otpHash = await bcrypt.hash(otp, 12);
     const now = new Date();
 
-    await prisma.passwordResetOtp.updateMany({
+    await prisma.emailVerificationOtp.updateMany({
       where: {
         email,
-        purpose: "register",
         consumedAt: null
       },
       data: {
@@ -75,14 +74,13 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    await prisma.passwordResetOtp.create({
+    await prisma.emailVerificationOtp.create({
       data: {
         email,
         otpHash,
         attempts: 0,
         createdAt: now,
-        expiresAt: new Date(now.getTime() + OTP_EXPIRES_IN_MS),
-        purpose: "register"
+        expiresAt: new Date(now.getTime() + OTP_EXPIRES_IN_MS)
       }
     });
 
@@ -90,7 +88,7 @@ export async function POST(request: NextRequest) {
       await sendRegistrationOtpEmail(email, otp);
     } catch (emailError: any) {
       // Rollback the pending account so it does not linger half-created
-      await prisma.passwordResetOtp.deleteMany({ where: { email, purpose: "register" } });
+      await prisma.emailVerificationOtp.deleteMany({ where: { email } });
       await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
       console.error("Registration OTP email failed:", emailError);
       return NextResponse.json<ApiResponse>({

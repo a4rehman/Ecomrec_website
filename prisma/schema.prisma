@@ -24,6 +24,19 @@ model User {
   @@map("users")
 }
 
+model EmailVerificationOtp {
+  id                    String    @id @default(uuid())
+  email                 String
+  otpHash               String
+  expiresAt             DateTime
+  attempts              Int       @default(0)
+  createdAt             DateTime  @default(now())
+  consumedAt            DateTime?
+  verificationTokenHash String?
+
+  @@map("email_verification_otps")
+}
+
 model PasswordResetOtp {
   id                  String    @id @default(uuid())
   email               String
@@ -34,7 +47,6 @@ model PasswordResetOtp {
   consumedAt          DateTime?
   resetTokenHash      String?
   resetTokenExpiresAt DateTime?
-  purpose             String    @default("password_reset") // "password_reset" | "register"
 
   @@map("password_reset_otps")
 }
