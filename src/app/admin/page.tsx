@@ -1,0 +1,1043 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { RootState, addProduct, updateProduct, deleteProduct, logoutUser, updateOrderStatus, deleteOrder, setOrders } from "@/store/store";
+import { Product } from "@/data/products";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/utils";
+import { OrderNotificationData, EmailSendResult } from "@/types/email";
+import Image from "next/image";
+import Link from "next/link";
+import { 
+  Plus, Edit, Trash2, LayoutDashboard, ShoppingBag, 
+  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp
+} from "lucide-react";
+
+export default function AdminPage() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  
+  const { products, user, orders } = useSelector((s: RootState) => s.commerce);
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "orders" | "users" | "security">("dashboard");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [authorized, setAuthorized] = useState(false);
+
+  const [users, setUsers] = useState<{ id: string; name: string; email: string; role: string; phone: string | null; city: string | null; emailVerified: boolean; createdAt: string }[]>([]);
+
+  // Admin Security & Password States
+  const [adminProfile, setAdminProfile] = useState<{ name: string; email: string } | null>(null);
+  const [adminCurrentPass, setAdminCurrentPass] = useState("");
+  const [adminNewPass, setAdminNewPass] = useState("");
+  const [adminConfirmPass, setAdminConfirmPass] = useState("");
+  const [secMsg, setSecMsg] = useState({ text: "", error: false });
+
+  // Form states for Add/Edit
+  const [showForm, setShowForm] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState("");
+
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("Luxury Lawn");
+  const [brand, setBrand] = useState("Sawera Collection");
+  const [price, setPrice] = useState(0);
+  const [compareAt, setCompareAt] = useState(0);
+  const [badge, setBadge] = useState("");
+  const [description, setDescription] = useState("");
+  const [fabric, setFabric] = useState("Premium Lawn");
+  const [stock, setStock] = useState(10);
+  const [salePrice, setSalePrice] = useState<number>(0);
+  const [saleEnd, setSaleEnd] = useState(""); // ISO date string
+  const [colorsInput, setColorsInput] = useState("Pastel Mint, Powder Pink, Ivory");
+  const [sizesSelected, setSizesSelected] = useState<string[]>(["Unstitched", "M", "L"]);
+  const [imageFiles, setImageFiles] = useState<string[]>([]);
+  const [imageUrl, setImageUrl] = useState("");
+  const [notification, setNotification] = useState("");
+
+  const sizeOptions = ["Unstitched", "XS", "S", "M", "L", "XL"];
+
+  const buildAdminOrderNotificationData = (orderId: string, actionType: OrderNotificationData["actionType"]): OrderNotificationData | null => {
+    const order = orders.find((o) => o.id === orderId);
+    if (!order) return null;
+
+    return {
+      customerName: order.name,
+      customerEmail: order.email || "Not provided",
+      customerPhone: order.phone,
+      orderId: order.id,
+      products: order.items
+        .map((item) => {
+          const product = products.find((p) => p.id === item.id);
+          if (!product) return null;
+
+          return {
+            productName: product.name,
+            quantity: item.qty,
+            size: item.size,
+            color: item.color,
+            unitPrice: product.price,
+            lineTotal: product.price * item.qty
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => Boolean(item)),
+      totalAmount: order.total,
+      shippingAddress: `${order.address}, ${order.city}, ${order.zip}`,
+      dateTime: new Date().toLocaleString(),
+      actionType
+    };
+  };
+
+  const fetchOrdersFromDb = () => {
+    fetch("/api/orders", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.orders) {
+          dispatch(setOrders(data.orders));
+        }
+      })
+      .catch((err) => console.error("Error fetching orders:", err));
+  };
+
+  const fetchUsersFromDb = () => {
+    fetch("/api/users", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.users) {
+          setUsers(data.users);
+        }
+      })
+      .catch((err) => console.error("Error fetching users:", err));
+  };
+
+  const handleDeleteUserClick = async (id: string, name: string) => {
+    if (confirm(`Delete user "${name}"? This cannot be undone.`)) {
+      try {
+        const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.ok) {
+          showToast("User deleted successfully!");
+          fetchUsersFromDb();
+        } else {
+          alert(data.message || "Failed to delete user.");
+        }
+      } catch (err) {
+        console.error("Failed to delete user:", err);
+        alert("Failed to delete user.");
+      }
+    }
+  };
+
+  // Authenticate user & Fetch orders from MySQL DB
+  useEffect(() => {
+    const storedUser = localStorage.getItem("jahanara_user");
+    if (!storedUser) {
+      router.push("/login");
+      return;
+    }
+    
+    try {
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.role !== "admin") {
+        router.push("/login");
+      } else {
+        setAuthorized(true);
+        setAdminProfile({ name: parsedUser.name || "Administrator", email: parsedUser.email || "" });
+        fetchOrdersFromDb();
+        fetchUsersFromDb();
+      }
+    } catch (e) {
+      router.push("/login");
+    }
+  }, [user, router, dispatch]);
+
+  useEffect(() => {
+    if (authorized && (activeTab === "orders" || activeTab === "dashboard")) {
+      fetchOrdersFromDb();
+    }
+  }, [activeTab, authorized]);
+
+  useEffect(() => {
+    if (authorized && (activeTab === "users" || activeTab === "dashboard")) {
+      fetchUsersFromDb();
+    }
+  }, [activeTab, authorized]);
+
+  const handleSizeToggle = (sz: string) => {
+    if (sizesSelected.includes(sz)) {
+      setSizesSelected(sizesSelected.filter((s) => s !== sz));
+    } else {
+      setSizesSelected([...sizesSelected, sz]);
+    }
+  };
+
+  // Process image upload to Base64
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    const fileArray = Array.from(files);
+    const promises = fileArray.map((file) => {
+      return new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(promises).then((base64Strings) => {
+      setImageFiles([...imageFiles, ...base64Strings]);
+    });
+  };
+
+  const handleClearImages = () => {
+    setImageFiles([]);
+    setImageUrl("");
+  };
+
+  const resetForm = () => {
+    setName("");
+    setCategory("Luxury Lawn");
+    setBrand("Sawera Collection");
+    setPrice(0);
+    setCompareAt(0);
+    setBadge("");
+    setDescription("");
+    setFabric("Premium Lawn");
+    setStock(10);
+    setSalePrice(0);
+    setSaleEnd("");
+    setColorsInput("Pastel Mint, Powder Pink, Ivory");
+    setSizesSelected(["Unstitched", "M", "L"]);
+    setImageFiles([]);
+    setImageUrl("");
+    setEditMode(false);
+    setSelectedProductId("");
+  };
+
+  const handleEditClick = (p: Product) => {
+    setEditMode(true);
+    setSelectedProductId(p.id);
+    setName(p.name);
+    setCategory(p.category);
+    setBrand(p.brand);
+    setPrice(p.price);
+    setCompareAt(p.compareAt || 0);
+    setBadge(p.badge || "");
+    setDescription(p.description);
+    setFabric(p.fabric);
+    setStock(p.stock);
+    setSalePrice(p.salePrice || 0);
+    setSaleEnd(p.saleEnd || "");
+    setColorsInput(p.colors.join(", "));
+    setSizesSelected(p.sizes);
+    setImageFiles(p.images);
+    setShowForm(true);
+  };
+
+  const handleDeleteClick = (id: string) => {
+    if (confirm("Are you sure you want to delete this product?")) {
+      dispatch(deleteProduct(id));
+      showToast("Product deleted successfully!");
+    }
+  };
+
+  const handleOrderStatusChange = async (id: string, status: string) => {
+    dispatch(updateOrderStatus({ id, status }));
+    showToast(`Order #${id} status updated to ${status}`);
+
+    // Sync to database (also sends customer email)
+    try {
+      await fetch(`/api/orders/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+    } catch (err) {
+      console.error("Failed to sync status to DB:", err);
+    }
+  };
+
+  const handleDeleteOrderClick = async (id: string) => {
+    if (confirm("Are you sure you want to delete this order?")) {
+      dispatch(deleteOrder(id));
+      showToast("Order deleted successfully!");
+      try {
+        await fetch(`/api/orders/${id}`, { method: "DELETE" });
+      } catch (err) {
+        console.error("Failed to delete order from DB:", err);
+      }
+    }
+  };
+
+  const showToast = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => {
+      setNotification("");
+    }, 4000);
+  };
+
+  const handleAdminPasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSecMsg({ text: "", error: false });
+
+    if (adminNewPass !== adminConfirmPass) {
+      setSecMsg({ text: "New passwords do not match", error: true });
+      return;
+    }
+
+    // Always read fresh email from localStorage to avoid stale Redux state
+    const storedUser = localStorage.getItem("jahanara_user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    const adminEmail = (parsedUser?.email || user?.email || "").trim().toLowerCase();
+
+    if (!adminEmail) {
+      setSecMsg({ text: "Cannot determine admin email. Please log out and log back in.", error: true });
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/user/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: adminEmail,
+          currentPassword: adminCurrentPass,
+          newPassword: adminNewPass
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setSecMsg({ text: "Admin password updated successfully!", error: false });
+        setAdminCurrentPass("");
+        setAdminNewPass("");
+        setAdminConfirmPass("");
+      } else {
+        setSecMsg({ text: data.message || "Failed to update password", error: true });
+      }
+    } catch (err: any) {
+      setSecMsg({ text: err.message || "Error changing password", error: true });
+    }
+  };
+
+  const handleSaveProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!name || !description || price <= 0) {
+      alert("Name, Description, and a valid Price are required.");
+      return;
+    }
+
+    // Combine uploaded files and input URL
+    const finalImages = [...imageFiles];
+    if (imageUrl) finalImages.push(imageUrl);
+    if (finalImages.length === 0) {
+      finalImages.push("/images/hero_lawn.png"); // fallback default image
+    }
+
+    const productSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+    const colors = colorsInput.split(",").map((c) => c.trim()).filter(Boolean);
+
+    const productData: Product = {
+      id: editMode ? selectedProductId : `p-${Date.now()}`,
+      slug: productSlug,
+      name,
+      category,
+      brand,
+      price: Number(price),
+      compareAt: compareAt > 0 ? Number(compareAt) : undefined,
+      rating: editMode ? products.find(p => p.id === selectedProductId)?.rating || 4.8 : 5.0,
+      reviews: editMode ? products.find(p => p.id === selectedProductId)?.reviews || 1 : 1,
+      badge: badge || undefined,
+      colors,
+      sizes: sizesSelected.length > 0 ? sizesSelected : ["Unstitched"],
+      images: finalImages,
+      description,
+      fabric,
+      stock: Number(stock),
+      salePrice: salePrice > 0 ? Number(salePrice) : undefined,
+      saleEnd: saleEnd || undefined
+    };
+
+    if (editMode) {
+      dispatch(updateProduct(productData));
+      showToast("Product updated successfully!");
+    } else {
+      dispatch(addProduct(productData));
+      showToast("Product added successfully!");
+    }
+
+    setShowForm(false);
+    resetForm();
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    localStorage.removeItem("jahanara_user");
+    router.push("/login");
+  };
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.brand.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (!authorized) {
+    return (
+      <div className="container-lux py-32 text-center">
+        <p className="text-xl font-serif text-muted">Checking administrator credentials...</p>
+      </div>
+    );
+  }
+
+  return (
+    <section className="container-lux py-10">
+      {notification && (
+        <div className="fixed top-5 right-5 z-50 flex items-center gap-2 bg-foreground text-background px-6 py-4 rounded shadow-2xl border border-accent animate-pulse text-xs tracking-wider uppercase font-semibold">
+          <CheckCircle size={16} className="text-accent" /> {notification}
+        </div>
+      )}
+
+      <div className="flex flex-col gap-6 md:flex-row md:items-center justify-between border-b border-line pb-8 mb-8">
+        <div>
+          <span className="tracked-luxury text-xs text-accent">Studio Admin</span>
+          <h1 className="font-serif text-6xl">Sawera Atelier</h1>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/shop">
+            <Button variant="outline" className="flex items-center gap-2">
+              <Eye size={16} /> View Shop
+            </Button>
+          </Link>
+          <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2 border-red-200 text-red-600 hover:bg-red-50">
+            <LogOut size={16} /> Log Out
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
+        {/* Admin Navigation */}
+        <aside className="space-y-2">
+          <button
+            onClick={() => { setActiveTab("dashboard"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "dashboard" && !showForm ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><LayoutDashboard size={16} /> Dashboard</span>
+          </button>
+          <button
+            onClick={() => { setActiveTab("products"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "products" && !showForm ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><ShoppingBag size={16} /> Manage Products</span>
+          </button>
+          <button
+            onClick={() => { setActiveTab("orders"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "orders" ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><LayoutDashboard size={16} /> Customer Orders ({orders.length})</span>
+          </button>
+          <button
+            onClick={() => { setActiveTab("users"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "users" ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><Users size={16} /> Registered Users ({users.length})</span>
+          </button>
+          <button
+            onClick={() => { setActiveTab("security"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "security" ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><Shield size={16} /> Privacy & Security</span>
+          </button>
+          <button
+            onClick={() => { setShowForm(true); setEditMode(false); resetForm(); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold border border-dashed border-accent text-accent hover:bg-accent/5 transition mt-4`}
+          >
+            <span className="flex items-center gap-3"><Plus size={16} /> Add New Suit</span>
+          </button>
+        </aside>
+
+        {/* Admin Contents */}
+        <main className="glass p-6 md:p-8 rounded min-h-[500px]">
+          {showForm ? (
+            /* CRUD Add/Edit Form */
+            <div>
+              <div className="flex items-center gap-4 mb-8">
+                <button onClick={() => setShowForm(false)} className="hover:text-accent transition">
+                  <ArrowLeft size={20} />
+                </button>
+                <h2 className="font-serif text-4xl">{editMode ? "Edit Creation" : "Publish New Creation"}</h2>
+              </div>
+
+              <form onSubmit={handleSaveProduct} className="grid gap-6">
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <label className="block text-sm font-medium">
+                    Suit Name *
+                    <Input className="mt-2" placeholder="e.g. Sawera Organza Peshwas" value={name} onChange={(e) => setName(e.target.value)} required />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Category *
+                    <select
+                      className="mt-2 h-11 w-full border border-line bg-background px-3 rounded text-sm focus-ring"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                    >
+                      <option>Luxury Lawn</option>
+                      <option>Printed Lawn</option>
+                      <option>Festive Chiffon</option>
+                      <option>Everyday Essentials</option>
+                      <option>Bridal & Couture</option>
+                      <option>Winter Festive</option>
+                      <option>Sale</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-3">
+                  <label className="block text-sm font-medium">
+                    Brand Name *
+                    <Input className="mt-2" placeholder="e.g. Sawera Collection" value={brand} onChange={(e) => setBrand(e.target.value)} required />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Price (PKR) *
+                    <Input className="mt-2" type="number" min="0" value={price || ""} onChange={(e) => setPrice(Number(e.target.value))} required />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Compare At Price (PKR)
+                    <Input className="mt-2" type="number" min="0" value={compareAt || ""} onChange={(e) => setCompareAt(Number(e.target.value))} />
+                  </label>
+                </div>
+
+                {/* Promotion & Sale Settings */}
+                <div className="grid gap-6 sm:grid-cols-2 border border-line/50 rounded p-4 bg-background/30">
+                  <label className="block text-sm font-medium">
+                    Sale Price (PKR) - Optional
+                    <Input className="mt-2" type="number" min="0" value={salePrice || ""} onChange={(e) => setSalePrice(Number(e.target.value))} />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Sale End Date (Local Date/Time) - Optional
+                    <Input className="mt-2" type="datetime-local" value={saleEnd} onChange={(e) => setSaleEnd(e.target.value)} />
+                  </label>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-3">
+                  <label className="block text-sm font-medium">
+                    Fabric Type
+                    <Input className="mt-2" placeholder="e.g. Pure Lawn + Silk Dupatta" value={fabric} onChange={(e) => setFabric(e.target.value)} />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Stock Availability *
+                    <Input className="mt-2" type="number" min="0" value={stock || ""} onChange={(e) => setStock(Number(e.target.value))} required />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Product Ribbon Badge
+                    <Input className="mt-2" placeholder="e.g. New, Bestseller, 15% OFF" value={badge} onChange={(e) => setBadge(e.target.value)} />
+                  </label>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <label className="block text-sm font-medium">
+                    Available Colors (separated by commas)
+                    <Input className="mt-2" placeholder="Ivory, Powder Pink, Mint" value={colorsInput} onChange={(e) => setColorsInput(e.target.value)} />
+                  </label>
+                  <div>
+                    <span className="block text-sm font-medium mb-3">Sizes Available</span>
+                    <div className="flex flex-wrap gap-3 mt-1">
+                      {sizeOptions.map((sz) => (
+                        <label key={sz} className="flex items-center gap-2 cursor-pointer border border-line px-3 py-2 rounded text-xs select-none">
+                          <input
+                            type="checkbox"
+                            checked={sizesSelected.includes(sz)}
+                            onChange={() => handleSizeToggle(sz)}
+                            className="accent-[var(--accent)]"
+                          />
+                          {sz}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <label className="block text-sm font-medium">
+                  Suit Description *
+                  <textarea
+                    rows={4}
+                    className="mt-2 w-full border border-line bg-background p-4 rounded text-sm focus-ring outline-none resize-none"
+                    placeholder="Provide a luxurious copy describing embroidery, panel flow, and dupatta designs..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                  />
+                </label>
+
+                {/* Upload Image Section */}
+                <div className="border border-line rounded p-5 bg-background/50 grid gap-4">
+                  <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                    <ImagePlus size={14} /> Product Images
+                  </h3>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block text-sm">
+                      Upload Photos from Device
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageUpload}
+                        className="mt-2 block w-full text-xs text-muted file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-foreground file:text-background hover:file:opacity-85 file:cursor-pointer"
+                      />
+                    </label>
+                    <label className="block text-sm">
+                      Or Paste Image Web URL
+                      <Input
+                        className="mt-2"
+                        placeholder="https://example.com/suit.jpg"
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                      />
+                    </label>
+                  </div>
+
+                  {imageFiles.length > 0 && (
+                    <div className="mt-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-semibold text-muted">Photos Preview ({imageFiles.length})</span>
+                        <button type="button" onClick={handleClearImages} className="text-xs text-red-600 underline">Clear All</button>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {imageFiles.map((base64, index) => (
+                          <div key={index} className="relative w-20 aspect-[3/4] border border-line overflow-hidden rounded">
+                            <Image src={base64} alt={`Preview ${index}`} fill className="object-cover" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-3 mt-4">
+                  <Button type="button" variant="outline" onClick={() => { setShowForm(false); resetForm(); }}>Cancel</Button>
+                  <Button type="submit">
+                    {editMode ? "Apply Changes" : "Publish Suit"}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          ) : activeTab === "dashboard" ? (
+            /* Dashboard Overview */
+            <div>
+              <h2 className="font-serif text-4xl mb-2">Dashboard Overview</h2>
+              <p className="text-sm text-muted mb-8">Welcome back! Here&apos;s what&apos;s happening with your store today.</p>
+
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4 mb-8">
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <Wallet size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Total Sales</span>
+                  </div>
+                  <p className="font-serif text-3xl">{formatPrice(orders.reduce((sum, o) => sum + o.total, 0))}</p>
+                  <p className="text-xs text-muted mt-2">Across all COD orders</p>
+                </div>
+
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <LayoutDashboard size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Total Orders</span>
+                  </div>
+                  <p className="font-serif text-3xl">{orders.length}</p>
+                  <p className="text-xs text-muted mt-2">
+                    {orders.filter((o) => o.status === "Processing").length} pending, {orders.filter((o) => o.status === "Shipped").length} shipped
+                  </p>
+                </div>
+
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <Package size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Active Products</span>
+                  </div>
+                  <p className="font-serif text-3xl">{products.length}</p>
+                  <p className="text-xs text-muted mt-2">{products.filter((p) => p.stock > 0).length} currently in stock</p>
+                </div>
+
+                <div className="border border-line rounded p-6 bg-background/50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded bg-accent/10 text-accent flex items-center justify-center">
+                      <Users size={18} />
+                    </div>
+                    <span className="text-xs uppercase tracking-wider text-muted font-semibold">Total Customers</span>
+                  </div>
+                  <p className="font-serif text-3xl">{users.length}</p>
+                  <p className="text-xs text-muted mt-2">
+                    {users.filter((u) => u.createdAt && Date.now() - new Date(u.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000).length} new this week
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <TrendingUp size={14} /> Recent Orders
+                </h3>
+                <button
+                  onClick={() => setActiveTab("orders")}
+                  className="text-xs text-accent underline"
+                >
+                  View all orders
+                </button>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-line text-xs uppercase tracking-wider text-muted">
+                      <th className="py-4 font-medium">Order ID</th>
+                      <th className="py-4 font-medium">Customer</th>
+                      <th className="py-4 font-medium">Date</th>
+                      <th className="py-4 font-medium">Total</th>
+                      <th className="py-4 font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.slice(0, 5).map((o) => (
+                      <tr key={o.id} className="border-b border-line/60 hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition">
+                        <td className="py-4 font-semibold text-accent">#{o.id}</td>
+                        <td className="py-4">
+                          <div className="text-sm font-medium">{o.name}</div>
+                          <div className="text-xs text-muted max-w-[180px] truncate">{o.email || "Email not provided"}</div>
+                        </td>
+                        <td className="py-4 text-sm text-muted">{o.date}</td>
+                        <td className="py-4 text-sm font-semibold">{formatPrice(o.total)}</td>
+                        <td className="py-4">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded border ${
+                            o.status === "Delivered"
+                              ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-200"
+                              : o.status === "Cancelled"
+                              ? "bg-red-50 text-red-700 border-red-200"
+                              : o.status === "Shipped"
+                              ? "bg-blue-50 text-blue-700 border-blue-200"
+                              : "bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-300 border-yellow-200"
+                          }`}>
+                            {o.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {orders.length === 0 && (
+                  <p className="text-center text-muted py-12">No orders have been placed yet.</p>
+                )}
+              </div>
+            </div>
+          ) : activeTab === "products" ? (
+            /* Products List View */
+            <div>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h2 className="font-serif text-4xl">All Published Suits ({filteredProducts.length})</h2>
+                <div className="relative max-w-xs flex-1">
+                  <Search className="absolute left-3 top-3.5 text-muted" size={16} />
+                  <Input placeholder="Search catalog..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-line text-xs uppercase tracking-wider text-muted">
+                      <th className="py-4 font-medium">Image</th>
+                      <th className="py-4 font-medium">Name</th>
+                      <th className="py-4 font-medium">Category</th>
+                      <th className="py-4 font-medium">Price</th>
+                      <th className="py-4 font-medium">Stock</th>
+                      <th className="py-4 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredProducts.map((p) => (
+                      <tr key={p.id} className="border-b border-line/60 hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition">
+                        <td className="py-4">
+                          <div className="relative w-12 aspect-[3/4] border border-line/50 overflow-hidden bg-neutral-100">
+                            {p.images && p.images[0] && (
+                              <Image src={p.images[0]} alt={p.name} fill className="object-cover" />
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-4 font-medium max-w-[200px] truncate">{p.name}</td>
+                        <td className="py-4 text-xs text-muted">{p.category}</td>
+                        <td className="py-4 text-sm font-semibold">{formatPrice(p.price)}</td>
+                        <td className="py-4 text-sm">{p.stock} pcs</td>
+                        <td className="py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleEditClick(p)}
+                              className="p-2 border border-line rounded hover:bg-foreground hover:text-background transition"
+                              title="Edit product"
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(p.id)}
+                              className="p-2 border border-red-200 text-red-600 rounded hover:bg-red-50 transition"
+                              title="Delete product"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredProducts.length === 0 && (
+                  <p className="text-center text-muted py-12">No creations matched your search criteria.</p>
+                )}
+              </div>
+            </div>
+          ) : activeTab === "orders" ? (
+            /* Orders Management View */
+            <div>
+              <h2 className="font-serif text-4xl mb-6">Customer COD Orders ({orders.length})</h2>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-line text-xs uppercase tracking-wider text-muted">
+                      <th className="py-4 font-medium">Order ID</th>
+                      <th className="py-4 font-medium">Customer</th>
+                      <th className="py-4 font-medium">Date</th>
+                      <th className="py-4 font-medium">Method</th>
+                      <th className="py-4 font-medium">Total</th>
+                      <th className="py-4 font-medium">Status</th>
+                      <th className="py-4 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((o) => (
+                      <tr key={o.id} className="border-b border-line/60">
+                        <td className="py-4 font-semibold text-accent">#{o.id}</td>
+                        <td className="py-4">
+                          <div className="text-sm font-medium">{o.name}</div>
+                          <div className="text-xs text-muted max-w-[180px] truncate">{o.email || "Email not provided"}</div>
+                          <div className="text-xs text-muted max-w-[180px] truncate">{o.address}, {o.city}</div>
+                          <div className="text-xs text-muted">{o.phone}</div>
+                        </td>
+                        <td className="py-4 text-sm text-muted">{o.date}</td>
+                        <td className="py-4 text-xs">Cash on Delivery</td>
+                        <td className="py-4 text-sm font-semibold">{formatPrice(o.total)}</td>
+                        <td className="py-4">
+                          <select 
+                            value={o.status}
+                            onChange={(e) => handleOrderStatusChange(o.id, e.target.value)}
+                            className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 text-yellow-700 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded outline-none cursor-pointer"
+                          >
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                        <td className="py-4 text-right">
+                          <button
+                            onClick={() => handleDeleteOrderClick(o.id)}
+                            className="p-2 border border-red-200 text-red-600 rounded hover:bg-red-50 transition inline-block"
+                            title="Delete order"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {orders.length === 0 && (
+                  <p className="text-center text-muted py-12">No orders have been placed yet.</p>
+                )}
+              </div>
+            </div>
+          ) : activeTab === "users" ? (
+            /* Registered Users View */
+            <div>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h2 className="font-serif text-4xl">Registered Users ({users.length})</h2>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-line text-xs uppercase tracking-wider text-muted">
+                      <th className="py-4 font-medium">Name</th>
+                      <th className="py-4 font-medium">Email</th>
+                      <th className="py-4 font-medium">Role</th>
+                      <th className="py-4 font-medium">Verification</th>
+                      <th className="py-4 font-medium">Phone</th>
+                      <th className="py-4 font-medium">City</th>
+                      <th className="py-4 font-medium">Joined</th>
+                      <th className="py-4 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((u) => (
+                      <tr key={u.id} className="border-b border-line/60 hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition">
+                        <td className="py-4 font-medium">{u.name}</td>
+                        <td className="py-4 text-sm text-muted">{u.email}</td>
+                        <td className="py-4">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${
+                            u.role === "admin"
+                              ? "bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-300 border border-purple-200"
+                              : "bg-neutral-100 dark:bg-neutral-900 text-muted border border-line"
+                          }`}>
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="py-4">
+                          {u.emailVerified ? (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200">
+                              Verified
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-300 border border-yellow-200">
+                              Pending
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 text-sm text-muted">{u.phone || "—"}</td>
+                        <td className="py-4 text-sm text-muted">{u.city || "—"}</td>
+                        <td className="py-4 text-sm text-muted">
+                          {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"}
+                        </td>
+                        <td className="py-4 text-right">
+                          {u.role !== "admin" && (
+                            <button
+                              onClick={() => handleDeleteUserClick(u.id, u.name)}
+                              className="p-2 border border-red-200 text-red-600 rounded hover:bg-red-50 transition inline-block"
+                              title="Delete user"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {users.length === 0 && (
+                  <p className="text-center text-muted py-12">No users have registered yet.</p>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* Privacy & Security View */
+            <div className="space-y-8">
+              <div>
+                <h2 className="font-serif text-4xl mb-2">Privacy & Admin Security</h2>
+                <p className="text-sm text-muted">Manage your administrator account security, password, and database encryption status.</p>
+              </div>
+
+              {secMsg.text && (
+                <div className={`p-4 rounded text-sm ${secMsg.error ? "bg-red-50 text-red-700 border border-red-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
+                  {secMsg.text}
+                </div>
+              )}
+
+              {/* Admin Profile Info Card */}
+              <div className="border border-line rounded p-6 bg-background/50 space-y-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <Shield size={16} /> Admin Account Info
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-2 text-sm">
+                  <div>
+                    <span className="text-xs text-muted block">Administrator Name</span>
+                    <span className="font-semibold text-foreground">{adminProfile?.name || user?.name || "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted block">Admin Email (used for login)</span>
+                    <span className="font-semibold text-foreground">{adminProfile?.email || user?.email || "—"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Password Change Form */}
+              <div className="border border-line rounded p-6 bg-background/50 space-y-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <Key size={16} /> Update Admin Password
+                </h3>
+                <form onSubmit={handleAdminPasswordChange} className="grid gap-4 max-w-md">
+                  <label className="block text-sm">
+                    Current Password *
+                    <Input 
+                      type="password"
+                      className="mt-2"
+                      value={adminCurrentPass}
+                      onChange={(e) => setAdminCurrentPass(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    New Password *
+                    <Input 
+                      type="password"
+                      className="mt-2"
+                      value={adminNewPass}
+                      onChange={(e) => setAdminNewPass(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm">
+                    Confirm New Password *
+                    <Input 
+                      type="password"
+                      className="mt-2"
+                      value={adminConfirmPass}
+                      onChange={(e) => setAdminConfirmPass(e.target.value)}
+                      required
+                    />
+                  </label>
+                  <Button type="submit" className="mt-2">Update Admin Password</Button>
+                </form>
+              </div>
+
+              {/* System Security Status */}
+              <div className="border border-line rounded p-6 bg-background/50 space-y-4">
+                <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                  <Server size={16} /> Security & System Integrity
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-3 text-xs">
+                  <div className="p-4 border border-line rounded bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">
+                    <span className="font-bold block mb-1">✔ Hostinger MySQL DB</span>
+                    <span>Encrypted Connection SSL/TLS Active</span>
+                  </div>
+                  <div className="p-4 border border-line rounded bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">
+                    <span className="font-bold block mb-1">✔ Hostinger SMTP</span>
+                    <span>Secure Email Notifications Configured</span>
+                  </div>
+                  <div className="p-4 border border-line rounded bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">
+                    <span className="font-bold block mb-1">✔ Password Hashing</span>
+                    <span>Bcrypt Salt Round 12 Active</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </section>
+  );
+}

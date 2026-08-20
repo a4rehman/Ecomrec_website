@@ -1,0 +1,84 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("user") // "admin" or "user"
+  phone        String?
+  address      String?
+  city         String?
+  zip          String?
+  emailVerified Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+model EmailVerificationOtp {
+  id                    String    @id @default(uuid())
+  email                 String
+  otpHash               String
+  expiresAt             DateTime
+  attempts              Int       @default(0)
+  createdAt             DateTime  @default(now())
+  consumedAt            DateTime?
+  verificationTokenHash String?
+
+  @@map("email_verification_otps")
+}
+
+model PasswordResetOtp {
+  id                  String    @id @default(uuid())
+  email               String
+  otpHash             String
+  expiresAt           DateTime
+  attempts            Int       @default(0)
+  createdAt           DateTime  @default(now())
+  consumedAt          DateTime?
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+
+  @@map("password_reset_otps")
+}
+
+model Order {
+  id        String      @id
+  name      String
+  email     String
+  address   String
+  city      String
+  zip       String
+  phone     String
+  total     Float
+  status    String      @default("Processing")
+  method    String      @default("cod")
+  date      String
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String @id @default(uuid())
+  orderId     String
+  productId   String
+  productName String
+  qty         Int
+  size        String?
+  color       String?
+  unitPrice   Float
+  order       Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
