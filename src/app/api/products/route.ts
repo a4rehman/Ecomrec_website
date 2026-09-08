@@ -55,6 +55,9 @@ export async function POST(request: NextRequest) {
       images: Array.isArray(body.images) && body.images.length ? body.images : ["/images/hero_lawn.png"],
       description: body.description, fabric: body.fabric || "Pure Lawn", stock: Number(body.stock ?? 10),
       salePrice: body.salePrice, saleEnd: body.saleEnd,
+      status: body.status === "draft" ? "draft" : "published",
+      isActive: body.isActive ?? true,
+      publishedAt: body.publishedAt,
     };
     const created = await prisma.product.create({ data: productWriteData(productInput) });
     return NextResponse.json({ ok: true, product: toProduct(created) }, { status: 201 });
