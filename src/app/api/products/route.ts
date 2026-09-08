@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
     const slug = searchParams.get("slug");
-    const products = await listProducts();
+    const includeUnpublished = searchParams.get("includeUnpublished") === "true";
+    const products = await listProducts(includeUnpublished);
     if (slug) {
       const product = products.find((item) => item.slug === slug);
       return product

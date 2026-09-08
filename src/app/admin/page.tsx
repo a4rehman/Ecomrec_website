@@ -50,6 +50,7 @@ export default function AdminPage() {
   const [stock, setStock] = useState(10);
   const [salePrice, setSalePrice] = useState<number>(0);
   const [saleEnd, setSaleEnd] = useState(""); // ISO date string
+  const [status, setStatus] = useState<"draft" | "published">("published");
   const [colorsInput, setColorsInput] = useState("Pastel Mint, Powder Pink, Ivory");
   const [sizesSelected, setSizesSelected] = useState<string[]>(["Unstitched", "M", "L"]);
   const [imageFiles, setImageFiles] = useState<string[]>([]);
@@ -107,7 +108,7 @@ export default function AdminPage() {
     setProductsLoading(true);
     setProductError("");
     try {
-      const res = await fetch("/api/products", { cache: "no-store" });
+      const res = await fetch("/api/products?includeUnpublished=true", { cache: "no-store" });
       const data = await res.json();
       if (!res.ok || !data.ok || !Array.isArray(data.products)) throw new Error(data.message || "Unable to load products from the database.");
       dispatch(setProducts(data.products));
@@ -236,6 +237,7 @@ export default function AdminPage() {
     setStock(10);
     setSalePrice(0);
     setSaleEnd("");
+    setStatus("published");
     setColorsInput("Pastel Mint, Powder Pink, Ivory");
     setSizesSelected(["Unstitched", "M", "L"]);
     setImageFiles([]);
@@ -258,6 +260,7 @@ export default function AdminPage() {
     setStock(p.stock);
     setSalePrice(p.salePrice || 0);
     setSaleEnd(p.saleEnd || "");
+    setStatus(p.status || "published");
     setColorsInput(p.colors.join(", "));
     setSizesSelected(p.sizes);
     setImageFiles(p.images);
@@ -395,7 +398,9 @@ export default function AdminPage() {
       fabric,
       stock: Number(stock),
       salePrice: Number(salePrice) > 0 ? Number(salePrice) : undefined,
-      saleEnd: saleEnd || undefined
+      saleEnd: saleEnd || undefined,
+      status,
+      isActive: true,
     };
 
     setSavingProduct(true);
@@ -557,6 +562,13 @@ export default function AdminPage() {
                       <option>Bridal & Couture</option>
                       <option>Winter Festive</option>
                       <option>Sale</option>
+                    </select>
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Publishing Status *
+                    <select className="mt-2 h-11 w-full border border-line bg-background px-3 rounded text-sm focus-ring" value={status} onChange={(e) => setStatus(e.target.value as "draft" | "published")}>
+                      <option value="published">Published — visible on website</option>
+                      <option value="draft">Draft — admin only</option>
                     </select>
                   </label>
                 </div>

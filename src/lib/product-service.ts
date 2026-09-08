@@ -41,9 +41,9 @@ export function productWriteData(input: Omit<Product, "id">): Prisma.ProductUnch
   };
 }
 
-export async function listProducts(): Promise<Product[]> {
+export async function listProducts(includeUnpublished = false): Promise<Product[]> {
   const products = await prisma.product.findMany({
-    where: { status: "published", isActive: true },
+    where: includeUnpublished ? undefined : { status: "published", isActive: true },
     orderBy: { createdAt: "desc" },
   });
   return products.map(toProduct);
@@ -62,5 +62,7 @@ export async function findProduct(identifier: string, includeInactive = false): 
 export function safeDatabaseMessage(error: unknown): string {
   if (error instanceof Prisma.PrismaClientInitializationError) return "Database connection is unavailable. Please contact the site administrator.";
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") return "A product with this URL slug already exists.";
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2021") return "Product database table is not ready. The administrator must deploy the database migration.";
+  if (error instanceof Prisma.PrismaClientKnownRequestError && ["P1000", "P1001", "P1002"].includes(error.code)) return "Database connection is unavailable. Please contact the site administrator.";
   return "The product could not be saved. Please try again.";
 }
