@@ -9,14 +9,18 @@ import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import type { Product } from "@/data/products";
 import { getCategorySeoContent } from "@/data/seo-content";
 import { search as trackSearch } from "@/lib/metaPixel";
 
-function ShopContentInner() {
+function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
   const searchParams = useSearchParams();
   const catParam = searchParams.get("category");
 
-  const { products, priceTier } = useSelector((state: RootState) => state.commerce);
+  const { products: syncedProducts, priceTier } = useSelector((state: RootState) => state.commerce);
+  // Render server-provided products immediately. The browser sync only updates
+  // the catalog afterwards; it must never leave the page visually empty.
+  const products = syncedProducts.length ? syncedProducts : initialProducts;
 
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
@@ -129,10 +133,10 @@ function ShopContentInner() {
   );
 }
 
-export function ShopContent() {
+export function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
   return (
     <Suspense fallback={<div className="container-lux py-24 text-center">Loading collections...</div>}>
-      <ShopContentInner />
+      <ShopContentInner initialProducts={initialProducts} />
     </Suspense>
   );
 }

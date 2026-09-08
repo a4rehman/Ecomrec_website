@@ -13,6 +13,7 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import type { Product } from "@/data/products";
 
 const trustBadges = [
   [Truck, "Free Shipping in Pakistan"],
@@ -23,8 +24,9 @@ const trustBadges = [
   [MessageCircle, "WhatsApp Support"],
 ] as const;
 
-export default function HomeBelowFold() {
-  const { products, priceTier } = useSelector((state: RootState) => state.commerce);
+export default function HomeBelowFold({ initialProducts }: { initialProducts: Product[] }) {
+  const { priceTier } = useSelector((state: RootState) => state.commerce);
+  const products = initialProducts;
 
   const filteredProducts = products.filter((p) => {
     if (priceTier === "premium") return p.price >= 5000;

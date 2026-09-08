@@ -65,7 +65,7 @@ export default async function ShopPage({ searchParams }: { searchParams: ShopPar
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <ShopContent />
+      <ShopContent initialProducts={products} />
     </>
   );
 }

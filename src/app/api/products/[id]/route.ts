@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import type { Product } from "@/data/products";
 import { findProduct, productWriteData, safeDatabaseMessage, toProduct } from "@/lib/product-service";
 import { prisma } from "@/lib/db";
@@ -37,6 +38,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       images: Array.isArray(body.images) ? body.images : existing.images,
     };
     const updated = await prisma.product.update({ where: { id: existing.id }, data: productWriteData(merged) });
+    revalidateTag("products");
     return NextResponse.json({ ok: true, product: toProduct(updated) });
   } catch (error) {
     return failure(error, "update");
@@ -49,6 +51,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
     const product = await findProduct(id, true);
     if (!product) return NextResponse.json({ ok: false, message: "Product not found" }, { status: 404 });
     await prisma.product.delete({ where: { id: product.id } });
+    revalidateTag("products");
     return NextResponse.json({ ok: true, message: "Product deleted" });
   } catch (error) {
     return failure(error, "delete");

@@ -1,4 +1,5 @@
 import { Prisma, Product as DbProduct } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 import type { Product } from "@/data/products";
 import { prisma } from "@/lib/db";
 
@@ -41,12 +42,25 @@ export function productWriteData(input: Omit<Product, "id">): Prisma.ProductUnch
   };
 }
 
-export async function listProducts(includeUnpublished = false): Promise<Product[]> {
+async function queryProducts(includeUnpublished = false): Promise<Product[]> {
   const products = await prisma.product.findMany({
     where: includeUnpublished ? undefined : { status: "published", isActive: true },
     orderBy: { createdAt: "desc" },
   });
   return products.map(toProduct);
+}
+
+// The public catalog is read far more often than it changes. Keeping it in
+// Next's shared data cache avoids a slow Hostinger MySQL connection on every
+// visitor's first product request. Product writes invalidate this cache.
+const cachedPublishedProducts = unstable_cache(
+  () => queryProducts(false),
+  ["published-products"],
+  { revalidate: 300, tags: ["products"] },
+);
+
+export async function listProducts(includeUnpublished = false): Promise<Product[]> {
+  return includeUnpublished ? queryProducts(true) : cachedPublishedProducts();
 }
 
 export async function findProduct(identifier: string, includeInactive = false): Promise<Product | null> {
