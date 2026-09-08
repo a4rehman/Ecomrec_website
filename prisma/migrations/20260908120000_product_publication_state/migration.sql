@@ -26,9 +26,3 @@ CREATE TABLE IF NOT EXISTS `products` (
   UNIQUE INDEX `products_slug_key`(`slug`),
   PRIMARY KEY (`id`)
 );
-
--- MySQL 8+ safe upgrades for a catalog table created by an earlier deployment.
-ALTER TABLE `products`
-  ADD COLUMN IF NOT EXISTS `status` VARCHAR(191) NOT NULL DEFAULT 'published',
-  ADD COLUMN IF NOT EXISTS `isActive` BOOLEAN NOT NULL DEFAULT true,
-  ADD COLUMN IF NOT EXISTS `publishedAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3);
