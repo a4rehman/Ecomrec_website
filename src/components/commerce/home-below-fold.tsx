@@ -131,7 +131,7 @@ export default function HomeBelowFold() {
         </div>
       </FadeIn>
 
-      <section className="container-lux grid gap-4 py-10 md:grid-cols-4">
+      {products.length > 0 && <section className="container-lux grid gap-4 py-10 md:grid-cols-4">
         {categories.slice(0, 4).map((cat, i) => (
           <FadeIn key={cat} delay={i * 0.08}>
             <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="lux-sheen group relative block min-h-80 overflow-hidden rounded-3xl bg-neutral-100 shadow-sm">
@@ -150,7 +150,7 @@ export default function HomeBelowFold() {
             </Link>
           </FadeIn>
         ))}
-      </section>
+      </section>}
 
       <FadeIn className="container-lux py-20">
         <div className="botanical-panel premium-surface grid gap-8 overflow-hidden p-8 md:grid-cols-[1fr_1.4fr] md:p-12">

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { RootState, addProduct, updateProduct, deleteProduct, logoutUser, updateOrderStatus, deleteOrder, setOrders } from "@/store/store";
+import { RootState, addProduct, updateProduct, deleteProduct, logoutUser, updateOrderStatus, deleteOrder, setOrders, setProducts } from "@/store/store";
 import { Product } from "@/data/products";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,9 @@ export default function AdminPage() {
   const [imageFiles, setImageFiles] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [notification, setNotification] = useState("");
+  const [productError, setProductError] = useState("");
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [savingProduct, setSavingProduct] = useState(false);
 
   const sizeOptions = ["Unstitched", "XS", "S", "M", "L", "XL"];
 
@@ -98,6 +101,24 @@ export default function AdminPage() {
         }
       })
       .catch((err) => console.error("Error fetching orders:", err));
+  };
+
+  const fetchProductsFromDb = async () => {
+    setProductsLoading(true);
+    setProductError("");
+    try {
+      const res = await fetch("/api/products", { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !Array.isArray(data.products)) throw new Error(data.message || "Unable to load products from the database.");
+      dispatch(setProducts(data.products));
+      return data.products as Product[];
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setProductError(err instanceof Error ? err.message : "Unable to load products from the database.");
+      return null;
+    } finally {
+      setProductsLoading(false);
+    }
   };
 
   const fetchUsersFromDb = () => {
@@ -146,6 +167,7 @@ export default function AdminPage() {
         setAdminProfile({ name: parsedUser.name || "Administrator", email: parsedUser.email || "" });
         fetchOrdersFromDb();
         fetchUsersFromDb();
+        void fetchProductsFromDb();
       }
     } catch (e) {
       router.push("/login");
@@ -156,6 +178,10 @@ export default function AdminPage() {
     if (authorized && (activeTab === "orders" || activeTab === "dashboard")) {
       fetchOrdersFromDb();
     }
+  }, [activeTab, authorized]);
+
+  useEffect(() => {
+    if (authorized && (activeTab === "products" || activeTab === "dashboard")) void fetchProductsFromDb();
   }, [activeTab, authorized]);
 
   useEffect(() => {
@@ -238,10 +264,19 @@ export default function AdminPage() {
     setShowForm(true);
   };
 
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = async (id: string) => {
     if (confirm("Are you sure you want to delete this product?")) {
-      dispatch(deleteProduct(id));
-      showToast("Product deleted successfully!");
+      try {
+        const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.message || "Failed to delete product.");
+        dispatch(deleteProduct(id));
+        await fetchProductsFromDb();
+        showToast("Product deleted successfully!");
+      } catch (err) {
+        console.error("Failed to delete product from DB:", err);
+        setProductError(err instanceof Error ? err.message : "Failed to delete product.");
+      }
     }
   };
 
@@ -323,10 +358,11 @@ export default function AdminPage() {
     }
   };
 
-  const handleSaveProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (savingProduct) return;
     
-    if (!name || !description || price <= 0) {
+    if (!name || !description || Number(price) <= 0) {
       alert("Name, Description, and a valid Price are required.");
       return;
     }
@@ -339,7 +375,6 @@ export default function AdminPage() {
     }
 
     const productSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-
     const colors = colorsInput.split(",").map((c) => c.trim()).filter(Boolean);
 
     const productData: Product = {
@@ -349,7 +384,7 @@ export default function AdminPage() {
       category,
       brand,
       price: Number(price),
-      compareAt: compareAt > 0 ? Number(compareAt) : undefined,
+      compareAt: Number(compareAt) > 0 ? Number(compareAt) : undefined,
       rating: editMode ? products.find(p => p.id === selectedProductId)?.rating || 4.8 : 5.0,
       reviews: editMode ? products.find(p => p.id === selectedProductId)?.reviews || 1 : 1,
       badge: badge || undefined,
@@ -359,20 +394,34 @@ export default function AdminPage() {
       description,
       fabric,
       stock: Number(stock),
-      salePrice: salePrice > 0 ? Number(salePrice) : undefined,
+      salePrice: Number(salePrice) > 0 ? Number(salePrice) : undefined,
       saleEnd: saleEnd || undefined
     };
 
-    if (editMode) {
-      dispatch(updateProduct(productData));
-      showToast("Product updated successfully!");
-    } else {
-      dispatch(addProduct(productData));
-      showToast("Product added successfully!");
-    }
+    setSavingProduct(true);
+    setProductError("");
+    try {
+      const res = await fetch(editMode ? `/api/products/${selectedProductId}` : "/api/products", {
+        method: editMode ? "PATCH" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productData)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.product) throw new Error(data.message || "Failed to save product.");
 
-    setShowForm(false);
-    resetForm();
+      // Only the product confirmed by MySQL is allowed into application state.
+      if (editMode) dispatch(updateProduct(data.product));
+      else dispatch(addProduct(data.product));
+      await fetchProductsFromDb();
+      showToast(editMode ? "Product updated successfully!" : "Product added successfully!");
+      setShowForm(false);
+      resetForm();
+    } catch (err) {
+      console.error("Failed to save product to DB:", err);
+      setProductError(err instanceof Error ? err.message : "Failed to save product.");
+    } finally {
+      setSavingProduct(false);
+    }
   };
 
   const handleLogout = () => {
@@ -400,6 +449,11 @@ export default function AdminPage() {
       {notification && (
         <div className="fixed top-5 right-5 z-50 flex items-center gap-2 bg-foreground text-background px-6 py-4 rounded shadow-2xl border border-accent animate-pulse text-xs tracking-wider uppercase font-semibold">
           <CheckCircle size={16} className="text-accent" /> {notification}
+        </div>
+      )}
+      {productError && (
+        <div role="alert" className="fixed top-5 right-5 z-50 max-w-md rounded border border-red-300 bg-red-50 px-6 py-4 text-sm text-red-800 shadow-2xl">
+          <strong>Product action failed.</strong> {productError}
         </div>
       )}
 
@@ -630,8 +684,8 @@ export default function AdminPage() {
 
                 <div className="flex justify-end gap-3 mt-4">
                   <Button type="button" variant="outline" onClick={() => { setShowForm(false); resetForm(); }}>Cancel</Button>
-                  <Button type="submit">
-                    {editMode ? "Apply Changes" : "Publish Suit"}
+                  <Button type="submit" disabled={savingProduct}>
+                    {savingProduct ? "Saving product..." : editMode ? "Apply Changes" : "Publish Suit"}
                   </Button>
                 </div>
               </form>
@@ -757,6 +811,7 @@ export default function AdminPage() {
                   <Input placeholder="Search catalog..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                 </div>
               </div>
+              {productsLoading && <p className="mb-4 text-sm text-muted">Loading products from database...</p>}
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">

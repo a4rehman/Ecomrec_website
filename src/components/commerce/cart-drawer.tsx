@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X, Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { products } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { closeCartDrawer, removeFromCart, RootState, updateQty } from "@/store/store";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ import { Button } from "@/components/ui/button";
 export function CartDrawer() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { cart, cartDrawerOpen, user } = useSelector((s: RootState) => s.commerce);
+  const { cart, cartDrawerOpen, user, products } = useSelector((s: RootState) => s.commerce);
 
   const lines = cart
     .map((line) => ({ ...line, product: products.find((p) => p.id === line.id)! }))

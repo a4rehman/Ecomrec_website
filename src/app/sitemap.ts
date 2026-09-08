@@ -1,8 +1,12 @@
 import type { MetadataRoute } from "next";
-import { blogPosts, products } from "@/data/products";
+import { blogPosts } from "@/data/products";
 import { SITE_URL } from "@/lib/seo";
+import { listProducts } from "@/lib/product-service";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// Product URLs are read from MySQL at request time; do not require a database while building.
+export const dynamic = "force-dynamic";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: { path: string; priority: number }[] = [
     { path: "", priority: 1 },
     { path: "/shop", priority: 0.9 },
@@ -16,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/order-cancellation", priority: 0.3 }
   ];
 
+  const products = await listProducts();
   const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
     url: `${SITE_URL}/product/${p.slug}`,
     lastModified: new Date(),

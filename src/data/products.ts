@@ -17,6 +17,9 @@ export type Product = {
   stock: number;
   salePrice?: number;
   saleEnd?: string; // ISO date string for countdown
+  status?: "draft" | "published";
+  isActive?: boolean;
+  publishedAt?: string;
 };
 
 // Real Pakistani suit images from public/images
@@ -2925,4 +2928,3 @@ export const blogPosts: BlogPost[] = [
     ]
   }
 ];
-

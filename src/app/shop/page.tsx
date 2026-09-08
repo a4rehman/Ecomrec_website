@@ -1,8 +1,11 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import type { Metadata } from "next";
-import { products } from "@/data/products";
 import { getCategoryMeta } from "@/data/seo-content";
 import { breadcrumbSchema, collectionSchema, SITE_URL } from "@/lib/seo";
 import { ShopContent } from "@/components/commerce/shop-content";
+import { listProducts } from "@/lib/product-service";
 
 type ShopParams = Promise<{ category?: string }>;
 
@@ -39,6 +42,7 @@ export default async function ShopPage({ searchParams }: { searchParams: ShopPar
   const { category } = await searchParams;
   const activeCategory = category || "All";
   const meta = getCategoryMeta(activeCategory);
+  const products = await listProducts();
 
   const count = activeCategory === "All"
     ? products.length

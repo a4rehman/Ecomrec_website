@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { products } from "@/data/products";
 import { BrandLogo } from "@/components/layout/brand-logo";
 
 export const metadata: Metadata = {
@@ -36,7 +35,7 @@ export default function AboutPage() {
           </p>
         </div>
         <div className="lux-sheen relative min-h-[520px] overflow-hidden rounded-[32px]">
-          <Image src={products[1].images[0]} alt="Sawera Collection Atelier" fill sizes="50vw" className="object-cover" />
+          <Image src="/images/hero_lawn.png" alt="Sawera Collection Atelier" fill sizes="50vw" className="object-cover" />
         </div>
       </div>
       <div className="mt-20 grid gap-6 md:grid-cols-3">

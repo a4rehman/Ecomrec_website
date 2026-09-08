@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { products } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
 import { removeFromCart, RootState, updateQty } from "@/store/store";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { Input } from "@/components/ui/input";
 
 export function CartClient({ checkout = false }: { checkout?: boolean }) {
   const dispatch = useDispatch();
-  const cart = useSelector((s: RootState) => s.commerce.cart);
+  const { cart, products } = useSelector((s: RootState) => s.commerce);
   const lines = cart.map((line) => ({ ...line, product: products.find((p) => p.id === line.id)! })).filter((l) => l.product);
   const subtotal = lines.reduce((sum, l) => sum + l.product.price * l.qty, 0);
   const discount = subtotal > 250 ? subtotal * 0.1 : 0;

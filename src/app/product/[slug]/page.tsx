@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { products } from "@/data/products";
+import { Product } from "@/data/products";
 import { ProductDetailClient } from "@/components/commerce/product-detail-client";
 import { breadcrumbSchema, productFaqSchema, productSchema, SITE_URL } from "@/lib/seo";
+import { findProduct } from "@/lib/product-service";
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+
+async function getProductBySlug(slug: string): Promise<Product | null> {
+  return findProduct(slug);
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug);
   if (!product) return { title: "Product Not Found" };
 
-  const image = product.images[0];
-
-  const description = `${product.name} by ${product.brand} — ${product.description} Available in ${product.colors.join(", ")}. ${product.fabric}. Free delivery across Pakistan in 2-4 business days.`;
+  const image = product.images[0] || "/images/hero_lawn.png";
+  const description = `${product.name} by ${product.brand} - ${product.description.slice(0, 150)}. Available in ${product.colors.join(", ")}. ${product.fabric}. Free delivery across Pakistan.`;
 
   return {
     title: `${product.name} | ${product.category} | Sawera Collection`,
@@ -41,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
   const jsonLd = {
