@@ -19,8 +19,10 @@ function publicImages(value: unknown): string[] {
   const images = stringList(value);
   // Never send legacy database-embedded image binaries to a visitor. A
   // migration removes them permanently; this guard keeps responses safe while
-  // a deployment is rolling out.
-  return images.some((image) => image.startsWith("data:image/")) ? ["/images/hero_lawn.png"] : images;
+  // a deployment is rolling out. Keep valid remote images in mixed legacy
+  // rows instead of replacing the whole gallery with a placeholder.
+  const safeImages = images.filter((image) => !image.startsWith("data:image/"));
+  return safeImages.length ? safeImages : ["/images/hero_lawn.png"];
 }
 
 export function toProduct(product: DbProduct): Product {
