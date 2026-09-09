@@ -2,7 +2,7 @@
 
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { ReactNode, useEffect } from "react";
-import { store, RootState, setProducts, setOrders, loginUser, setPriceTier } from "@/store/store";
+import { store, RootState, setProducts, setOrders, loginUser, setPriceTier, setDarkMode } from "@/store/store";
 
 function StateHydrator({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
@@ -18,6 +18,12 @@ function StateHydrator({ children }: { children: ReactNode }) {
       })
       .catch((error) => console.error("Unable to load product catalog:", error));
 
+    try {
+      const storedDarkMode = localStorage.getItem("jahanara_dark_mode");
+      if (storedDarkMode !== null) dispatch(setDarkMode(JSON.parse(storedDarkMode)));
+    } catch (error) {
+      console.error("Failed to parse stored dark mode:", error);
+    }
     try {
       const storedUser = localStorage.getItem("jahanara_user");
       if (storedUser) dispatch(loginUser(JSON.parse(storedUser)));
@@ -37,6 +43,14 @@ function StateHydrator({ children }: { children: ReactNode }) {
       console.error("Failed to parse stored orders:", error);
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      try { localStorage.setItem("jahanara_dark_mode", JSON.stringify(state.darkMode)); }
+      catch (error) { console.error("Failed to persist dark mode:", error); }
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, [state.darkMode]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -71,6 +85,15 @@ function StateHydrator({ children }: { children: ReactNode }) {
 
 function ThemeBoundary({ children }: { children: ReactNode }) {
   const darkMode = useSelector((state: RootState) => state.commerce.darkMode);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
   return <div className={darkMode ? "dark min-h-screen bg-background text-foreground" : "min-h-screen bg-background text-foreground"}>{children}</div>;
 }
 

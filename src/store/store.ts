@@ -62,6 +62,9 @@ const commerceSlice = createSlice({
     toggleDarkMode: (state) => {
       state.darkMode = !state.darkMode;
     },
+    setDarkMode: (state, action: PayloadAction<boolean>) => {
+      state.darkMode = action.payload;
+    },
     clearCart: (state) => {
       state.cart = [];
     },
@@ -110,6 +113,7 @@ export const {
   toggleWishlist,
   viewProduct,
   toggleDarkMode,
+  setDarkMode,
   clearCart,
   setProducts,
   setOrders,

@@ -71,6 +71,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=localStorage.getItem("jahanara_dark_mode");if(d==="true"){document.documentElement.classList.add("dark");}}catch(e){}})();`
+          }}
+        />
         <Providers>
           <Header />
           <CartDrawer />
