@@ -31,7 +31,13 @@ export async function GET(request: NextRequest) {
     const filtered = category && category !== "All"
       ? products.filter((item) => item.category.toLowerCase() === category.toLowerCase())
       : products;
-    return NextResponse.json({ ok: true, products: filtered });
+    // The Hostinger database is geographically distant from some Vercel
+    // regions. Cache public catalog reads at the edge so customers never wait
+    // on that connection; product writes still invalidate the server cache.
+    return NextResponse.json(
+      { ok: true, products: filtered },
+      { headers: includeUnpublished ? {} : { "Cache-Control": "public, max-age=0, s-maxage=60, stale-while-revalidate=600" } },
+    );
   } catch (error) {
     return errorResponse(error, "load");
   }
