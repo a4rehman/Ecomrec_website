@@ -32,7 +32,7 @@ function parseCsv(text: string): Row[] {
 }
 
 function detect(headers: string[]) { return Object.fromEntries(headers.map((header) => {
-  const key = header.toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  const key = header.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
   const found = (Object.keys(aliases) as Exclude<Field, "ignore">[]).find((field) => aliases[field].includes(key));
   return [header, found || "ignore"];
 })) as Record<string, Field>; }
