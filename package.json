@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
     "seed:default-products": "tsx scripts/seed-default-products.ts",
-    "build": "node scripts/ensure-prisma-baseline.mjs && prisma migrate deploy && prisma generate && npm run seed:default-products && next build",
+    "build": "node scripts/ensure-prisma-baseline.mjs && prisma migrate deploy && prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint ."
