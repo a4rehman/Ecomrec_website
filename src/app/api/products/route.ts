@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import type { Product } from "@/data/products";
 import { listProducts, productWriteData, safeDatabaseMessage, toProduct } from "@/lib/product-service";
 import { prisma } from "@/lib/db";
@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
     };
     const created = await prisma.product.create({ data: productWriteData(productInput) });
     revalidateTag("products");
+    revalidatePath("/sitemap.xml");
     return NextResponse.json({ ok: true, product: toProduct(created) }, { status: 201 });
   } catch (error) {
     return errorResponse(error, "save");

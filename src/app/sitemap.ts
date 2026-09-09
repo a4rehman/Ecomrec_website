@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/data/products";
 import { SITE_URL } from "@/lib/seo";
-import { listProducts } from "@/lib/product-service";
+import { prisma } from "@/lib/db";
 
 // Product URLs are read from MySQL at request time; do not require a database while building.
 export const dynamic = "force-dynamic";
@@ -20,10 +20,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/order-cancellation", priority: 0.3 }
   ];
 
-  const products = await listProducts();
+  // Read directly from MySQL so a product added, edited, published, or
+  // removed in the admin panel is reflected in the next sitemap request.
+  const products = await prisma.product.findMany({
+    where: { status: "published", isActive: true },
+    select: { slug: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+  });
   const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
     url: `${SITE_URL}/product/${p.slug}`,
-    lastModified: new Date(),
+    lastModified: p.updatedAt,
     changeFrequency: "weekly",
     priority: 0.8
   }));

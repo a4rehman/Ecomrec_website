@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/db";
 import { requireAdminSession } from "@/lib/admin-session";
 import { productWriteData, toProduct } from "@/lib/product-service";
@@ -82,7 +82,10 @@ export async function POST(request: NextRequest) {
         results.push({ row: index + 1, name, status: "failed", message: "Database save failed. This row was not imported." });
       }
     }
-    if (results.some((result) => result.status === "imported" || result.status === "updated")) revalidateTag("products");
+    if (results.some((result) => result.status === "imported" || result.status === "updated")) {
+      revalidateTag("products");
+      revalidatePath("/sitemap.xml");
+    }
     const summary = { total: results.length, imported: results.filter((r) => r.status === "imported").length, updated: results.filter((r) => r.status === "updated").length, skipped: results.filter((r) => r.status === "skipped").length, failed: results.filter((r) => r.status === "failed").length };
     return NextResponse.json({ ok: true, summary, results });
   } catch (error) {
