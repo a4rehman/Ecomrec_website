@@ -103,11 +103,6 @@ export const productSchema = (product: Product) => ({
         }
       }
     }
-  },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: product.rating,
-    reviewCount: product.reviews
   }
 });
 

@@ -230,7 +230,7 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
       </section>
 
       <FadeIn className="container-lux py-20">
-        <SectionHeading eyebrow="Clients" title="Atelier Reviews" />
+        <SectionHeading eyebrow="Clients" title="Client Testimonials" />
         <div className="grid gap-4 md:grid-cols-3">
           {testimonials.map((t, i) => (
             <motion.blockquote

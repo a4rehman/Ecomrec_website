@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Heart, Star, ZoomIn } from "lucide-react";
+import { Heart, ZoomIn } from "lucide-react";
 import { Product } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
@@ -173,9 +173,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
         <div className="lg:sticky lg:top-32 lg:h-fit">
           <p className="tracked-luxury text-xs text-accent">{product.category}</p>
           <h1 className="mt-3 font-serif text-5xl md:text-7xl">{product.name}</h1>
-          <p className="mt-5 flex items-center gap-1">
-            <Star size={16} fill="currentColor" /> {product.rating} / {product.reviews} reviews
-          </p>
+
           <p className="mt-6 text-2xl font-semibold">
             {formatPrice(product.price)}{" "}
             {product.compareAt && (

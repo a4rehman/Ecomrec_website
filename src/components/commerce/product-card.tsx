@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag, Star } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { motion } from "framer-motion";
 import { Product } from "@/data/products";
@@ -38,7 +38,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div>
           <Link href={`/product/${product.slug}`} className="focus-ring font-medium leading-6 transition hover:text-accent">{product.name}</Link>
           <p className="mt-1 text-xs uppercase tracking-[.12em] text-muted">{product.category}</p>
-          <p className="mt-2 flex items-center gap-1 text-xs text-muted"><Star size={13} fill="currentColor" className="text-accent" /> {product.rating} <span aria-hidden="true">·</span> {product.reviews} reviews</p>
+
           {product.salePrice && product.saleEnd ? (
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-sm line-through text-muted">{formatPrice(product.price)}</span>
