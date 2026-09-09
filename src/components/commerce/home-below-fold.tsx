@@ -34,8 +34,10 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
     return true;
   });
 
-  const bestSellers = getProductsByBadge(products, "Best Seller").length ? getProductsByBadge(products, "Best Seller") : products.slice(0, 8);
-  const celebrityEdit = getProductsByBadge(products, "Celebrity").length ? getProductsByBadge(products, "Celebrity") : products.filter((p) => p.category === "Festive Chiffon").slice(0, 8);
+  // Six cards fit the desktop six-column strip, keeping both collections on
+  // a single polished row instead of leaving a partial second line below.
+  const bestSellers = (getProductsByBadge(products, "Best Seller").length ? getProductsByBadge(products, "Best Seller") : products).slice(0, 6);
+  const celebrityEdit = (getProductsByBadge(products, "Celebrity").length ? getProductsByBadge(products, "Celebrity") : products.filter((p) => p.category === "Festive Chiffon")).slice(0, 6);
   const unstitchedDresses = products.filter((p) => p.sizes.some((size) => size.toLowerCase() === "unstitched")).slice(0, 8);
   const configuredPremiumNewArrivals = products.filter((p) =>
     ["sc_tehwaar_anayra_amal", "sc_amour_bin_ilyas_186a", "sc_amour_bin_ilyas_187b", "sc_push_pawan_zarizaa_titli"].includes(p.id)

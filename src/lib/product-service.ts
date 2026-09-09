@@ -47,7 +47,8 @@ export function productWriteData(input: Omit<Product, "id">): Prisma.ProductUnch
     slug: input.slug, name: input.name.trim(), category: input.category, brand: input.brand,
     price: input.price, compareAt: input.compareAt ?? null, rating: input.rating, reviews: input.reviews,
     badge: input.badge ?? null, colors: JSON.stringify(input.colors), sizes: JSON.stringify(input.sizes),
-    images: JSON.stringify(input.images), description: input.description.trim(), fabric: input.fabric,
+    // A focused five-image gallery keeps product pages fast and easy to browse.
+    images: JSON.stringify(input.images.slice(0, 5)), description: input.description.trim(), fabric: input.fabric,
     stock: input.stock, salePrice: input.salePrice ?? null, saleEnd: input.saleEnd ?? null,
     status: input.status || "published", isActive: input.isActive ?? true,
     publishedAt: input.status === "draft" ? null : input.publishedAt ? new Date(input.publishedAt) : new Date(),
