@@ -20,20 +20,20 @@ export interface HeroPositionConfig {
 
 const SLIDE_DURATION = 7000;
 
-// Default smart clothing-first positions (focusing on neckline, torso, embroidery, and full outfit)
+// Default smart clothing-first positions (anchored at 10%-12% from top to show full head-to-suit silhouette naturally)
 export const DEFAULT_HERO_POSITION: HeroPositionConfig = {
-  desktop: "60% 40%",
-  tablet: "center 38%",
-  mobile: "center 35%",
+  desktop: "65% 12%",
+  tablet: "center 12%",
+  mobile: "center 10%",
 };
 
 // Known custom focal overrides for specific product lines or curated editorial banners
 export const HERO_CUSTOM_POSITIONS: Record<string, Partial<HeroPositionConfig>> = {
-  "zoya-blush-floral-lawn": { desktop: "65% 42%", tablet: "center 40%", mobile: "center 36%" },
-  "celeste-royal-black-peshwas": { desktop: "60% 38%", tablet: "center 38%", mobile: "center 35%" },
-  "sawera-embroidered-lawn-set": { desktop: "65% 40%", tablet: "center 38%", mobile: "center 35%" },
-  "gul-e-noor-festive-peshwas": { desktop: "62% 40%", tablet: "center 38%", mobile: "center 35%" },
-  "chikankari-cotton-kurti": { desktop: "60% 38%", tablet: "center 36%", mobile: "center 35%" },
+  "zoya-blush-floral-lawn": { desktop: "65% 15%", tablet: "center 12%", mobile: "center 10%" },
+  "celeste-royal-black-peshwas": { desktop: "60% 12%", tablet: "center 12%", mobile: "center 10%" },
+  "sawera-embroidered-lawn-set": { desktop: "65% 12%", tablet: "center 12%", mobile: "center 10%" },
+  "gul-e-noor-festive-peshwas": { desktop: "62% 12%", tablet: "center 12%", mobile: "center 10%" },
+  "chikankari-cotton-kurti": { desktop: "60% 12%", tablet: "center 10%", mobile: "center 8%" },
 };
 
 // Known display name overrides for hero products
