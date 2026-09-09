@@ -68,7 +68,7 @@ async function queryProducts(includeUnpublished = false): Promise<Product[]> {
 // visitor's first product request. Product writes invalidate this cache.
 const cachedPublishedProducts = unstable_cache(
   () => queryProducts(false),
-  ["published-products"],
+  ["published-products-v2"],
   { revalidate: 300, tags: ["products"] },
 );
 
