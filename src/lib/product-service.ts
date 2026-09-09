@@ -15,13 +15,21 @@ function stringList(value: unknown): string[] {
   return value.split(",").map((item) => item.trim()).filter(Boolean);
 }
 
+function publicImages(value: unknown): string[] {
+  const images = stringList(value);
+  // Never send legacy database-embedded image binaries to a visitor. A
+  // migration removes them permanently; this guard keeps responses safe while
+  // a deployment is rolling out.
+  return images.some((image) => image.startsWith("data:image/")) ? ["/images/hero_lawn.png"] : images;
+}
+
 export function toProduct(product: DbProduct): Product {
   return {
     id: product.id, slug: product.slug, name: product.name, category: product.category,
     brand: product.brand, price: Number(product.price),
     compareAt: product.compareAt == null ? undefined : Number(product.compareAt),
     rating: Number(product.rating), reviews: product.reviews, badge: product.badge ?? undefined,
-    colors: stringList(product.colors), sizes: stringList(product.sizes), images: stringList(product.images),
+    colors: stringList(product.colors), sizes: stringList(product.sizes), images: publicImages(product.images),
     description: product.description, fabric: product.fabric, stock: product.stock,
     salePrice: product.salePrice == null ? undefined : Number(product.salePrice), saleEnd: product.saleEnd ?? undefined,
     status: product.status === "draft" ? "draft" : "published",
