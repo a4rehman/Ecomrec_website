@@ -7,13 +7,14 @@ import { ProductCard } from "@/components/commerce/product-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/utils";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, setPriceTier } from "@/store/store";
 import type { Product } from "@/data/products";
 import { getCategorySeoContent } from "@/data/seo-content";
 import { search as trackSearch } from "@/lib/metaPixel";
 
 function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
+  const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const catParam = searchParams.get("category");
 
@@ -34,7 +35,7 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
   }, [category, brand]);
 
   // Determine price bounds based on active tier
-  const minLimit = priceTier === "simple" ? 1000 : 5000;
+  const minLimit = 1000;
   const maxLimit = priceTier === "simple" ? 5000 : 100000;
 
   useEffect(() => {
@@ -81,15 +82,23 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
 
   // Filter available categories and brands for dropdown dynamically
   const availableCategories = useMemo(() => {
-    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : p.price < 5000);
+    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : priceTier === "simple" ? p.price < 5000 : true);
     const cats = [...new Set(list.map(p => p.category))];
     return ["Trending", ...cats];
   }, [products, priceTier]);
 
   const availableBrands = useMemo(() => {
-    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : p.price < 5000);
+    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : priceTier === "simple" ? p.price < 5000 : true);
     return [...new Set(list.map(p => p.brand))];
   }, [products, priceTier]);
+
+  const handleResetFilters = () => {
+    dispatch(setPriceTier("all"));
+    setQuery("");
+    setCategory("All");
+    setBrand("All");
+    setMax(100000);
+  };
 
   return (
     <section className="container-lux py-14">
@@ -108,11 +117,11 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
           <label className="mb-4 block text-sm">Category<select className="mt-2 h-11 w-full border border-line bg-background px-3" value={category} onChange={(e) => setCategory(e.target.value)}><option>All</option>{availableCategories.map((c) => <option key={c}>{c}</option>)}</select></label>
           <label className="mb-4 block text-sm">Brand<select className="mt-2 h-11 w-full border border-line bg-background px-3" value={brand} onChange={(e) => setBrand(e.target.value)}><option>All</option>{availableBrands.map((b) => <option key={b}>{b}</option>)}</select></label>
           <label className="mb-4 block text-sm">Max price: {formatPrice(max)}<input type="range" min={minLimit} max={maxLimit} step={priceTier === "simple" ? 200 : 1000} value={max} onChange={(e) => setMax(Number(e.target.value))} className="mt-3 w-full accent-[var(--accent)]" /></label>
-          <Button variant="outline" className="w-full" onClick={() => { setQuery(""); setCategory("All"); setBrand("All"); setMax(maxLimit); }}>Reset</Button>
+          <Button variant="outline" className="w-full" onClick={handleResetFilters}>Reset</Button>
         </aside>
         <div>
           <div className="mb-6 flex items-center justify-between border-b border-line pb-4"><p className="text-sm text-muted">{filtered.length} products</p><select className="h-11 border border-line bg-background px-3" value={sort} onChange={(e) => setSort(e.target.value)}><option value="featured">Featured</option><option value="price-asc">Price low to high</option><option value="price-desc">Price high to low</option></select></div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>{filtered.length === 0 && <div className="premium-surface mt-6 p-8 text-center"><h2 className="font-serif text-3xl">No pieces found</h2><p className="mt-2 text-muted">Try clearing a filter or searching for another style.</p><Button variant="outline" className="mt-5" onClick={() => { setQuery(""); setCategory("All"); setBrand("All"); setMax(maxLimit); }}>Clear filters</Button></div>}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 xl:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>{filtered.length === 0 && <div className="premium-surface mt-6 p-8 text-center"><h2 className="font-serif text-3xl">No pieces found</h2><p className="mt-2 text-muted">Try clearing a filter or searching for another style.</p><Button variant="outline" className="mt-5" onClick={handleResetFilters}>Clear filters</Button></div>}
           <div className="mt-12 flex justify-center gap-2">{[1, 2, 3].map((n) => <button className="h-11 w-11 border border-line hover:bg-foreground hover:text-background" key={n}>{n}</button>)}</div>
 
           {(() => {
