@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true
   },
   images: {
+    // Product photos are hosted on Shopify CDN. Load them directly because
+    // Vercel's optimizer rejects these signed/parameterized image URLs.
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     qualities: [75, 85],
     minimumCacheTTL: 86400,
