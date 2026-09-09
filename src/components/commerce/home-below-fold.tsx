@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ProductCard } from "@/components/commerce/product-card";
 import { ProductStrip } from "@/components/commerce/product-strip";
 import { SectionHeading } from "@/components/commerce/section-heading";
-import { blogPosts, categories, getProductsByBadge, getProductsByCategory, testimonials } from "@/data/products";
+import { blogPosts, getProductsByBadge, testimonials } from "@/data/products";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { Button } from "@/components/ui/button";
@@ -34,12 +34,14 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
     return true;
   });
 
-  const bestSellers = getProductsByBadge(products, "Best Seller");
-  const celebrityEdit = getProductsByBadge(products, "Celebrity");
-  const unstitchedDresses = getProductsByCategory(products, "Unstitched");
-  const premiumNewArrivals = products.filter((p) =>
+  const bestSellers = getProductsByBadge(products, "Best Seller").length ? getProductsByBadge(products, "Best Seller") : products.slice(0, 8);
+  const celebrityEdit = getProductsByBadge(products, "Celebrity").length ? getProductsByBadge(products, "Celebrity") : products.filter((p) => p.category === "Festive Chiffon").slice(0, 8);
+  const unstitchedDresses = products.filter((p) => p.sizes.some((size) => size.toLowerCase() === "unstitched")).slice(0, 8);
+  const configuredPremiumNewArrivals = products.filter((p) =>
     ["sc_tehwaar_anayra_amal", "sc_amour_bin_ilyas_186a", "sc_amour_bin_ilyas_187b", "sc_push_pawan_zarizaa_titli"].includes(p.id)
   );
+  const premiumNewArrivals = configuredPremiumNewArrivals.length ? configuredPremiumNewArrivals : products.slice(4, 8);
+  const collectionCategories = [...new Set(products.map((product) => product.category))].slice(0, 4);
 
   return (
     <>
@@ -133,8 +135,8 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
         </div>
       </FadeIn>
 
-      {products.length > 0 && <section className="container-lux grid gap-4 py-10 md:grid-cols-4">
-        {categories.slice(0, 4).map((cat, i) => (
+      {collectionCategories.length > 0 && <section className="container-lux grid gap-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
+        {collectionCategories.map((cat, i) => (
           <FadeIn key={cat} delay={i * 0.08}>
             <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="lux-sheen group relative block min-h-80 overflow-hidden rounded-3xl bg-neutral-100 shadow-sm">
               <Image
