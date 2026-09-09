@@ -22,6 +22,9 @@ export type Product = {
   publishedAt?: string;
   sku?: string;
   tags?: string[];
+  heroObjectPositionDesktop?: string;
+  heroObjectPositionTablet?: string;
+  heroObjectPositionMobile?: string;
 };
 
 // Real Pakistani suit images from public/images
