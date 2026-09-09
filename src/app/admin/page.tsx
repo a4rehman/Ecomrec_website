@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { RootState, addProduct, updateProduct, deleteProduct, logoutUser, updateOrderStatus, deleteOrder, setOrders, setProducts } from "@/store/store";
@@ -13,8 +14,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingBag, 
-  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp
+  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp, FileUp
 } from "lucide-react";
+
+const CsvProductImporter = dynamic(
+  () => import("@/components/admin/csv-product-importer").then((module) => module.CsvProductImporter),
+  { ssr: false, loading: () => <div className="mb-7 rounded border border-line p-5 text-sm text-muted">Loading CSV import tools…</div> },
+);
 
 export default function AdminPage() {
   const router = useRouter();
@@ -38,6 +44,7 @@ export default function AdminPage() {
   const [showForm, setShowForm] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState("");
+  const [showCsvImport, setShowCsvImport] = useState(false);
 
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Luxury Lawn");
@@ -45,6 +52,8 @@ export default function AdminPage() {
   const [price, setPrice] = useState(0);
   const [compareAt, setCompareAt] = useState(0);
   const [badge, setBadge] = useState("");
+  const [sku, setSku] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
   const [description, setDescription] = useState("");
   const [fabric, setFabric] = useState("Premium Lawn");
   const [stock, setStock] = useState(10);
@@ -232,6 +241,8 @@ export default function AdminPage() {
     setPrice(0);
     setCompareAt(0);
     setBadge("");
+    setSku("");
+    setTagsInput("");
     setDescription("");
     setFabric("Premium Lawn");
     setStock(10);
@@ -255,6 +266,8 @@ export default function AdminPage() {
     setPrice(p.price);
     setCompareAt(p.compareAt || 0);
     setBadge(p.badge || "");
+    setSku(p.sku || "");
+    setTagsInput((p.tags || []).join(", "));
     setDescription(p.description);
     setFabric(p.fabric);
     setStock(p.stock);
@@ -391,6 +404,8 @@ export default function AdminPage() {
       rating: editMode ? products.find(p => p.id === selectedProductId)?.rating || 4.8 : 5.0,
       reviews: editMode ? products.find(p => p.id === selectedProductId)?.reviews || 1 : 1,
       badge: badge || undefined,
+      sku: sku || undefined,
+      tags: tagsInput.split(",").map((tag) => tag.trim()).filter(Boolean),
       colors,
       sizes: sizesSelected.length > 0 ? sizesSelected : ["Unstitched"],
       images: finalImages,
@@ -420,6 +435,7 @@ export default function AdminPage() {
       await fetchProductsFromDb();
       showToast(editMode ? "Product updated successfully!" : "Product added successfully!");
       setShowForm(false);
+      setShowCsvImport(false);
       resetForm();
     } catch (err) {
       console.error("Failed to save product to DB:", err);
@@ -430,9 +446,32 @@ export default function AdminPage() {
   };
 
   const handleLogout = () => {
+    void fetch("/api/auth/logout", { method: "POST" });
     dispatch(logoutUser());
     localStorage.removeItem("jahanara_user");
     router.push("/login");
+  };
+
+  const loadImportedProductIntoForm = (product: Partial<Product>) => {
+    setEditMode(false);
+    setSelectedProductId("");
+    setName(product.name || "");
+    setCategory(product.category || "Luxury Lawn");
+    setBrand(product.brand || "Sawera Collection");
+    setPrice(product.price || 0);
+    setCompareAt(product.compareAt || 0);
+    setBadge(product.badge || "");
+    setSku(product.sku || "");
+    setTagsInput((product.tags || []).join(", "));
+    setDescription(product.description || "");
+    setFabric(product.fabric || "Pure Lawn");
+    setStock(product.stock || 0);
+    setColorsInput((product.colors || []).join(", "));
+    setSizesSelected(product.sizes?.length ? product.sizes : ["Unstitched"]);
+    setImageFiles(product.images || []);
+    setStatus(product.status || "draft");
+    setShowCsvImport(false);
+    showToast("CSV row loaded into the Add Suit form. Review it, then save.");
   };
 
   const filteredProducts = products.filter(p => 
@@ -523,7 +562,7 @@ export default function AdminPage() {
             <span className="flex items-center gap-3"><Shield size={16} /> Privacy & Security</span>
           </button>
           <button
-            onClick={() => { setShowForm(true); setEditMode(false); resetForm(); }}
+            onClick={() => { setShowForm(true); setEditMode(false); resetForm(); setShowCsvImport(false); }}
             className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold border border-dashed border-accent text-accent hover:bg-accent/5 transition mt-4`}
           >
             <span className="flex items-center gap-3"><Plus size={16} /> Add New Suit</span>
@@ -540,7 +579,10 @@ export default function AdminPage() {
                   <ArrowLeft size={20} />
                 </button>
                 <h2 className="font-serif text-4xl">{editMode ? "Edit Creation" : "Publish New Creation"}</h2>
+                {!editMode && <Button type="button" variant="outline" className="ml-auto" onClick={() => setShowCsvImport((visible) => !visible)}><FileUp size={15} /> {showCsvImport ? "Manual Entry" : "Import File"}</Button>}
               </div>
+
+              {showCsvImport && <CsvProductImporter onLoadProduct={loadImportedProductIntoForm} onImported={async () => { await fetchProductsFromDb(); showToast("Database-confirmed import is now synced with admin products."); }} />}
 
               <form onSubmit={handleSaveProduct} className="grid gap-6">
                 <div className="grid gap-6 sm:grid-cols-2">
@@ -586,7 +628,16 @@ export default function AdminPage() {
                     Compare At Price (PKR)
                     <Input className="mt-2" type="number" min="0" value={compareAt || ""} onChange={(e) => setCompareAt(Number(e.target.value))} />
                   </label>
+                  <label className="block text-sm font-medium">
+                    SKU
+                    <Input className="mt-2" placeholder="e.g. ZL-001" value={sku} onChange={(e) => setSku(e.target.value)} />
+                  </label>
                 </div>
+
+                <label className="block text-sm font-medium">
+                  Product Tags (separated by commas)
+                  <Input className="mt-2" placeholder="New, Lawn, Festive" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
+                </label>
 
                 {/* Promotion & Sale Settings */}
                 <div className="grid gap-6 sm:grid-cols-2 border border-line/50 rounded p-4 bg-background/30">

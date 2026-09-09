@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { isValidEmail, normalizeEmail } from "@/lib/auth-validation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { ApiResponse, AuthUser } from "@/types/auth";
+import { adminSessionCookieName, createAdminSession, sessionCookieOptions } from "@/lib/admin-session";
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || "local";
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json<ApiResponse<AuthUser>>({
+    const response = NextResponse.json<ApiResponse<AuthUser>>({
       ok: true,
       message: "Logged in successfully.",
       data: {
@@ -50,6 +51,8 @@ export async function POST(request: NextRequest) {
         role: user.role as any
       }
     });
+    response.cookies.set(adminSessionCookieName, createAdminSession(user), sessionCookieOptions());
+    return response;
   } catch (error) {
     console.error("Login failed:", error);
     return NextResponse.json<ApiResponse>({ ok: false, message: "Login failed. Please try again." }, { status: 500 });

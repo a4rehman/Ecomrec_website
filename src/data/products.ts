@@ -20,6 +20,8 @@ export type Product = {
   status?: "draft" | "published";
   isActive?: boolean;
   publishedAt?: string;
+  sku?: string;
+  tags?: string[];
 };
 
 // Real Pakistani suit images from public/images

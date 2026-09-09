@@ -27,6 +27,8 @@ export function toProduct(product: DbProduct): Product {
     status: product.status === "draft" ? "draft" : "published",
     isActive: product.isActive,
     publishedAt: product.publishedAt?.toISOString(),
+    sku: product.sku ?? undefined,
+    tags: stringList(product.tags),
   };
 }
 
@@ -39,6 +41,7 @@ export function productWriteData(input: Omit<Product, "id">): Prisma.ProductUnch
     stock: input.stock, salePrice: input.salePrice ?? null, saleEnd: input.saleEnd ?? null,
     status: input.status || "published", isActive: input.isActive ?? true,
     publishedAt: input.status === "draft" ? null : input.publishedAt ? new Date(input.publishedAt) : new Date(),
+    sku: input.sku?.trim() || null, tags: input.tags?.length ? JSON.stringify(input.tags) : null,
   };
 }
 

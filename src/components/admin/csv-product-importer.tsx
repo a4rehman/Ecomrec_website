@@ -1,0 +1,68 @@
+"use client";
+
+import { ChangeEvent, useMemo, useState } from "react";
+import { Download, FileUp, Loader2, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Product } from "@/data/products";
+
+type Field = "ignore" | "name" | "description" | "price" | "compareAt" | "category" | "brand" | "sku" | "stock" | "images" | "tags" | "sizes" | "colors" | "fabric" | "badge";
+type Row = Record<string, string>;
+type Draft = Partial<Product> & { name: string; category: string; price: number; images: string[]; sku?: string; tags?: string[]; valid: boolean; errors: string[] };
+
+const fieldLabels: Record<Field, string> = { ignore: "Ignore column", name: "Name", description: "Description", price: "Price", compareAt: "Compare price", category: "Category", brand: "Brand", sku: "SKU", stock: "Stock", images: "Images", tags: "Tags", sizes: "Sizes", colors: "Colors", fabric: "Fabric", badge: "Badge" };
+const aliases: Record<Exclude<Field, "ignore">, string[]> = {
+  name: ["name", "product name", "title", "product title"], description: ["description", "product description", "body html", "details"], price: ["price", "regular price", "variant price", "sale price"], compareAt: ["compare at price", "compare price", "mrp", "original price"], category: ["category", "collection", "product type", "type"], brand: ["brand", "vendor"], sku: ["sku", "variant sku", "product code"], stock: ["stock", "inventory", "inventory qty", "quantity", "variant inventory qty"], images: ["images", "image", "image url", "image link", "image src"], tags: ["tags", "tag"], sizes: ["sizes", "size", "option1 value"], colors: ["colors", "color", "option2 value"], fabric: ["fabric", "material"], badge: ["badge", "ribbon", "label"] };
+const categories = ["Luxury Lawn", "Printed Lawn", "Festive Chiffon", "Everyday Essentials", "Bridal & Couture", "Winter Festive", "Sale", "Unstitched"];
+
+function parseCsv(text: string): Row[] {
+  const records: string[][] = []; let row: string[] = []; let cell = ""; let quoted = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i]; const next = text[i + 1];
+    if (char === '"' && quoted && next === '"') { cell += '"'; i += 1; }
+    else if (char === '"') quoted = !quoted;
+    else if (char === "," && !quoted) { row.push(cell.trim()); cell = ""; }
+    else if ((char === "\n" || char === "\r") && !quoted) { if (char === "\r" && next === "\n") i += 1; row.push(cell.trim()); if (row.some(Boolean)) records.push(row); row = []; cell = ""; }
+    else cell += char;
+  }
+  row.push(cell.trim()); if (row.some(Boolean)) records.push(row);
+  if (quoted || records.length < 2) throw new Error(quoted ? "CSV contains an unclosed quoted value." : "CSV needs a header row and at least one product row.");
+  const headers = records[0].map((header) => header.replace(/^\uFEFF/, "").trim());
+  if (!headers.every(Boolean) || new Set(headers.map((h) => h.toLowerCase())).size !== headers.length) throw new Error("CSV headers must be unique and cannot be empty.");
+  return records.slice(1).map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] || ""])));
+}
+
+function detect(headers: string[]) { return Object.fromEntries(headers.map((header) => {
+  const key = header.toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  const found = (Object.keys(aliases) as Exclude<Field, "ignore">[]).find((field) => aliases[field].includes(key));
+  return [header, found || "ignore"];
+})) as Record<string, Field>; }
+function number(value: string) { const parsed = Number(value.replace(/[^0-9.-]/g, "")); return Number.isFinite(parsed) ? parsed : 0; }
+function list(value: string) { return [...new Set(value.split(/[;,|]/).map((item) => item.trim()).filter(Boolean))]; }
+function normalizedCategory(value: string) { const match = categories.find((category) => category.toLowerCase() === value.trim().toLowerCase()); return match || value.trim() || "Luxury Lawn"; }
+function isImage(value: string) { try { const url = new URL(value); return /^https?:$/.test(url.protocol); } catch { return value.startsWith("/"); } }
+
+export function CsvProductImporter({ onLoadProduct, onImported }: { onLoadProduct: (product: Partial<Product>) => void; onImported: () => Promise<void> | void }) {
+  const [rows, setRows] = useState<Row[]>([]); const [fileName, setFileName] = useState(""); const [mapping, setMapping] = useState<Record<string, Field>>({});
+  const [selected, setSelected] = useState<Set<number>>(new Set()); const [status, setStatus] = useState<"draft" | "published">("draft"); const [duplicateMode, setDuplicateMode] = useState<"skip" | "update">("skip");
+  const [page, setPage] = useState(0); const [message, setMessage] = useState(""); const [importing, setImporting] = useState(false); const [result, setResult] = useState<{ imported: number; updated: number; skipped: number; failed: number; total: number } | null>(null);
+  const drafts = useMemo<Draft[]>(() => rows.map((row) => {
+    const values = Object.fromEntries(Object.entries(mapping).filter(([, field]) => field !== "ignore").map(([header, field]) => [field, row[header]])) as Record<string, string>;
+    const images = list(values.images || ""); const errors: string[] = [];
+    if (!values.name?.trim()) errors.push("Name is required"); if (number(values.price || "") <= 0) errors.push("Price must be positive"); if (!values.category?.trim()) errors.push("Category is required");
+    if (images.some((image) => !isImage(image))) errors.push("One or more image URLs are invalid");
+    return { name: values.name?.trim() || "", description: values.description?.trim() || "", price: number(values.price || ""), compareAt: number(values.compareAt || "") || undefined, category: normalizedCategory(values.category || ""), brand: values.brand?.trim() || "Sawera Collection", sku: values.sku?.trim() || undefined, stock: Math.max(0, Math.trunc(number(values.stock || "0"))), images, tags: list(values.tags || ""), sizes: list(values.sizes || "").length ? list(values.sizes) : ["Unstitched"], colors: list(values.colors || ""), fabric: values.fabric?.trim() || "Pure Lawn", badge: values.badge?.trim() || undefined, valid: errors.length === 0, errors };
+  }), [rows, mapping]);
+  const visible = drafts.slice(page * 20, page * 20 + 20);
+
+  const upload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]; if (!file) return; setMessage(""); setResult(null);
+    if (!file.name.toLowerCase().endsWith(".csv") || file.type && !["text/csv", "application/vnd.ms-excel"].includes(file.type)) { setMessage("Please upload a valid .csv file."); return; }
+    if (file.size === 0 || file.size > 5 * 1024 * 1024) { setMessage("CSV must be between 1 byte and 5 MB."); return; }
+    try { const parsed = parseCsv(await file.text()); if (parsed.length > 1000) throw new Error("CSV supports up to 1,000 products per import."); setRows(parsed); setFileName(file.name); setMapping(detect(Object.keys(parsed[0]))); setSelected(new Set(parsed.map((_, index) => index))); setPage(0); }
+    catch (error) { setRows([]); setMessage(error instanceof Error ? error.message : "CSV could not be read."); }
+  };
+  const downloadTemplate = () => { const csv = "name,description,price,compareAtPrice,category,subCategory,sku,stock,images,tags,status,isFeatured,isBestSeller\nZoya Luxury Lawn,Embroidered three piece lawn suit,8500,10500,Luxury Lawn,Zariwork,ZL-001,10,https://example.com/zoya.jpg,New;Lawn,draft,false,false"; const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); link.download = "sawera-product-import-template.csv"; link.click(); URL.revokeObjectURL(link.href); };
+  const bulkImport = async () => { const chosen = [...selected].map((index) => drafts[index]).filter((draft) => draft.valid); if (!chosen.length) { setMessage("Select at least one ready product."); return; } setImporting(true); setMessage(""); try { const response = await fetch("/api/admin/products/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ products: chosen.map(({ valid, errors, ...product }) => ({ ...product, status })), duplicateMode }) }); const data = await response.json(); if (!response.ok || !data.ok) throw new Error(data.message || "Import failed."); setResult(data.summary); await onImported(); } catch (error) { setMessage(error instanceof Error ? error.message : "Import failed."); } finally { setImporting(false); } };
+
+  return <section className="mb-7 rounded border border-line bg-background/40 p-5"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="tracked-luxury text-xs text-accent">Smart CSV Import</p><p className="mt-1 text-sm text-muted">Map columns, review products, then load one into this form or save a selected batch.</p></div><div className="flex gap-2"><Button type="button" variant="outline" onClick={downloadTemplate}><Download size={15} /> Template</Button><label className="inline-flex cursor-pointer items-center gap-2 rounded bg-foreground px-4 py-2 text-sm font-medium text-background"><FileUp size={15} /> Import File<input type="file" accept=".csv,text/csv" className="sr-only" onChange={upload} /></label></div></div>{message && <p role="alert" className="mt-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{message}</p>}{rows.length > 0 && <div className="mt-5 space-y-5"><div className="rounded border border-line p-4 text-sm"><strong>{fileName}</strong><span className="ml-2 text-muted">{rows.length} rows · {drafts.filter((draft) => draft.valid).length} ready</span><div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{Object.keys(mapping).map((header) => <label key={header} className="text-xs"><span className="block truncate text-muted">{header}</span><select className="mt-1 h-9 w-full border border-line bg-background px-2" value={mapping[header]} onChange={(event) => setMapping({ ...mapping, [header]: event.target.value as Field })}>{(Object.keys(fieldLabels) as Field[]).map((field) => <option key={field} value={field}>{fieldLabels[field]}</option>)}</select></label>)}</div></div><div className="flex flex-wrap items-center gap-3 text-sm"><label><input type="checkbox" checked={selected.size === drafts.length} onChange={(event) => setSelected(event.target.checked ? new Set(drafts.map((_, index) => index)) : new Set())} /> Select all</label><label className="ml-auto">Import as <select className="ml-2 border border-line bg-background p-2" value={status} onChange={(event) => setStatus(event.target.value as typeof status)}><option value="draft">Draft</option><option value="published">Published</option></select></label><label>Duplicates <select className="ml-2 border border-line bg-background p-2" value={duplicateMode} onChange={(event) => setDuplicateMode(event.target.value as typeof duplicateMode)}><option value="skip">Skip</option><option value="update">Update existing</option></select></label></div><div className="overflow-x-auto border border-line"><table className="w-full min-w-[740px] text-left text-sm"><thead className="bg-muted/30 text-xs"><tr><th className="p-3">Select</th><th className="p-3">Product</th><th className="p-3">Price</th><th className="p-3">Category</th><th className="p-3">SKU / Stock</th><th className="p-3">Status</th><th className="p-3" /></tr></thead><tbody>{visible.map((draft, offset) => { const index = page * 20 + offset; return <tr key={index} className="border-t border-line"><td className="p-3"><input type="checkbox" checked={selected.has(index)} onChange={() => setSelected((current) => { const next = new Set(current); next.has(index) ? next.delete(index) : next.add(index); return next; })} /></td><td className="p-3"><div className="font-medium">{draft.name || "Untitled product"}</div>{draft.images[0] && <span className="text-xs text-muted">Image URL detected</span>}</td><td className="p-3">Rs. {draft.price.toLocaleString()}</td><td className="p-3">{draft.category}</td><td className="p-3">{draft.sku || "—"}<span className="block text-xs text-muted">Stock: {draft.stock}</span></td><td className="p-3">{draft.valid ? <span className="text-emerald-700">✓ Ready</span> : <span className="text-red-700">{draft.errors.join(", ")}</span>}</td><td className="p-3"><Button type="button" variant="outline" disabled={!draft.valid} onClick={() => onLoadProduct({ ...draft, status })}>Load into form</Button></td></tr>; })}</tbody></table></div><div className="flex items-center justify-between"><Button type="button" variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button><span className="text-xs text-muted">Page {page + 1} of {Math.max(1, Math.ceil(drafts.length / 20))}</span><Button type="button" variant="outline" disabled={(page + 1) * 20 >= drafts.length} onClick={() => setPage(page + 1)}>Next</Button></div><div className="flex items-center justify-between border-t border-line pt-4"><p className="text-xs text-muted">Only MySQL-confirmed saves count as imported.</p><Button type="button" disabled={importing} onClick={bulkImport}>{importing ? <><Loader2 className="animate-spin" size={15} /> Importing {selected.size} products…</> : <><Upload size={15} /> Import selected ({selected.size})</>}</Button></div>{result && <p className="rounded border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">Import complete — {result.imported} added, {result.updated} updated, {result.skipped} skipped, {result.failed} failed (of {result.total}).</p>}</div>}</section>;
+}
