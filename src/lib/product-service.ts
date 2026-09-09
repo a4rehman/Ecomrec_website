@@ -25,9 +25,31 @@ function publicImages(value: unknown): string[] {
   return safeImages.length ? safeImages : ["/images/hero_lawn.png"];
 }
 
+function normalizeProductName(name: string): string {
+  const trimmed = name.trim();
+  const upper = trimmed.toUpperCase();
+  if (
+    upper === "JAZERA EMBROIDERED 3PC" ||
+    upper === "JAZIRA EMBROIDERED 3PC" ||
+    upper === "JAZERA EMBROIDERED 3 PC" ||
+    upper === "JAZIRA EMBROIDERED 3 PC" ||
+    upper === "JAZERA EMBROIDERED" ||
+    upper === "JAZIRA EMBROIDERED"
+  ) {
+    return "dilara-purple-heart";
+  }
+  if (upper === "NAGMA") {
+    return "DILARA";
+  }
+  if (upper === "FALAK") {
+    return "ELAAN";
+  }
+  return trimmed;
+}
+
 export function toProduct(product: DbProduct): Product {
   return {
-    id: product.id, slug: product.slug, name: product.name, category: product.category,
+    id: product.id, slug: product.slug, name: normalizeProductName(product.name), category: product.category,
     brand: product.brand, price: Number(product.price),
     compareAt: product.compareAt == null ? undefined : Number(product.compareAt),
     rating: Number(product.rating), reviews: product.reviews, badge: product.badge ?? undefined,

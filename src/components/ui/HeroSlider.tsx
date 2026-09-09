@@ -36,6 +36,30 @@ export const HERO_CUSTOM_POSITIONS: Record<string, Partial<HeroPositionConfig>> 
   "chikankari-cotton-kurti": { desktop: "60% 38%", tablet: "center 36%", mobile: "center 35%" },
 };
 
+// Known display name overrides for hero products
+export const PRODUCT_NAME_DISPLAY_OVERRIDES: Record<string, string> = {
+  "JAZERA EMBROIDERED 3PC": "dilara-purple-heart",
+  "JAZIRA EMBROIDERED 3PC": "dilara-purple-heart",
+  "JAZERA EMBROIDERED 3 PC": "dilara-purple-heart",
+  "JAZIRA EMBROIDERED 3 PC": "dilara-purple-heart",
+  "JAZERA EMBROIDERED": "dilara-purple-heart",
+  "JAZIRA EMBROIDERED": "dilara-purple-heart",
+  "NAGMA": "DILARA",
+  "FALAK": "ELAAN",
+  "jazera-embroidered-3pc": "dilara-purple-heart",
+  "jazira-embroidered-3pc": "dilara-purple-heart",
+  "nagma": "DILARA",
+  "falak": "ELAAN",
+};
+
+export function getSlideDisplayName(slide: Product): string {
+  const byName = PRODUCT_NAME_DISPLAY_OVERRIDES[slide.name.trim().toUpperCase()] || PRODUCT_NAME_DISPLAY_OVERRIDES[slide.name.trim()];
+  if (byName) return byName;
+  const bySlug = PRODUCT_NAME_DISPLAY_OVERRIDES[slide.slug.toLowerCase()];
+  if (bySlug) return bySlug;
+  return slide.name;
+}
+
 export function getSlidePosition(slide: Product): HeroPositionConfig {
   const custom =
     slide.heroObjectPositionDesktop || slide.heroObjectPositionMobile
@@ -178,7 +202,7 @@ export function HeroSlider({ products }: HeroSliderProps) {
           >
             <Image
               src={slide.images[0]}
-              alt={`${slide.name} - ${slide.category} by Sawera Collection`}
+              alt={`${getSlideDisplayName(slide)} - ${slide.category} by Sawera Collection`}
               fill
               priority={current === 0}
               fetchPriority={current === 0 ? "high" : "auto"}
@@ -219,7 +243,7 @@ export function HeroSlider({ products }: HeroSliderProps) {
               {slide.category} — {slide.brand}
             </motion.p>
             <motion.h1 variants={textChildVariants} className="mt-3 font-serif text-5xl leading-none sm:text-6xl md:text-8xl">
-              {slide.name}
+              {getSlideDisplayName(slide)}
             </motion.h1>
             <motion.p variants={textChildVariants} className="brand-script mt-4 text-lg text-white/90">
               Made for Her. Inspired by Grace
