@@ -36,7 +36,7 @@ function normalizeProductName(name: string): string {
     upper === "JAZERA EMBROIDERED" ||
     upper === "JAZIRA EMBROIDERED"
   ) {
-    return "dilara-purple-heart";
+    return "JAZERA";
   }
   if (upper === "NAGMA") {
     return "DILARA";

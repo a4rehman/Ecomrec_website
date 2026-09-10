@@ -12,6 +12,7 @@ import { RootState, setPriceTier } from "@/store/store";
 import type { Product } from "@/data/products";
 import { getCategorySeoContent } from "@/data/seo-content";
 import { search as trackSearch } from "@/lib/metaPixel";
+import { CollectionSwitcher } from "@/components/layout/collection-switcher";
 
 function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
   const dispatch = useDispatch();
@@ -102,14 +103,20 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
 
   return (
     <section className="container-lux py-14">
-      <div className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+      <div className="mb-10 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
         <div>
           <p className="tracked-luxury text-xs text-accent">Shop</p>
-          <h1 className="font-serif text-6xl">
+          <h1 className="font-serif text-5xl md:text-6xl">
             {priceTier === "premium" ? "Luxury Atelier" : priceTier === "simple" ? "Everyday Essentials" : "Collections"}
           </h1>
         </div>
-        <div className="relative max-w-md flex-1"><Search className="absolute left-3 top-3.5 text-muted" size={18} /><Input placeholder="Search products" className="pl-10" value={query} onChange={(e) => setQuery(e.target.value)} /></div>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1 lg:max-w-xl lg:justify-end">
+          <CollectionSwitcher />
+          <div className="relative max-w-xs flex-1">
+            <Search className="absolute left-3 top-3.5 text-muted" size={18} />
+            <Input placeholder="Search products" className="pl-10" value={query} onChange={(e) => setQuery(e.target.value)} />
+          </div>
+        </div>
       </div>
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         <aside className="glass h-fit p-5">

@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, toggleDarkMode, logoutUser } from "@/store/store";
 import { categories } from "@/data/products";
-import { CollectionSwitcher } from "./collection-switcher";
 import AnnouncementMarquee from "@/components/ui/AnnouncementMarquee";
 
 export function Header() {
@@ -41,7 +40,6 @@ export function Header() {
         <AnnouncementMarquee />
       </div>
 
-      <CollectionSwitcher />
       {/* Main navigation bar */}
       <header className="sticky top-0 z-40 border-b border-line bg-background/88 backdrop-blur-xl transition-all duration-300">
         {/* Subtle scroll progress indicator */}

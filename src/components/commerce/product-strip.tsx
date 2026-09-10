@@ -51,7 +51,7 @@ export function ProductStrip({
               <h3 className="mt-3 line-clamp-2 text-center text-sm font-semibold leading-snug transition group-hover:text-accent">
                 {product.name}
               </h3>
-              {showFabric && (
+              {showFabric && product.fabric && product.fabric.toLowerCase() !== "not specified" && (
                 <p className="mt-1 text-center text-xs text-muted">{product.fabric}</p>
               )}
             </Link>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import type { Product } from "@/data/products";
 import { findProduct, productWriteData, safeDatabaseMessage, toProduct } from "@/lib/product-service";
+import { requireAdminSession } from "@/lib/admin-session";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -12,11 +13,16 @@ function failure(error: unknown, action: string) {
   return NextResponse.json({ ok: false, error: `Failed to ${action} product`, message: safeDatabaseMessage(error) }, { status: 500 });
 }
 
-export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const product = await findProduct(id, true);
-    return product ? NextResponse.json({ ok: true, product }) : NextResponse.json({ ok: false, message: "Product not found" }, { status: 404 });
+    if (!product) return NextResponse.json({ ok: false, message: "Product not found" }, { status: 404 });
+    const isPublic = product.status !== "draft" && product.isActive !== false;
+    if (!isPublic && !requireAdminSession(request)) {
+      return NextResponse.json({ ok: false, message: "Product not found" }, { status: 404 });
+    }
+    return NextResponse.json({ ok: true, product });
   } catch (error) {
     return failure(error, "load");
   }
@@ -24,6 +30,9 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!requireAdminSession(request)) {
+      return NextResponse.json({ ok: false, message: "Administrator authentication is required." }, { status: 401 });
+    }
     const { id } = await params;
     const existing = await findProduct(id, true);
     if (!existing) return NextResponse.json({ ok: false, message: "Product not found" }, { status: 404 });
@@ -46,8 +55,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    if (!requireAdminSession(request)) {
+      return NextResponse.json({ ok: false, message: "Administrator authentication is required." }, { status: 401 });
+    }
     const { id } = await params;
     const product = await findProduct(id, true);
     if (!product) return NextResponse.json({ ok: false, message: "Product not found" }, { status: 404 });

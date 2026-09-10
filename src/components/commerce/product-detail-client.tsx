@@ -268,9 +268,11 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
             Buy Now
           </Button>
           <div className="mt-8 border-t border-line pt-6 text-sm leading-7 text-muted">
-            <p>Fabric: {product.fabric}</p>
+            {product.fabric && product.fabric.toLowerCase() !== "not specified" && (
+              <p>Fabric: {product.fabric}</p>
+            )}
             <p>Stock: {product.stock} pieces available</p>
-            <p>Shipping: 2-4 business days (unstiched) / 9-14 days (stitched)</p>
+            <p>Shipping: 2-4 business days (unstitched) / 9-14 days (stitched)</p>
             <p>
               <Link href="/shop" className="text-accent underline">View all {product.category}</Link>
             </p>
@@ -281,7 +283,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
             <dl className="grid gap-3 text-sm">
               <div className="grid grid-cols-[110px_1fr] gap-2">
                 <dt className="text-muted">Fabric</dt>
-                <dd className="text-foreground">{product.fabric}</dd>
+                <dd className="text-foreground">{product.fabric && product.fabric.toLowerCase() !== "not specified" ? product.fabric : "Premium lawn / chiffon"}</dd>
               </div>
               <div className="grid grid-cols-[110px_1fr] gap-2">
                 <dt className="text-muted">Design</dt>

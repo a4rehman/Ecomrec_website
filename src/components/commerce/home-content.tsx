@@ -13,7 +13,7 @@ const HomeBelowFold = dynamic(() => import("@/components/commerce/home-below-fol
 });
 
 const MARQUEE_TEXT =
-  "SAWERA COLLECTION Â· MADE FOR HER. INSPIRED BY GRACE Â· NEW ARRIVALS Â· MODEST FASHION Â· BLUSH EDITS Â· PREMIUM PRET Â· FESTIVE FORMALS Â· ";
+  "SAWERA COLLECTION · MADE FOR HER. INSPIRED BY GRACE · NEW ARRIVALS · MODEST FASHION · BLUSH EDITS · PREMIUM PRET · FESTIVE FORMALS · ";
 
 export function HomeContent({ initialProducts }: { initialProducts: Product[] }) {
   const { priceTier } = useSelector((state: RootState) => state.commerce);
