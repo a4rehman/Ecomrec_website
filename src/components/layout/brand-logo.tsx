@@ -11,17 +11,17 @@ type BrandLogoProps = {
 
 export function BrandLogo({ className, imageClassName, showTagline = false, href = "/" }: BrandLogoProps) {
   const logo = (
-    <div className={cn("flex flex-col items-center", className)}>
+    <div className={cn("flex flex-col items-start", className)}>
       <Image
         src="/sawera-logo.webp"
         alt="Sawera Collection"
-        width={853}
-        height={1280}
+        width={1200}
+        height={1200}
         priority
-        className={cn("h-auto w-40 object-contain md:w-52", imageClassName)}
+        className={cn("h-auto w-44 object-contain md:w-48", imageClassName)}
       />
       {showTagline && (
-        <p className="font-serif mt-2 text-center text-sm italic tracking-[.08em] text-muted">
+        <p className="font-serif mt-2 text-left text-xs italic tracking-[.08em] text-muted">
           Made for Her. Inspired by Grace
         </p>
       )}

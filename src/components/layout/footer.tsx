@@ -8,8 +8,8 @@ export function Footer() {
     <footer className="mt-24 border-t border-line bg-panel/60 py-14 backdrop-blur-sm">
       <div className="container-lux grid gap-12 md:grid-cols-[1.15fr_0.7fr_1fr_1.1fr]">
         <section>
-          <BrandLogo className="items-start" imageClassName="w-48" showTagline />
-          <p className="mt-6 max-w-sm leading-8 text-muted">A luxury feminine fashion house for women, girls, modest fashion buyers, and premium clothing customers.</p>
+          <BrandLogo className="items-start" imageClassName="w-48" />
+          <p className="mt-4 max-w-sm leading-8 text-muted">A luxury feminine fashion house for women, girls, modest fashion buyers, and premium clothing customers.</p>
           <div className="mt-7 flex gap-3 text-accent" aria-label="Sawera Collection on social media">
             <a href="https://www.instagram.com/saweracollection" target="_blank" rel="noopener noreferrer" aria-label="Sawera Collection on Instagram" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="Instagram"><Share2 size={18} /></a>
             <a href="https://wa.me/923066378857" target="_blank" rel="noopener noreferrer" aria-label="Chat with Sawera Collection on WhatsApp" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="WhatsApp"><MessageCircle size={18} /></a>
