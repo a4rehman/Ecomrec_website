@@ -48,26 +48,27 @@ export function Header() {
           style={{ width: `${scrollProgress}%` }}
         />
 
-        <div className="container-lux grid h-20 md:h-24 grid-cols-3 items-center overflow-visible">
+        <div className="container-lux grid h-16 sm:h-20 md:h-24 grid-cols-3 items-center overflow-visible">
           <button
             onClick={() => setOpen(true)}
-            className="focus-ring flex items-center gap-3 justify-self-start text-sm uppercase tracking-wide transition duration-300 hover:text-accent hover:scale-105"
+            className="focus-ring flex items-center gap-1.5 sm:gap-3 justify-self-start text-xs sm:text-sm uppercase tracking-wide transition duration-300 hover:text-accent hover:scale-105 min-h-[44px] min-w-[44px]"
             aria-label="Open navigation menu"
             aria-expanded={open}
             aria-controls="site-navigation"
           >
-            <Menu size={22} strokeWidth={1.6} /> Menu
+            <Menu size={20} className="sm:size-[22px]" strokeWidth={1.6} />
+            <span className="hidden xs:inline sm:inline">Menu</span>
           </button>
 
-          <Link href="/" className="justify-self-center flex flex-col items-center text-center transition duration-500 hover:opacity-90">
-            <span className="block font-serif text-4xl tracking-[.28em]">SAWERA</span>
-            <span className="tracked-luxury block text-[10px] text-gray-600">COLLECTION</span>
-            <span className="block text-[9px] italic text-gray-600 mt-1 font-serif tracking-widest">Made for Her. Inspired by Grace</span>
+          <Link href="/" className="justify-self-center flex flex-col items-center text-center transition duration-500 hover:opacity-90 max-w-full px-1">
+            <span className="block font-serif text-2xl sm:text-3xl md:text-4xl tracking-[.16em] sm:tracking-[.28em] truncate">SAWERA</span>
+            <span className="tracked-luxury block text-[8px] sm:text-[10px] text-gray-600">COLLECTION</span>
+            <span className="hidden sm:block text-[9px] italic text-gray-600 mt-0.5 font-serif tracking-widest">Made for Her. Inspired by Grace</span>
           </Link>
 
-          <nav className="flex items-center gap-5 justify-self-end">
-            <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/shop" aria-label="Search products">
-              <Search strokeWidth={1.7} />
+          <nav className="flex items-center gap-3 sm:gap-5 justify-self-end">
+            <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent p-2" href="/shop" aria-label="Search products">
+              <Search strokeWidth={1.7} size={20} />
             </Link>
 
             {user ? (
@@ -96,27 +97,27 @@ export function Header() {
                 </button>
               </div>
             ) : (
-              <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/login" aria-label="Login or create account">
-                <User strokeWidth={1.7} />
+              <Link className="hidden sm:block transition duration-300 hover:scale-110 hover:text-accent p-2" href="/login" aria-label="Login or create account">
+                <User strokeWidth={1.7} size={20} />
               </Link>
             )}
 
-            <Link className="relative hidden sm:block transition duration-300 hover:scale-110 hover:text-accent" href="/wishlist" aria-label={`Wishlist, ${wishlist.length} items`}>
-              <Heart strokeWidth={1.7} />
+            <Link className="relative hidden sm:block transition duration-300 hover:scale-110 hover:text-accent p-2" href="/wishlist" aria-label={`Wishlist, ${wishlist.length} items`}>
+              <Heart strokeWidth={1.7} size={20} />
               {wishlist.length > 0 && (
-                <b className="absolute -right-2 -top-2 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{wishlist.length}</b>
+                <b className="absolute right-0 top-0 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{wishlist.length}</b>
               )}
             </Link>
 
-            <Link className="relative transition duration-300 hover:scale-110 hover:text-accent" href="/cart" aria-label={`Shopping bag, ${cart.length} items`}>
-              <ShoppingBag strokeWidth={1.7} />
+            <Link className="relative transition duration-300 hover:scale-110 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" href="/cart" aria-label={`Shopping bag, ${cart.length} items`}>
+              <ShoppingBag strokeWidth={1.7} size={20} />
               {cart.length > 0 && (
-                <b className="absolute -right-2 -top-2 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{cart.length}</b>
+                <b className="absolute right-0.5 top-0.5 text-[10px] bg-accent text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px]">{cart.length}</b>
               )}
             </Link>
 
-            <button className="focus-ring transition duration-300 hover:scale-110 hover:text-accent" onClick={() => dispatch(toggleDarkMode())} aria-label="Toggle dark mode">
-              {darkMode ? <Sun strokeWidth={1.7} /> : <Moon strokeWidth={1.7} />}
+            <button className="focus-ring transition duration-300 hover:scale-110 hover:text-accent p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" onClick={() => dispatch(toggleDarkMode())} aria-label="Toggle dark mode">
+              {darkMode ? <Sun strokeWidth={1.7} size={20} /> : <Moon strokeWidth={1.7} size={20} />}
             </button>
           </nav>
         </div>

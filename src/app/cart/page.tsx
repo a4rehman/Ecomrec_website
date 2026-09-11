@@ -9,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function CartPage() {
-  return <section className="container-lux py-14"><h1 className="mb-10 font-serif text-6xl">Shopping Bag</h1><CartClient /></section>;
+  return (
+    <section className="container-lux py-10 sm:py-14">
+      <h1 className="mb-6 sm:mb-10 font-serif text-4xl sm:text-6xl">Shopping Bag</h1>
+      <CartClient />
+    </section>
+  );
 }

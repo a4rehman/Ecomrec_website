@@ -275,9 +275,9 @@ export default function CheckoutPage() {
   }
 
   return (
-    <section className="container-lux py-14">
-      <h1 className="mb-10 font-serif text-6xl">Checkout</h1>
-      <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+    <section className="container-lux py-10 sm:py-14">
+      <h1 className="mb-6 sm:mb-10 font-serif text-4xl sm:text-6xl">Checkout</h1>
+      <div className="grid gap-8 lg:gap-10 lg:grid-cols-[1.2fr_0.8fr]">
         <form className="grid gap-4" onSubmit={handlePlaceOrder}>
           <h2 className="tracked-luxury mb-2 text-sm">Shipping Address</h2>
           {error && (

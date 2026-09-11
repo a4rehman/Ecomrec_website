@@ -36,7 +36,7 @@ export function ElevenLabsAgent() {
       */}
       <div
         aria-label="AI Shopping Assistant"
-        className="fixed bottom-6 right-6 z-40"
+        className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-40 max-w-[calc(100vw-24px)] scale-90 sm:scale-100 origin-bottom-right"
       >
         <elevenlabs-convai agent-id={AGENT_ID} />
       </div>

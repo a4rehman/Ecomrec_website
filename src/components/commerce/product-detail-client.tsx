@@ -141,46 +141,46 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
           { name: product.name, href: `/product/${product.slug}` }
         ]}
       />
-      <div className="grid gap-10 lg:grid-cols-[1.15fr_.85fr]">
-        <div className="grid gap-4 md:grid-cols-[96px_1fr]">
-          <div className="order-2 flex gap-3 md:order-1 md:flex-col">
+      <div className="grid gap-8 lg:gap-10 lg:grid-cols-[1.15fr_.85fr] min-w-0">
+        <div className="grid gap-4 md:grid-cols-[96px_1fr] min-w-0">
+          <div className="order-2 flex gap-2.5 overflow-x-auto max-w-full pb-2 no-scrollbar md:order-1 md:flex-col md:overflow-visible md:pb-0">
             {product.images.map((src) => (
               <button
-                className={`focus-ring relative aspect-square w-24 overflow-hidden border ${image === src ? "border-accent ring-1 ring-accent" : "border-line"}`}
+                className={`focus-ring relative aspect-square w-16 sm:w-20 md:w-24 shrink-0 overflow-hidden border transition ${image === src ? "border-accent ring-1 ring-accent" : "border-line"}`}
                 aria-label={`View ${product.name} image`}
                 aria-pressed={image === src}
                 onClick={() => handleImageClick(src)}
                 key={src}
               >
-                <Image src={src} alt={productImageAlt(product)} fill sizes="96px" className="object-cover" />
+                <Image src={src} alt={productImageAlt(product)} fill sizes="(max-width: 768px) 80px, 96px" className="object-cover" />
               </button>
             ))}
           </div>
-          <div className="relative order-1 aspect-[4/5] overflow-hidden bg-neutral-100 md:order-2">
+          <div className="relative order-1 aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden bg-neutral-100 md:order-2">
             <Image
               src={image}
               alt={productImageAlt(product)}
               fill
               priority
-              sizes="60vw"
-              className="object-cover transition duration-500 hover:scale-110"
+              sizes="(max-width: 768px) 100vw, 55vw"
+              className="object-cover transition duration-500 hover:scale-105"
             />
-            <span className="glass absolute bottom-5 right-5 flex items-center gap-2 px-4 py-3 text-sm">
-              <ZoomIn size={16} /> Hover to zoom
+            <span className="glass absolute bottom-3 right-3 sm:bottom-5 sm:right-5 flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm">
+              <ZoomIn size={15} /> Hover to zoom
             </span>
           </div>
         </div>
-        <div className="lg:sticky lg:top-32 lg:h-fit">
+        <div className="min-w-0 lg:sticky lg:top-32 lg:h-fit">
           <p className="tracked-luxury text-xs text-accent">{product.category}</p>
-          <h1 className="mt-3 font-serif text-5xl md:text-7xl">{product.name}</h1>
+          <h1 className="mt-3 font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl break-words leading-tight">{product.name}</h1>
 
-          <p className="mt-6 text-2xl font-semibold">
+          <p className="mt-4 sm:mt-6 text-xl sm:text-2xl font-semibold">
             {formatPrice(product.price)}{" "}
             {product.compareAt && (
-              <s className="ml-2 text-base text-muted">{formatPrice(product.compareAt)}</s>
+              <s className="ml-2 text-base font-normal text-muted">{formatPrice(product.compareAt)}</s>
             )}
           </p>
-          <p className="mt-6 leading-8 text-muted">{product.description}</p>
+          <p className="mt-4 sm:mt-6 text-sm sm:text-base leading-7 sm:leading-8 text-muted break-words">{product.description}</p>
 
           <div className="mt-8">
             <p className="mb-3 tracked-luxury text-xs">Color</p>
@@ -253,16 +253,22 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
             </div>
           )}
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_auto]">
-            <Button onClick={() => { dispatch(addToCart({ id: product.id, qty: 1, size, color })); dispatch(openCartDrawer()); }}>
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <Button
+              className="flex-1 min-h-[44px]"
+              onClick={() => {
+                dispatch(addToCart({ id: product.id, qty: 1, size, color }));
+                dispatch(openCartDrawer());
+              }}
+            >
               Add to Cart
             </Button>
-            <Button variant="outline" onClick={() => dispatch(toggleWishlist(product.id))}>
+            <Button variant="outline" onClick={() => dispatch(toggleWishlist(product.id))} className="min-h-[44px]">
               <Heart size={16} fill={wished ? "currentColor" : "none"} /> Wishlist
             </Button>
           </div>
           <Button
-            className="mt-3 w-full bg-accent border-accent text-white hover:bg-foreground"
+            className="mt-3 w-full bg-accent border-accent text-white hover:bg-foreground min-h-[44px]"
             onClick={() => { dispatch(addToCart({ id: product.id, qty: 1, size, color })); dispatch(openCartDrawer()); }}
           >
             Buy Now
@@ -281,38 +287,38 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
           <div className="mt-8 border-t border-line pt-6">
             <h2 className="tracked-luxury text-xs text-accent font-semibold mb-4">Product Details &amp; Care</h2>
             <dl className="grid gap-3 text-sm">
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                <dt className="text-muted">Fabric</dt>
-                <dd className="text-foreground">{product.fabric && product.fabric.toLowerCase() !== "not specified" ? product.fabric : "Premium lawn / chiffon"}</dd>
+              <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-1 sm:gap-2">
+                <dt className="text-muted font-medium">Fabric</dt>
+                <dd className="text-foreground break-words">{product.fabric && product.fabric.toLowerCase() !== "not specified" ? product.fabric : "Premium lawn / chiffon"}</dd>
               </div>
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                <dt className="text-muted">Design</dt>
-                <dd className="text-foreground">{product.description}</dd>
+              <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-1 sm:gap-2">
+                <dt className="text-muted font-medium">Design</dt>
+                <dd className="text-foreground break-words">{product.description}</dd>
               </div>
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                <dt className="text-muted">Colors</dt>
-                <dd className="text-foreground">{product.colors.join(", ")}</dd>
+              <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-1 sm:gap-2">
+                <dt className="text-muted font-medium">Colors</dt>
+                <dd className="text-foreground break-words">{product.colors.join(", ")}</dd>
               </div>
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                <dt className="text-muted">Occasion</dt>
-                <dd className="text-foreground">{getProductOccasion(product.category)}</dd>
+              <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-1 sm:gap-2">
+                <dt className="text-muted font-medium">Occasion</dt>
+                <dd className="text-foreground break-words">{getProductOccasion(product.category)}</dd>
               </div>
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                <dt className="text-muted">Season</dt>
-                <dd className="text-foreground">{getProductSeason(product.category)}</dd>
+              <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-1 sm:gap-2">
+                <dt className="text-muted font-medium">Season</dt>
+                <dd className="text-foreground break-words">{getProductSeason(product.category)}</dd>
               </div>
-              <div className="grid grid-cols-[110px_1fr] gap-2">
-                <dt className="text-muted">Care</dt>
-                <dd className="text-foreground">Dry clean only. Store in breathable cotton fabric to protect embroidery. Avoid direct sunlight and harsh detergents.</dd>
+              <div className="grid grid-cols-1 sm:grid-cols-[110px_1fr] gap-1 sm:gap-2">
+                <dt className="text-muted font-medium">Care</dt>
+                <dd className="text-foreground break-words">Dry clean only. Store in breathable cotton fabric to protect embroidery. Avoid direct sunlight and harsh detergents.</dd>
               </div>
             </dl>
           </div>
         </div>
       </div>
-      <section className="mt-20">
-        <h2 className="font-serif text-5xl">Related Products</h2>
-        <p className="mt-2 text-muted">More {product.category} suits and similar styles from the Sawera Collection.</p>
-        <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
+      <section className="mt-14 sm:mt-20">
+        <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl">Related Products</h2>
+        <p className="mt-2 text-xs sm:text-sm text-muted">More {product.category} suits and similar styles from the Sawera Collection.</p>
+        <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           {relatedProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -320,9 +326,9 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
       </section>
 
       {recentlyViewed.length > 0 && (
-        <section className="mt-20">
-          <h2 className="font-serif text-5xl">Recently Viewed</h2>
-          <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
+        <section className="mt-14 sm:mt-20">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl">Recently Viewed</h2>
+          <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
             {recentlyViewed.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

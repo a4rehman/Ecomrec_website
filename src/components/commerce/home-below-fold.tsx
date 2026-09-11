@@ -90,7 +90,7 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
 
       <FadeIn className="container-lux py-16">
         <SectionHeading eyebrow="Just In" title="Premium New Arrivals" />
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-8">
           {premiumNewArrivals.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -130,7 +130,7 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
           title="The Grace Edit"
           text="Explore soft silhouettes, premium fabrics, and delicate detailing designed for modern women and girls who love refined fashion."
         />
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-8">
           {filteredProducts.slice(0, 4).map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
