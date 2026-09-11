@@ -17,12 +17,15 @@ import { CheckCircle2, RotateCcw, ShoppingBag, Truck } from "lucide-react";
 export default function CheckoutPage() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { cart, products, user } = useSelector((s: RootState) => s.commerce);
+  const { cart, products, user, coupon } = useSelector((s: RootState) => s.commerce);
 
   const subtotal = cart.reduce((acc, item) => {
     const p = products.find((prod) => prod.id === item.id);
     return acc + (p ? p.price * item.qty : 0);
   }, 0);
+
+  const discountAmount = coupon ? Math.round((subtotal * coupon.discountPercent) / 100) : 0;
+  const grandTotal = Math.max(0, subtotal - discountAmount);
 
   // Meta `InitiateCheckout` — fire once when the visitor reaches checkout
   const checkoutTracked = useRef(false);
@@ -55,6 +58,7 @@ export default function CheckoutPage() {
   const [cardCvc, setCardCvc] = useState("");
 
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedId, setGeneratedId] = useState("");
   const [error, setError] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
@@ -84,7 +88,7 @@ export default function CheckoutPage() {
       customerPhone: phone,
       orderId,
       products: orderedProducts,
-      totalAmount: subtotal,
+      totalAmount: grandTotal,
       shippingAddress: `${address}, ${city}, ${zip}`,
       dateTime: new Date().toLocaleString(),
       actionType
@@ -93,6 +97,8 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setError("");
     setEmailMessage("");
     setRequestMessage("");
@@ -118,61 +124,78 @@ export default function CheckoutPage() {
       return;
     }
 
-    const orderId = `JHN-${Math.floor(100000 + Math.random() * 900000)}`;
-    const newOrder = {
-      id: orderId,
-      items: cart,
-      total: subtotal,
-      name,
-      email,
-      address,
-      city,
-      zip,
-      phone,
-      date: new Date().toLocaleDateString(),
-      status: "Processing"
-    };
+    setIsSubmitting(true);
 
-    const notificationData = buildOrderNotificationData(orderId, "Placed");
-
-    dispatch(createOrder(newOrder));
-    setPlacedOrderNotificationData(notificationData);
-
-    // Save order to Hostinger MySQL Database
     try {
-      await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...newOrder,
-          method: payMethod,
-          items: cart.map((item) => {
-            const product = products.find((prod) => prod.id === item.id);
-            return {
-              id: item.id,
-              name: product?.name || "Product",
-              qty: item.qty,
-              size: item.size,
-              color: item.color,
-              price: product?.price || 0
-            };
-          })
-        })
-      });
-    } catch (err) {
-      console.error("Failed to save order to database:", err);
-    }
+      const orderId = `SAW-${Math.floor(100000 + Math.random() * 900000)}`;
+      const newOrder = {
+        id: orderId,
+        items: cart,
+        total: grandTotal,
+        name,
+        email,
+        address,
+        city,
+        zip,
+        phone,
+        date: new Date().toLocaleDateString(),
+        status: "Processing",
+        couponCode: coupon?.code,
+        discount: discountAmount
+      };
 
-    const notifyRes = await fetch("/api/notify/order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(notificationData),
-    });
-    const notification: EmailSendResult = await notifyRes.json();
-    setEmailMessage(notification.message);
-    dispatch(clearCart());
-    setGeneratedId(orderId);
-    setOrderPlaced(true);
+      const notificationData = buildOrderNotificationData(orderId, "Placed");
+
+      dispatch(createOrder(newOrder));
+      setPlacedOrderNotificationData(notificationData);
+
+      // Save order to Hostinger MySQL Database
+      try {
+        await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...newOrder,
+            method: payMethod,
+            couponCode: coupon?.code,
+            discount: discountAmount,
+            items: cart.map((item) => {
+              const product = products.find((prod) => prod.id === item.id);
+              return {
+                id: item.id,
+                name: product?.name || "Product",
+                qty: item.qty,
+                size: item.size,
+                color: item.color,
+                price: product?.price || 0
+              };
+            })
+          })
+        });
+      } catch (err) {
+        console.error("Failed to save order to database:", err);
+      }
+
+      try {
+        const notifyRes = await fetch("/api/notify/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(notificationData),
+        });
+        const notification: EmailSendResult = await notifyRes.json();
+        setEmailMessage(notification.message);
+      } catch (err) {
+        console.error("Failed to send order notification email:", err);
+      }
+
+      dispatch(clearCart());
+      setGeneratedId(orderId);
+      setOrderPlaced(true);
+    } catch (err: any) {
+      setError(err?.message || "An error occurred while placing your order. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOrderRequest = async (actionType: "Replacement" | "Return") => {
@@ -313,8 +336,8 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          <Button type="submit" className="mt-6 w-full py-4 text-base">
-            Place Order
+          <Button type="submit" disabled={isSubmitting} className="mt-6 w-full py-4 text-base font-semibold uppercase tracking-wider">
+            {isSubmitting ? "Placing your order..." : "Place Order"}
           </Button>
         </form>
         

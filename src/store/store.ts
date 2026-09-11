@@ -4,7 +4,13 @@ import { metaPixelMiddleware } from "@/lib/metaPixel";
 
 type Line = { id: string; qty: number; size?: string; color?: string };
 export type User = { id?: string; email: string; name: string; role: "admin" | "user" };
-export type Order = { id: string; items: Line[]; total: number; name: string; email: string; address: string; city: string; zip: string; phone: string; date: string; status: string };
+export type Order = { id: string; items: Line[]; total: number; name: string; email: string; address: string; city: string; zip: string; phone: string; date: string; status: string; couponCode?: string; discount?: number };
+
+export type Coupon = {
+  code: string;
+  discountPercent: number;
+  description?: string;
+};
 
 type CommerceState = {
   cart: Line[];
@@ -16,6 +22,7 @@ type CommerceState = {
   user: User | null;
   priceTier: "all" | "premium" | "simple";
   orders: Order[];
+  coupon: Coupon | null;
 };
 
 const initialState: CommerceState = {
@@ -27,7 +34,8 @@ const initialState: CommerceState = {
   products: [],
   user: null,
   priceTier: "all",
-  orders: []
+  orders: [],
+  coupon: null
 };
 
 const commerceSlice = createSlice({
@@ -45,11 +53,27 @@ const commerceSlice = createSlice({
       if (found) found.qty += action.payload.qty;
       else state.cart.push(action.payload);
     },
-    updateQty: (state, action: PayloadAction<{ id: string; qty: number }>) => {
-      state.cart = state.cart.map((i) => (i.id === action.payload.id ? { ...i, qty: Math.max(1, action.payload.qty) } : i));
+    updateQty: (state, action: PayloadAction<{ id: string; size?: string; color?: string; qty: number }>) => {
+      state.cart = state.cart.map((i) => {
+        const matches = i.id === action.payload.id &&
+          (action.payload.size === undefined || i.size === action.payload.size) &&
+          (action.payload.color === undefined || i.color === action.payload.color);
+        return matches ? { ...i, qty: Math.max(1, action.payload.qty) } : i;
+      });
     },
-    removeFromCart: (state, action: PayloadAction<string>) => {
-      state.cart = state.cart.filter((i) => i.id !== action.payload);
+    removeFromCart: (state, action: PayloadAction<string | { id: string; size?: string; color?: string }>) => {
+      if (typeof action.payload === "string") {
+        state.cart = state.cart.filter((i) => i.id !== action.payload);
+      } else {
+        const target = action.payload;
+        state.cart = state.cart.filter((i) => !(i.id === target.id && (target.size === undefined || i.size === target.size) && (target.color === undefined || i.color === target.color)));
+      }
+    },
+    applyCoupon: (state, action: PayloadAction<Coupon>) => {
+      state.coupon = action.payload;
+    },
+    removeCoupon: (state) => {
+      state.coupon = null;
     },
     toggleWishlist: (state, action: PayloadAction<string>) => {
       state.wishlist = state.wishlist.includes(action.payload)
@@ -110,6 +134,8 @@ export const {
   addToCart,
   updateQty,
   removeFromCart,
+  applyCoupon,
+  removeCoupon,
   toggleWishlist,
   viewProduct,
   toggleDarkMode,
