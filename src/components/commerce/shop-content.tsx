@@ -73,7 +73,7 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
         (category === "All" ||
          (category === "Trending" && (p.rating >= 4.8 || p.badge === "Bestseller")) ||
          p.category === category) &&
-        (brand === "All" || p.brand === brand) &&
+        (brand === "All" || brand === "Sawera Collection" || p.brand === brand) &&
         p.price <= max &&
         p.name.toLowerCase().includes(query.toLowerCase())
       );
@@ -89,9 +89,8 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
   }, [products, priceTier]);
 
   const availableBrands = useMemo(() => {
-    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : priceTier === "simple" ? p.price < 5000 : true);
-    return [...new Set(list.map(p => p.brand))];
-  }, [products, priceTier]);
+    return ["Sawera Collection"];
+  }, []);
 
   const handleResetFilters = () => {
     dispatch(setPriceTier("all"));

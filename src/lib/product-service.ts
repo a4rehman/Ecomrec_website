@@ -50,7 +50,7 @@ function normalizeProductName(name: string): string {
 export function toProduct(product: DbProduct): Product {
   return {
     id: product.id, slug: product.slug, name: normalizeProductName(product.name), category: product.category,
-    brand: product.brand, price: Number(product.price),
+    brand: "Sawera Collection", price: Number(product.price),
     compareAt: product.compareAt == null ? undefined : Number(product.compareAt),
     rating: Number(product.rating), reviews: product.reviews, badge: product.badge ?? undefined,
     colors: stringList(product.colors), sizes: stringList(product.sizes), images: publicImages(product.images),
