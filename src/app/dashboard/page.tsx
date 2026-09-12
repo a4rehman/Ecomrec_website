@@ -365,43 +365,43 @@ export default function DashboardPage() {
   }
 
   return (
-    <section className="container-lux py-10 md:py-14">
+    <section className="container-lux min-w-0 overflow-x-clip py-8 sm:py-10 md:py-14">
       {/* Top Welcome Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-line pb-6">
-        <div>
+      <div className="mb-8 flex min-w-0 flex-col justify-between gap-4 border-b border-line pb-6 md:flex-row md:items-center">
+        <div className="min-w-0">
           <span className="text-xs uppercase tracking-widest text-accent font-semibold">Sawera Atelier</span>
-          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal mt-1">Customer Dashboard</h1>
-          <p className="text-muted text-xs md:text-sm mt-1">
+          <h1 className="mt-1 break-words font-serif text-3xl font-normal sm:text-4xl lg:text-5xl">Customer Dashboard</h1>
+          <p className="mt-1 break-words text-xs text-muted md:text-sm">
             Logged in as <span className="font-semibold text-foreground">{currentUser?.name}</span> ({currentUser?.email})
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:flex-nowrap">
           <Link href="/shop">
-            <Button variant="outline" className="gap-2 text-xs">
+            <Button variant="outline" className="min-h-11 gap-2 text-xs">
               <ShoppingBag size={14} /> Shop Suits
             </Button>
           </Link>
-          <Button onClick={handleLogout} variant="outline" className="gap-2 text-xs text-rose-600 border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-950/40">
+          <Button onClick={handleLogout} variant="outline" className="min-h-11 gap-2 border-rose-200 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40">
             <LogOut size={14} /> Logout
           </Button>
         </div>
       </div>
 
       {/* Main Grid: Sidebar + Active Tab Content */}
-      <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
+      <div className="grid min-w-0 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
         
         {/* Luxury Sidebar Navigation */}
-        <aside className="glass p-4 border border-line rounded-lg h-fit space-y-1">
+        <aside className="glass h-fit min-w-0 space-y-1 rounded-lg border border-line p-4">
           <p className="text-[10px] uppercase tracking-widest text-muted font-bold px-3 py-2">Account Navigation</p>
           
           <button
             onClick={() => setActiveTab("overview")}
-            className={`w-full text-left px-3.5 py-2.5 text-xs font-medium rounded-md flex items-center justify-between transition ${
+            className={`flex min-w-0 w-full items-center justify-between rounded-md px-3.5 py-2.5 text-left text-xs font-medium transition ${
               activeTab === "overview" ? "bg-accent text-accent-foreground font-semibold" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <Package size={16} /> Overview
             </div>
             <ArrowRight size={13} className="opacity-60" />
@@ -409,11 +409,11 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("orders")}
-            className={`w-full text-left px-3.5 py-2.5 text-xs font-medium rounded-md flex items-center justify-between transition ${
+            className={`flex min-w-0 w-full items-center justify-between rounded-md px-3.5 py-2.5 text-left text-xs font-medium transition ${
               activeTab === "orders" ? "bg-accent text-accent-foreground font-semibold" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <ShoppingBag size={16} /> My Orders
             </div>
             <span className="text-[11px] bg-neutral-200 dark:bg-neutral-800 px-2 py-0.5 rounded-full font-bold">
@@ -423,11 +423,11 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("track")}
-            className={`w-full text-left px-3.5 py-2.5 text-xs font-medium rounded-md flex items-center justify-between transition ${
+            className={`flex min-w-0 w-full items-center justify-between rounded-md px-3.5 py-2.5 text-left text-xs font-medium transition ${
               activeTab === "track" ? "bg-accent text-accent-foreground font-semibold" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <Truck size={16} /> Track Orders
             </div>
             <ArrowRight size={13} className="opacity-60" />
@@ -435,11 +435,11 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("wishlist")}
-            className={`w-full text-left px-3.5 py-2.5 text-xs font-medium rounded-md flex items-center justify-between transition ${
+            className={`flex min-w-0 w-full items-center justify-between rounded-md px-3.5 py-2.5 text-left text-xs font-medium transition ${
               activeTab === "wishlist" ? "bg-accent text-accent-foreground font-semibold" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <Heart size={16} /> Wishlist
             </div>
             <span className="text-[11px] bg-neutral-200 dark:bg-neutral-800 px-2 py-0.5 rounded-full font-bold">
@@ -449,11 +449,11 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("notifications")}
-            className={`w-full text-left px-3.5 py-2.5 text-xs font-medium rounded-md flex items-center justify-between transition ${
+            className={`flex min-w-0 w-full items-center justify-between rounded-md px-3.5 py-2.5 text-left text-xs font-medium transition ${
               activeTab === "notifications" ? "bg-accent text-accent-foreground font-semibold" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <Bell size={16} /> Notifications
             </div>
             {unreadNotifsCount > 0 && (
@@ -465,11 +465,11 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("addresses")}
-            className={`w-full text-left px-3.5 py-2.5 text-xs font-medium rounded-md flex items-center justify-between transition ${
+            className={`flex min-w-0 w-full items-center justify-between rounded-md px-3.5 py-2.5 text-left text-xs font-medium transition ${
               activeTab === "addresses" ? "bg-accent text-accent-foreground font-semibold" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <MapPin size={16} /> Saved Addresses
             </div>
             <ArrowRight size={13} className="opacity-60" />
@@ -477,11 +477,11 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setActiveTab("profile")}
-            className={`w-full text-left px-3.5 py-2.5 text-xs font-medium rounded-md flex items-center justify-between transition ${
+            className={`flex min-w-0 w-full items-center justify-between rounded-md px-3.5 py-2.5 text-left text-xs font-medium transition ${
               activeTab === "profile" ? "bg-accent text-accent-foreground font-semibold" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2.5">
               <Shield size={16} /> Profile & Security
             </div>
             <ArrowRight size={13} className="opacity-60" />
@@ -489,7 +489,7 @@ export default function DashboardPage() {
         </aside>
 
         {/* Dynamic Content Pane */}
-        <div>
+        <div className="min-w-0">
           {/* TAB 1: OVERVIEW */}
           {activeTab === "overview" && (
             <div className="space-y-8">
