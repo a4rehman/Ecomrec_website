@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       slug, name: body.name, category: body.category || "Luxury Lawn", brand: body.brand || "Sawera Collection",
       price: Number(body.price), compareAt: body.compareAt, rating: Number(body.rating || 5), reviews: Number(body.reviews || 1),
       badge: body.badge, colors: Array.isArray(body.colors) ? body.colors : [],
-      sizes: Array.isArray(body.sizes) && body.sizes.length ? body.sizes : ["Unstitched"],
+      sizes: Array.isArray(body.sizes) && body.sizes.length ? body.sizes : ["M", "L"],
       images: Array.isArray(body.images) && body.images.length ? body.images : ["/images/hero_lawn.png"],
       description: body.description, fabric: body.fabric || "Pure Lawn", stock: Number(body.stock ?? 10),
       salePrice: body.salePrice, saleEnd: body.saleEnd,

@@ -29,7 +29,6 @@ export function HomeContent({ initialProducts }: { initialProducts: Product[] })
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema([
         { q: "Do you offer tailoring and stitching services?", a: "Yes, we offer premium professional stitching for both local and international orders. You can choose from standard sizes (XS to XL) or select custom tailoring during checkout by submitting your measurements. Stitching typically adds 7-10 business days to fulfillment." },
         { q: "How fast is shipping, both domestically and internationally?", a: "Domestic delivery within Pakistan takes 2-4 business days. International express shipping via DHL/FedEx takes 5-7 business days to the USA, UK, Canada, and UAE. Custom-stitched suits require additional processing time." },
-        { q: "What is included in the Unstitched fabric options?", a: "Our 3-piece Unstitched suits include full running fabric for the shirt/kameez (typically 3 meters), matching dyed trousers fabric (2.5 meters), and a fully woven or printed dupatta (2.5 meters). Any separate embroidered borders, necklines, or lace trims are packaged separately for your tailor to attach." },
         { q: "How should I care for suits with heavy tilla and zari work?", a: "We strongly recommend dry cleaning for all products containing delicate hand-embroidery, gota borders, tilla work, or premium silk/chiffon fabrics. Iron on low heat on the reverse side of the embroidery to avoid damage." },
       ])) }} />
       <HeroSlider products={sliderProducts} />

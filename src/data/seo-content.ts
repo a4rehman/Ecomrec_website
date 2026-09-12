@@ -15,7 +15,7 @@ export const categorySeoContent: Record<string, CategorySeoContent> = {
     heading: "Luxury Lawn Suits for Women in Pakistan",
     paragraphs: [
       "Our luxury lawn collection is the heart of Pakistani summer fashion. Crafted from premium breathable lawn with intricate resham and thread embroidery, each 3 piece luxury lawn suit comes with a printed or embroidered dupatta and matching trouser fabric.",
-      "Luxury lawn suits are perfect for daytime formals, family gatherings and summer weddings. The fine weave keeps you cool while the heavy embellishments add an elegant, dressy finish. Every suit is available in multiple colours and both unstitched and stitched options.",
+      "Luxury lawn suits are perfect for daytime formals, family gatherings and summer weddings. The fine weave keeps you cool while the heavy embellishments add an elegant, dressy finish. Every suit is available in multiple colours and a full range of sizes.",
       "Shop online for luxury lawn suits in Pakistan with nationwide delivery. Pair them with statement jewellery and traditional khussas for a complete, graceful look."
     ]
   },

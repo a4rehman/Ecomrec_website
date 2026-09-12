@@ -38,7 +38,6 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
   // a single polished row instead of leaving a partial second line below.
   const bestSellers = (getProductsByBadge(products, "Best Seller").length ? getProductsByBadge(products, "Best Seller") : products).slice(0, 6);
   const celebrityEdit = (getProductsByBadge(products, "Celebrity").length ? getProductsByBadge(products, "Celebrity") : products.filter((p) => p.category === "Festive Chiffon")).slice(0, 6);
-  const unstitchedDresses = products.filter((p) => p.sizes.some((size) => size.toLowerCase() === "unstitched")).slice(0, 8);
   const configuredPremiumNewArrivals = products.filter((p) =>
     ["sc_tehwaar_anayra_amal", "sc_amour_bin_ilyas_186a", "sc_amour_bin_ilyas_187b", "sc_push_pawan_zarizaa_titli"].includes(p.id)
   );
@@ -164,20 +163,11 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
             <p className="tracked-luxury text-xs text-accent">Private Boutique Offer</p>
             <h2 className="mt-3 font-serif text-5xl">Graceful Festive Savings</h2>
             <p className="mt-5 text-muted">
-              Get 15% off selected everyday and unstitched luxury pieces. Use coupon <b>SAWERA15</b> at checkout.
+              Get 15% off selected everyday and luxury pieces. Use coupon <b>SAWERA15</b> at checkout.
             </p>
           </div>
           <CountdownTimer />
         </div>
-      </FadeIn>
-
-      <FadeIn className="container-lux py-16">
-        <SectionHeading
-          eyebrow="Shop by Fabric"
-          title="Unstitched Dresses"
-          text="Express shipping on selected unstitched lawn and festive sets — perfect for tailors and custom fits."
-        />
-        <ProductStrip products={unstitchedDresses} />
       </FadeIn>
 
       <FadeIn className="py-8">
@@ -311,10 +301,6 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
             {
               q: "How fast is shipping, both domestically and internationally?",
               a: "Domestic delivery within Pakistan takes 2-4 business days. International express shipping via DHL/FedEx takes 5-7 business days to the USA, UK, Canada, and UAE. Custom-stitched suits require additional processing time.",
-            },
-            {
-              q: "What is included in the Unstitched fabric options?",
-              a: "Our 3-piece Unstitched suits include full running fabric for the shirt/kameez (typically 3 meters), matching dyed trousers fabric (2.5 meters), and a fully woven or printed dupatta (2.5 meters). Any separate embroidered borders, necklines, or lace trims are packaged separately for your tailor to attach.",
             },
             {
               q: "How should I care for suits with heavy tilla and zari work?",

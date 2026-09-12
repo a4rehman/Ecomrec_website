@@ -86,24 +86,6 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
     [recentlyViewedIds, products, product.id]
   );
 
-  // Stitching selectors logic
-  const hasUnstitched = product.sizes.includes("Unstitched");
-  const [suitStyle, setSuitStyle] = useState(hasUnstitched ? "Unstitched" : "Stitched");
-
-  const handleStyleChange = (style: string) => {
-    setSuitStyle(style);
-    if (style === "Unstitched") {
-      setSize("Unstitched");
-    } else {
-      const defaultStitchedSize = product.sizes.find((s) => s !== "Unstitched") || product.sizes[0];
-      setSize(defaultStitchedSize);
-    }
-  };
-
-  const visibleSizes = suitStyle === "Stitched"
-    ? product.sizes.filter((s) => s !== "Unstitched")
-    : ["Unstitched"];
-
   const handleColorChange = (c: string) => {
     setColor(c);
     const idx = product.colors.indexOf(c);
@@ -125,7 +107,6 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
     setImage(product.images[0]);
     setSize(product.sizes[0]);
     setColor(product.colors[0]);
-    setSuitStyle(product.sizes.includes("Unstitched") ? "Unstitched" : "Stitched");
     
     dispatch(viewProduct(product.id));
   }, [dispatch, product.id, product]);
@@ -198,32 +179,10 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
             </div>
           </div>
 
-          {hasUnstitched && (
-            <div className="mt-6">
-              <p className="mb-3 tracked-luxury text-xs">Suit Style</p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleStyleChange("Unstitched")}
-                  className={`border px-4 py-2 text-sm ${suitStyle === "Unstitched" ? "border-foreground bg-foreground text-background" : "border-line"}`}
-                >
-                  Unstitched Fabric
-                </button>
-                <button
-                  onClick={() => handleStyleChange("Stitched")}
-                  className={`border px-4 py-2 text-sm ${suitStyle === "Stitched" ? "border-foreground bg-foreground text-background" : "border-line"}`}
-                >
-                  Stitched (Tailored)
-                </button>
-              </div>
-            </div>
-          )}
-
           <div className="mt-6">
-            <p className="mb-3 tracked-luxury text-xs">
-              {suitStyle === "Unstitched" ? "Selected Style" : "Size"}
-            </p>
+            <p className="mb-3 tracked-luxury text-xs">Size</p>
             <div className="flex flex-wrap gap-2">
-              {visibleSizes.map((s) => (
+              {product.sizes.map((s) => (
                 <button
                   key={s}
                   onClick={() => setSize(s)}
@@ -234,24 +193,6 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
               ))}
             </div>
           </div>
-
-          {hasUnstitched && suitStyle === "Unstitched" && (
-            <div className="mt-6 p-4 border border-line bg-background/50 text-xs text-muted leading-6">
-              <p className="font-semibold text-foreground mb-1">Unstitched Fabric Details:</p>
-              <p>- Shirt/Kameez fabric: 3.0 Meters premium lawn/chiffon</p>
-              <p>- Trouser fabric: 2.5 Meters dyed cotton/silk</p>
-              <p>- Dupatta fabric: 2.5 Meters printed/embroidered silk/organza</p>
-              <p>- Includes all separate patches and borders as illustrated.</p>
-            </div>
-          )}
-          {hasUnstitched && suitStyle === "Stitched" && (
-            <div className="mt-6 p-4 border border-line bg-background/50 text-xs text-muted leading-6">
-              <p className="font-semibold text-foreground mb-1">Stitching Service Details:</p>
-              <p>- Premium boutique tailoring tailored to standard sizing guidelines.</p>
-              <p>- Finished with inner lining (where appropriate) and custom styling trims.</p>
-              <p>- Adds an extra 7-10 business days to processing timelines.</p>
-            </div>
-          )}
 
           <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Button
@@ -278,7 +219,7 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
               <p>Fabric: {product.fabric}</p>
             )}
             <p>Stock: {product.stock} pieces available</p>
-            <p>Shipping: 2-4 business days (unstitched) / 9-14 days (stitched)</p>
+            <p>Shipping: 2-4 business days domestic / 9-14 days international</p>
             <p>
               <Link href="/shop" className="text-accent underline">View all {product.category}</Link>
             </p>

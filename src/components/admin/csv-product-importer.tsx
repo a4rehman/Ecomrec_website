@@ -12,7 +12,7 @@ type Draft = Partial<Product> & { name: string; category: string; price: number;
 const fieldLabels: Record<Field, string> = { ignore: "Ignore column", name: "Name", description: "Description", price: "Price", compareAt: "Compare price", category: "Category", brand: "Brand", sku: "SKU", stock: "Stock", images: "Images", tags: "Tags", sizes: "Sizes", colors: "Colors", fabric: "Fabric", badge: "Badge" };
 const aliases: Record<Exclude<Field, "ignore">, string[]> = {
   name: ["name", "product name", "title", "product title"], description: ["description", "product description", "body html", "details"], price: ["price", "regular price", "variant price", "sale price"], compareAt: ["compare at price", "compare price", "mrp", "original price"], category: ["category", "collection", "product type", "type"], brand: ["brand", "vendor"], sku: ["sku", "variant sku", "product code"], stock: ["stock", "inventory", "inventory qty", "quantity", "variant inventory qty"], images: ["images", "image", "image url", "image link", "image src"], tags: ["tags", "tag"], sizes: ["sizes", "size", "option1 value"], colors: ["colors", "color", "option2 value"], fabric: ["fabric", "material"], badge: ["badge", "ribbon", "label"] };
-const categories = ["Luxury Lawn", "Printed Lawn", "Festive Chiffon", "Everyday Essentials", "Bridal & Couture", "Winter Festive", "Sale", "Unstitched"];
+const categories = ["Luxury Lawn", "Printed Lawn", "Festive Chiffon", "Everyday Essentials", "Bridal & Couture", "Winter Festive", "Sale"];
 
 function parseCsv(text: string): Row[] {
   const records: string[][] = []; let row: string[] = []; let cell = ""; let quoted = false;
@@ -50,7 +50,7 @@ export function CsvProductImporter({ onLoadProduct, onImported }: { onLoadProduc
     const images = list(values.images || ""); const errors: string[] = [];
     if (!values.name?.trim()) errors.push("Name is required"); if (number(values.price || "") <= 0) errors.push("Price must be positive"); if (!values.category?.trim()) errors.push("Category is required");
     if (images.some((image) => !isImage(image))) errors.push("One or more image URLs are invalid");
-    return { name: values.name?.trim() || "", description: values.description?.trim() || "", price: number(values.price || ""), compareAt: number(values.compareAt || "") || undefined, category: normalizedCategory(values.category || ""), brand: values.brand?.trim() || "Sawera Collection", sku: values.sku?.trim() || undefined, stock: Math.max(0, Math.trunc(number(values.stock || "0"))), images, tags: list(values.tags || ""), sizes: list(values.sizes || "").length ? list(values.sizes) : ["Unstitched"], colors: list(values.colors || ""), fabric: values.fabric?.trim() || "Pure Lawn", badge: values.badge?.trim() || undefined, valid: errors.length === 0, errors };
+    return { name: values.name?.trim() || "", description: values.description?.trim() || "", price: number(values.price || ""), compareAt: number(values.compareAt || "") || undefined, category: normalizedCategory(values.category || ""), brand: values.brand?.trim() || "Sawera Collection", sku: values.sku?.trim() || undefined, stock: Math.max(0, Math.trunc(number(values.stock || "0"))), images, tags: list(values.tags || ""), sizes: list(values.sizes || "").length ? list(values.sizes) : ["M", "L"], colors: list(values.colors || ""), fabric: values.fabric?.trim() || "Pure Lawn", badge: values.badge?.trim() || undefined, valid: errors.length === 0, errors };
   }), [rows, mapping]);
   const visible = drafts.slice(page * 20, page * 20 + 20);
 

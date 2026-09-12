@@ -74,7 +74,7 @@ export function CartClient({ checkout = false }: { checkout?: boolean }) {
         </div>
         <h1 className="font-serif text-4xl sm:text-5xl mb-3">Your Bag Is Empty</h1>
         <p className="text-muted text-sm leading-relaxed mb-8">
-          Discover our latest luxury lawn, festive formals, and everyday unstitched collections.
+          Discover our latest luxury lawn, festive formals, and everyday collections.
         </p>
         <Link href="/shop">
           <Button className="px-8 py-3.5">

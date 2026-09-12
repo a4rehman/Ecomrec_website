@@ -61,7 +61,7 @@ export default function AdminPage() {
   const [saleEnd, setSaleEnd] = useState(""); // ISO date string
   const [status, setStatus] = useState<"draft" | "published">("published");
   const [colorsInput, setColorsInput] = useState("Pastel Mint, Powder Pink, Ivory");
-  const [sizesSelected, setSizesSelected] = useState<string[]>(["Unstitched", "M", "L"]);
+  const [sizesSelected, setSizesSelected] = useState<string[]>([ "M", "L"]);
   const [imageFiles, setImageFiles] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [notification, setNotification] = useState("");
@@ -69,7 +69,7 @@ export default function AdminPage() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [savingProduct, setSavingProduct] = useState(false);
 
-  const sizeOptions = ["Unstitched", "XS", "S", "M", "L", "XL"];
+  const sizeOptions = [ "XS", "S", "M", "L", "XL"];
 
   const buildAdminOrderNotificationData = (orderId: string, actionType: OrderNotificationData["actionType"]): OrderNotificationData | null => {
     const order = orders.find((o) => o.id === orderId);
@@ -250,7 +250,7 @@ export default function AdminPage() {
     setSaleEnd("");
     setStatus("published");
     setColorsInput("Pastel Mint, Powder Pink, Ivory");
-    setSizesSelected(["Unstitched", "M", "L"]);
+    setSizesSelected([ "M", "L"]);
     setImageFiles([]);
     setImageUrl("");
     setEditMode(false);
@@ -407,7 +407,7 @@ export default function AdminPage() {
       sku: sku || undefined,
       tags: tagsInput.split(",").map((tag) => tag.trim()).filter(Boolean),
       colors,
-      sizes: sizesSelected.length > 0 ? sizesSelected : ["Unstitched"],
+      sizes: sizesSelected.length > 0 ? sizesSelected : ["M", "L"],
       images: finalImages,
       description,
       fabric,
@@ -467,7 +467,7 @@ export default function AdminPage() {
     setFabric(product.fabric || "Pure Lawn");
     setStock(product.stock || 0);
     setColorsInput((product.colors || []).join(", "));
-    setSizesSelected(product.sizes?.length ? product.sizes : ["Unstitched"]);
+    setSizesSelected(product.sizes?.length ? product.sizes : ["M", "L"]);
     setImageFiles(product.images || []);
     setStatus(product.status || "draft");
     setShowCsvImport(false);

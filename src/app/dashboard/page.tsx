@@ -839,7 +839,7 @@ export default function DashboardPage() {
                         <p className="text-xs font-bold text-accent">{formatPrice(p.price)}</p>
                         <Button 
                           onClick={() => {
-                            dispatch(addToCart({ id: p.id, qty: 1, size: "Unstitched" }));
+                            dispatch(addToCart({ id: p.id, qty: 1, size: "M" }));
                             dispatch(toggleWishlist(p.id));
                           }}
                           className="w-full text-xs gap-2" 

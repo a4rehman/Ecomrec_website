@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
           brand: String(row.brand || "Sawera Collection").trim(), price,
           compareAt: cleanNumber(row.compareAt) || undefined, rating: cleanNumber(row.rating, 5), reviews: Math.max(0, Math.trunc(cleanNumber(row.reviews, 1))),
           badge: typeof row.badge === "string" && row.badge.trim() ? row.badge.trim() : undefined,
-          colors: cleanList(row.colors), sizes: cleanList(row.sizes).length ? cleanList(row.sizes) : ["Unstitched"], images: cleanList(row.images),
+          colors: cleanList(row.colors), sizes: cleanList(row.sizes).length ? cleanList(row.sizes) : ["M", "L"], images: cleanList(row.images),
           description: String(row.description || name).trim(), fabric: String(row.fabric || "Pure Lawn").trim(), stock: Math.max(0, Math.trunc(cleanNumber(row.stock, 0))),
           salePrice: cleanNumber(row.salePrice) || undefined, saleEnd: typeof row.saleEnd === "string" ? row.saleEnd : undefined,
           status, isActive: status === "published", sku, tags: cleanList(row.tags),
