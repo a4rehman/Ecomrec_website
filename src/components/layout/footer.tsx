@@ -11,9 +11,9 @@ export function Footer() {
           <BrandLogo className="items-start" imageClassName="w-48" />
           <p className="mt-4 max-w-sm leading-8 text-muted">A luxury feminine fashion house for women, girls, modest fashion buyers, and premium clothing customers.</p>
           <div className="mt-7 flex gap-3 text-accent" aria-label="Sawera Collection on social media">
-            <a href="https://www.instagram.com/saweracollection" target="_blank" rel="noopener noreferrer" aria-label="Sawera Collection on Instagram" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="Instagram"><Share2 size={18} /></a>
+            <a href="https://www.instagram.com/saweraa_collection/" target="_blank" rel="noopener noreferrer" aria-label="Sawera Collection on Instagram" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="Instagram"><Share2 size={18} /></a>
             <a href="https://wa.me/923066378857" target="_blank" rel="noopener noreferrer" aria-label="Chat with Sawera Collection on WhatsApp" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="WhatsApp"><MessageCircle size={18} /></a>
-            <a href="https://www.facebook.com/saweracollection" target="_blank" rel="noopener noreferrer" aria-label="Sawera Collection on Facebook" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="Facebook"><Send size={18} /></a>
+            <a href="https://www.facebook.com/people/Sawera-Collection/61590957704524/" target="_blank" rel="noopener noreferrer" aria-label="Sawera Collection on Facebook" className="grid h-10 w-10 place-items-center rounded-full border border-line transition hover:bg-foreground hover:text-background" title="Facebook"><Send size={18} /></a>
           </div>
         </section>
         <section>
