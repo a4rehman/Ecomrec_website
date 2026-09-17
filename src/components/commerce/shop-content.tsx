@@ -25,6 +25,7 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
   const products = syncedProducts.length ? syncedProducts : initialProducts;
 
   const [query, setQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [category, setCategory] = useState("All");
   const [brand, setBrand] = useState("All");
   const [max, setMax] = useState(100000);
@@ -109,11 +110,44 @@ function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
             {priceTier === "premium" ? "Luxury Atelier" : priceTier === "simple" ? "Everyday Essentials" : "Collections"}
           </h1>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 flex-1 lg:max-w-xl lg:justify-end">
+        <div className="flex flex-col sm:flex-row items-center gap-3 flex-1 lg:max-w-2xl lg:justify-end">
           <CollectionSwitcher />
-          <div className="relative max-w-xs flex-1">
-            <Search className="absolute left-3 top-3.5 text-muted" size={18} />
-            <Input placeholder="Search products" className="pl-10" value={query} onChange={(e) => setQuery(e.target.value)} />
+          
+          <div className="relative flex items-center justify-center">
+            {isSearchOpen || query ? (
+              <div className="relative flex items-center animate-in fade-in zoom-in-95 duration-200">
+                <Search className="absolute left-4 text-muted pointer-events-none" size={17} />
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Search products..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="h-11 w-60 sm:w-68 rounded-full border border-line bg-background/95 pl-11 pr-9 text-xs focus:outline-none focus:border-accent shadow-sm transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    setIsSearchOpen(false);
+                  }}
+                  className="absolute right-3 text-muted hover:text-foreground text-xs p-1"
+                  aria-label="Close search"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen(true)}
+                className="h-11 w-11 rounded-full border border-line/80 bg-background/95 flex items-center justify-center text-foreground hover:border-accent hover:text-accent shadow-sm transition-all duration-300 shrink-0"
+                aria-label="Search products"
+                title="Search products"
+              >
+                <Search size={18} />
+              </button>
+            )}
           </div>
         </div>
       </div>
