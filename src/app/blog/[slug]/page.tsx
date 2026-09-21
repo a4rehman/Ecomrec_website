@@ -29,10 +29,12 @@ function formatDate(date: string): string {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = blogPosts.find((p) => p.slug === slug);
-  if (!post) return { title: "Article Not Found" };
+  if (!post) return { title: "Article Not Found", robots: { index: false, follow: false } };
+
+  const imageUrl = post.image.startsWith("http") ? post.image : `${SITE_URL}${post.image}`;
 
   return {
-    title: `${post.title} | Sawera Collection`,
+    title: post.title,
     description: post.excerpt,
     keywords: [post.title.toLowerCase(), post.category.toLowerCase(), "pakistani fashion", "women's fashion blog", "sawera collection"],
     alternates: { canonical: `${SITE_URL}/blog/${post.slug}` },
@@ -44,13 +46,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       siteName: "Sawera Collection",
       publishedTime: post.date,
       authors: [post.author],
-      images: [{ url: post.image, width: 1200, height: 630, alt: post.title }]
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: post.title }]
     },
     twitter: {
       card: "summary_large_image",
       title: `${post.title} | Sawera Collection`,
       description: post.excerpt,
-      images: [post.image]
+      images: [imageUrl]
     }
   };
 }

@@ -15,13 +15,14 @@ async function getProductBySlug(slug: string): Promise<Product | null> {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  if (!product) return { title: "Product Not Found" };
+  if (!product) return { title: "Product Not Found", robots: { index: false, follow: false } };
 
-  const image = product.images[0] || "/images/hero_lawn.png";
+  const rawImage = product.images[0] || "/images/hero_lawn.png";
+  const image = rawImage.startsWith("http") ? rawImage : `${SITE_URL}${rawImage}`;
   const description = `${product.name} by ${product.brand} - ${product.description.slice(0, 150)}. Available in ${product.colors.join(", ")}. ${product.fabric}. Free delivery across Pakistan.`;
 
   return {
-    title: `${product.name} | ${product.category} | Sawera Collection`,
+    title: product.name,
     description,
     keywords: [product.name, product.category, product.brand, product.fabric, "pakistani women's suits", "buy online pakistan"],
     alternates: { canonical: `${SITE_URL}/product/${product.slug}` },

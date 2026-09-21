@@ -17,7 +17,7 @@ export async function generateMetadata({ searchParams }: { searchParams: ShopPar
   const meta = getCategoryMeta(category || "All");
 
   return {
-    title: meta.title,
+    title: { absolute: meta.title },
     description: meta.description,
     keywords: ["women fashion", "lawn suits", "pakistani dresses", "online shopping", ...(category ? [category.toLowerCase()] : [])],
     alternates: { canonical: `${SITE_URL}${categoryPath(category || "All")}` },

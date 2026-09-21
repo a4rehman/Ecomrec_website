@@ -13,6 +13,7 @@ import { initiateCheckout as trackInitiateCheckout } from "@/lib/metaPixel";
 import { OrderNotificationData, EmailSendResult } from "@/types/email";
 import Link from "next/link";
 import { CheckCircle2, RotateCcw, ShoppingBag, Truck } from "lucide-react";
+import { GoogleCustomerReviews } from "@/components/commerce/google-customer-reviews";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
@@ -218,6 +219,7 @@ export default function CheckoutPage() {
   if (orderPlaced) {
     return (
       <section className="container-lux py-24 max-w-2xl text-center">
+        <GoogleCustomerReviews orderId={generatedId} email={email} deliveryCountry="PK" />
         <div className="flex justify-center mb-6">
           <CheckCircle2 size={80} className="text-green-600 animate-bounce" />
         </div>

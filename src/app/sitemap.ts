@@ -20,13 +20,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/order-cancellation", priority: 0.3 }
   ];
 
+  const categoryPages: { path: string; priority: number }[] = [
+    { path: "/shop?category=Luxury%20Lawn", priority: 0.85 },
+    { path: "/shop?category=Printed%20Lawn", priority: 0.85 },
+    { path: "/shop?category=Festive%20Chiffon", priority: 0.85 },
+    { path: "/shop?category=Everyday%20Essentials", priority: 0.8 },
+    { path: "/shop?category=Bridal%20%26%20Couture", priority: 0.85 },
+    { path: "/shop?category=Winter%20Festive", priority: 0.8 },
+    { path: "/shop?category=Trending", priority: 0.85 },
+    { path: "/shop?category=Sale", priority: 0.85 }
+  ];
+
   // Read directly from MySQL so a product added, edited, published, or
   // removed in the admin panel is reflected in the next sitemap request.
-  const products = await prisma.product.findMany({
-    where: { status: "published", isActive: true },
-    select: { slug: true, updatedAt: true },
-    orderBy: { updatedAt: "desc" },
-  });
+  let products: { slug: string; updatedAt: Date }[] = [];
+  try {
+    products = await prisma.product.findMany({
+      where: { status: "published", isActive: true },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+    });
+  } catch {
+    // If database is temporarily unavailable, fallback to published static catalog
+    const { products: staticCatalog } = await import("@/data/products");
+    products = staticCatalog
+      .filter((p) => p.status !== "draft" && p.isActive !== false)
+      .map((p) => ({ slug: p.slug, updatedAt: new Date() }));
+  }
+
   const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
     url: `${SITE_URL}/product/${p.slug}`,
     lastModified: p.updatedAt,
@@ -46,6 +67,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}${p.path}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
+      priority: p.priority
+    })),
+    ...categoryPages.map((p) => ({
+      url: `${SITE_URL}${p.path}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
       priority: p.priority
     })),
     ...productEntries,

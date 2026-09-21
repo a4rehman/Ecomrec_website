@@ -28,3 +28,27 @@ declare namespace React {
     }
   }
 }
+
+interface Window {
+  gapi?: {
+    load: (feature: string, callback: () => void) => void;
+    surveyoptin?: {
+      render: (config: {
+        merchant_id: number;
+        order_id: string;
+        email: string;
+        delivery_country: string;
+        estimated_delivery_date: string;
+        products?: { gtin: string }[];
+      }) => void;
+    };
+  };
+  renderOptIn?: () => void;
+  merchantwidget?: {
+    start: (config: {
+      merchant_id: number;
+      position?: "BOTTOM_LEFT" | "BOTTOM_RIGHT" | "INLINE";
+      region?: string;
+    }) => void;
+  };
+}

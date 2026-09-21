@@ -51,10 +51,10 @@ export const productSchema = (product: Product) => ({
     .filter((img) => !img.startsWith("data:"))
     .map((img) => (img.startsWith("http") ? img : `${SITE_URL}${img}`)),
   description: product.description,
-  sku: product.slug,
+  sku: product.sku || product.slug,
   brand: {
     "@type": "Brand",
-    name: product.brand
+    name: product.brand || SITE_NAME
   },
   category: product.category,
   offers: {
