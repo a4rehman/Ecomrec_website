@@ -1,5 +1,5 @@
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Product } from "@/data/products";
+import { Product, products as staticCatalog } from "@/data/products";
 import { metaPixelMiddleware } from "@/lib/metaPixel";
 
 type Line = { id: string; qty: number; size?: string; color?: string };
@@ -31,7 +31,7 @@ const initialState: CommerceState = {
   recentlyViewed: [],
   darkMode: false,
   cartDrawerOpen: false,
-  products: [],
+  products: staticCatalog,
   user: null,
   priceTier: "all",
   orders: [],

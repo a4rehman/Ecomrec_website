@@ -9,14 +9,22 @@ function StateHydrator({ children }: { children: ReactNode }) {
   const state = useSelector((s: RootState) => s.commerce);
 
   useEffect(() => {
-    // The database API, not browser storage, is the only catalog source of truth.
-    fetch("/api/products", { cache: "no-store" })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok || !data.ok || !Array.isArray(data.products)) throw new Error(data.message || "Unable to load products");
-        dispatch(setProducts(data.products));
-      })
-      .catch((error) => console.error("Unable to load product catalog:", error));
+    // Defer API sync to idle time so it doesn't compete with critical mobile render/paint/LCP
+    const fetchCatalog = () => {
+      fetch("/api/products", { cache: "no-store" })
+        .then(async (response) => {
+          const data = await response.json();
+          if (!response.ok || !data.ok || !Array.isArray(data.products)) throw new Error(data.message || "Unable to load products");
+          dispatch(setProducts(data.products));
+        })
+        .catch((error) => console.error("Unable to load product catalog:", error));
+    };
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      (window as any).requestIdleCallback(fetchCatalog, { timeout: 2500 });
+    } else {
+      setTimeout(fetchCatalog, 1200);
+    }
 
     try {
       const storedDarkMode = localStorage.getItem("jahanara_dark_mode");
