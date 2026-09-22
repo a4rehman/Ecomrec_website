@@ -26,7 +26,10 @@ function publicImages(value: unknown): string[] {
 }
 
 function normalizeProductName(name: string): string {
-  const trimmed = name.trim();
+  let trimmed = name.trim()
+    .replace(/\s+by\s+(Anayra|Bin Ilyas|Zarizaa|Mushq|Maherposh|Tehzeeb|Tehzeeb Libas)\s*/gi, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
   const upper = trimmed.toUpperCase();
   if (
     upper === "JAZERA EMBROIDERED 3PC" ||

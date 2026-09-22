@@ -62,7 +62,7 @@ export default function ContactPage() {
         <div>
           <div className="grid gap-4">
             <p className="flex gap-3">
-              <MapPin /> Sawera Collection, 88-B Block, Gulberg III, Lahore, Pakistan
+              <MapPin /> Sawera Collection, Lahore, Punjab, Pakistan
             </p>
             <p className="flex gap-3">
               <a href="https://wa.me/923066378857" target="_blank" rel="noopener noreferrer" className="hover:underline">+92 306 6378857 (WhatsApp Helpline)</a>
@@ -71,13 +71,13 @@ export default function ContactPage() {
               <Mail /> <a href="mailto:support@saweracollection.com" className="hover:underline">support@saweracollection.com</a>
             </p>
             <p className="flex gap-3">
-              <Share2 /> @saweracollection
+              <Share2 /> @saweraa_collection
             </p>
           </div>
           <div className="botanical-panel mt-8 aspect-[16/10] rounded-[28px] border border-line bg-[linear-gradient(135deg,#fffaf9,#f4dfe0,#c98386)] p-6 text-foreground">
-            <p className="tracked-luxury">Lahore Flagship Studio Map</p>
+            <p className="tracked-luxury">Customer Concierge &amp; Order Support</p>
             <p className="relative z-10 mt-4 max-w-sm text-sm leading-7 text-muted">
-              Visit our flagship studio in Gulberg III for fittings, occasion styling, and the latest Sawera Collection edits.
+              Our styling team and customer concierge are available via WhatsApp and email to assist with sizing, custom stitching, order tracking, and international express delivery.
             </p>
           </div>
         </div>

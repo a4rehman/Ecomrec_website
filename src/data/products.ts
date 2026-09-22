@@ -2170,9 +2170,9 @@ export const products: Product[] = [
   {
     id: "sc_tehwaar_anayra_amal",
     slug: "tehwaar-anayra-amal-lama-tissue-shahaan",
-    name: "Tehwaar by Anayra Amal RTW Embroidered Lama Tissue 3 Piece Suit",
+    name: "Tehwaar Amal RTW Embroidered Lama Tissue 3 Piece Suit",
     category: "Bridal & Couture",
-    brand: "Anayra",
+    brand: "Sawera Collection",
     price: 335000,
     compareAt: 365000,
     rating: 5.0,
@@ -2188,9 +2188,9 @@ export const products: Product[] = [
   {
     id: "sc_amour_bin_ilyas_186a",
     slug: "amour-bin-ilyas-bi26ula-186a-festive",
-    name: "Amour by Bin Ilyas Embroidered Lawn 3 Piece Suit BI26ULA 186A",
+    name: "Amour Embroidered Lawn 3 Piece Suit BI26ULA 186A",
     category: "Luxury Lawn",
-    brand: "Bin Ilyas",
+    brand: "Sawera Collection",
     price: 12900,
     compareAt: 14900,
     rating: 4.9,
@@ -2206,9 +2206,9 @@ export const products: Product[] = [
   {
     id: "sc_amour_bin_ilyas_187b",
     slug: "amour-bin-ilyas-bi26ula-187b-festive",
-    name: "Amour by Bin Ilyas Embroidered Lawn 3 Piece Suit BI26ULA 187B",
+    name: "Amour Embroidered Lawn 3 Piece Suit BI26ULA 187B",
     category: "Luxury Lawn",
-    brand: "Bin Ilyas",
+    brand: "Sawera Collection",
     price: 12900,
     compareAt: 14900,
     rating: 4.9,
@@ -2224,9 +2224,9 @@ export const products: Product[] = [
   {
     id: "sc_push_pawan_zarizaa_titli",
     slug: "push-pawan-zarizaa-zz26upp-titli-wedding",
-    name: "Push Pawan by Zarizaa Embroidered Organza 3 Piece Suit ZZ26UPP D-2P Titli",
+    name: "Push Pawan Embroidered Organza 3 Piece Suit ZZ26UPP D-2P Titli",
     category: "Bridal & Couture",
-    brand: "Zarizaa",
+    brand: "Sawera Collection",
     price: 98500,
     compareAt: 112000,
     rating: 4.9,
@@ -2424,13 +2424,13 @@ export const products: Product[] = [
     stock: 52
   },
 
-  // ── Mushq & Maherposh featured ──
+  // ── Featured Luxury & Pret ──
   {
     id: "sc_mushq_soleil_honey",
     slug: "mushq-soleil-hemline-mu26usl-honey",
-    name: "Soleil Hemline by Mushq Printed Lawn 3 Piece Suit MU26USL Honey",
+    name: "Soleil Hemline Printed Lawn 3 Piece Suit MU26USL Honey",
     category: "Printed Lawn",
-    brand: "Mushq",
+    brand: "Sawera Collection",
     price: 8900,
     compareAt: 10500,
     rating: 4.8,
@@ -2446,9 +2446,9 @@ export const products: Product[] = [
   {
     id: "sc_mushq_solace_ombre",
     slug: "mushq-solace-mu26uls-ombre",
-    name: "Solace by Mushq Chikankari Lawn 3 Piece Suit MU26ULS Ombre",
+    name: "Solace Chikankari Lawn 3 Piece Suit MU26ULS Ombre",
     category: "Printed Lawn",
-    brand: "Mushq",
+    brand: "Sawera Collection",
     price: 9500,
     compareAt: 11200,
     rating: 4.9,
@@ -2464,9 +2464,9 @@ export const products: Product[] = [
   {
     id: "sc_mushq_solace_ethereal",
     slug: "mushq-solace-mu26uls-ethereal",
-    name: "Solace by Mushq Chikankari Lawn 3 Piece Suit MU26ULS Ethereal",
+    name: "Solace Chikankari Lawn 3 Piece Suit MU26ULS Ethereal",
     category: "Printed Lawn",
-    brand: "Mushq",
+    brand: "Sawera Collection",
     price: 9500,
     compareAt: 11200,
     rating: 4.8,
@@ -2482,9 +2482,9 @@ export const products: Product[] = [
   {
     id: "sc_maherposh_sehrish",
     slug: "maherposh-sehrish-mp-sr-raw-silk",
-    name: "Sehrish by Maherposh RTW Embroidered Viscose Raw Silk 3 Piece Suit MP-SR",
+    name: "Sehrish RTW Embroidered Viscose Raw Silk 3 Piece Suit MP-SR",
     category: "Festive Chiffon",
-    brand: "Maherposh",
+    brand: "Sawera Collection",
     price: 28900,
     compareAt: 33500,
     rating: 4.9,

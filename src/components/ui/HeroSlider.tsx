@@ -32,7 +32,7 @@ export const HERO_BANNER_SLIDES: BannerSlide[] = [
     ctaText: "DISCOVER LUXURY PRET",
     href: "/shop?category=Luxury%20Lawn",
     image: "/home_page_images/hero_banner_1_lavender.jpg",
-    ratingText: "4.9/5 from 30,500+ luxury shoppers",
+    ratingText: "Handcrafted Luxury & Premium Fabrics",
     objectPosition: "center 22%",
   },
   {
@@ -43,7 +43,7 @@ export const HERO_BANNER_SLIDES: BannerSlide[] = [
     ctaText: "DISCOVER UNSTITCHED",
     href: "/shop?category=Printed%20Lawn",
     image: "/home_page_images/hero_banner_2_crimson.jpg",
-    ratingText: "4.9/5 | Customer-loved fabrics",
+    ratingText: "Pure Breathable Lawn & Resham Embroidery",
     objectPosition: "center 20%",
   },
   {
@@ -54,7 +54,7 @@ export const HERO_BANNER_SLIDES: BannerSlide[] = [
     ctaText: "FIND YOUR SIGNATURE PIECE",
     href: "/shop?category=Pret%20Wear",
     image: "/home_page_images/hero_banner_3_teal.jpg",
-    ratingText: "4.9/5 from 20,000+ happy customers",
+    ratingText: "Artisan Stitched & Ready to Wear",
     objectPosition: "center 25%",
   },
   {
@@ -65,7 +65,7 @@ export const HERO_BANNER_SLIDES: BannerSlide[] = [
     ctaText: "DISCOVER FESTIVE FORMALS",
     href: "/shop?category=Festive%20Chiffon",
     image: "/home_page_images/hero_banner_4_royal_black.jpg",
-    ratingText: "5.0/5 | Master artisan craftsmanship",
+    ratingText: "Heritage Zari & Antique Zardozi Work",
     objectPosition: "center 22%",
   },
   {
@@ -76,7 +76,7 @@ export const HERO_BANNER_SLIDES: BannerSlide[] = [
     ctaText: "EXPLORE SUMMER EDIT",
     href: "/shop?category=Printed%20Lawn",
     image: "/home_page_images/hero_banner_5_blush.jpg",
-    ratingText: "4.8/5 from 18,000+ fashion lovers",
+    ratingText: "Summer Lawn & Pure Silk Dupattas",
     objectPosition: "center 20%",
   },
 ];
