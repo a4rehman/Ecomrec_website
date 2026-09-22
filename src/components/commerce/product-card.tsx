@@ -24,11 +24,31 @@ export function ProductCard({ product }: { product: Product }) {
     <motion.article initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} className="group min-w-0">
       <div className="relative overflow-hidden bg-[#f5f1ee] aspect-[3/4] w-full">
         <Link href={`/product/${product.slug}`} className="block w-full h-full focus-ring">
-          <Image src={product.images[0]} alt={productImageAlt(product)} fill sizes="(max-width:768px) 50vw, (max-width:1280px) 33vw, 25vw" className={`object-cover transition duration-700 ease-out ${nextImage ? "group-hover:scale-105 group-hover:opacity-0" : "group-hover:scale-105"}`} />
-          {nextImage && <>
-            <Image src={nextImage} alt={`${product.name} alternate view`} fill sizes="(max-width:768px) 50vw, (max-width:1280px) 33vw, 25vw" className="object-cover opacity-0 scale-105 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100" />
-            <span className="pointer-events-none absolute bottom-3 left-3 translate-y-2 bg-background/92 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[.16em] opacity-0 shadow-sm transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">Next view</span>
-          </>}
+          <Image
+            src={product.images[0]}
+            alt={productImageAlt(product)}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+            quality={80}
+            loading="lazy"
+            className={`object-cover transition duration-700 ease-out ${nextImage ? "group-hover:scale-105 group-hover:opacity-0" : "group-hover:scale-105"}`}
+          />
+          {nextImage && (
+            <>
+              <Image
+                src={nextImage}
+                alt={`${product.name} alternate view`}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+                quality={80}
+                loading="lazy"
+                className="object-cover opacity-0 scale-105 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100"
+              />
+              <span className="pointer-events-none absolute bottom-3 left-3 translate-y-2 bg-background/92 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[.16em] opacity-0 shadow-sm transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                Next view
+              </span>
+            </>
+          )}
         </Link>
         {product.badge && <span className="absolute left-2.5 top-2.5 sm:left-3 sm:top-3 bg-background/92 px-2.5 py-1 text-[8px] sm:text-[9px] font-semibold uppercase tracking-[.18em] shadow-sm">{product.badge}</span>}
         <button className="focus-ring absolute right-2.5 top-2.5 sm:right-3 sm:top-3 grid h-8 w-8 sm:h-10 sm:w-10 place-items-center rounded-full bg-background/92 shadow-sm transition hover:bg-foreground hover:text-background" onClick={() => dispatch(toggleWishlist(product.id))} aria-label={wished ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}><Heart size={16} className="sm:size-[18px]" strokeWidth={1.6} fill={wished ? "currentColor" : "none"} /></button>

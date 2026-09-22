@@ -57,7 +57,9 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
             src="/home_page_images/banner_luxury_lawn.webp"
             alt="Sawera Luxury Lawn Collection banner — embroidered 3 piece lawn suits for women"
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 1280px"
+            quality={80}
+            loading="lazy"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/20" />
@@ -102,7 +104,9 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
             src="/home_page_images/banner_festive_collection.webp"
             alt="Sawera Festive Formals Collection banner — chiffon and raw silk dresses"
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 1280px"
+            quality={80}
+            loading="lazy"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/35" />
@@ -144,7 +148,9 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
                 src={(filteredProducts[i % filteredProducts.length] || products[0]).images[0]}
                 alt={`${cat} suits for women by Sawera Collection`}
                 fill
-                sizes="25vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+                quality={80}
+                loading="lazy"
                 className="object-cover transition duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#3b2022]/72 via-[#6f4144]/18 to-transparent" />
@@ -176,7 +182,9 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
             src="/home_page_images/banner_summer_edit.webp"
             alt="Sawera Garden Edit banner — lightweight cotton lawn suits in pastel florals"
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 1280px"
+            quality={80}
+            loading="lazy"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/15" />
@@ -261,7 +269,7 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
             <FadeIn key={b.slug} delay={i * 0.08}>
               <Link href={`/blog/${b.slug}`} className="group block">
                 <div className="lux-sheen relative aspect-[4/3] overflow-hidden rounded-2xl">
-                  <Image src={b.image} alt={b.title} fill sizes="33vw" className="object-cover transition duration-700 group-hover:scale-105" />
+                  <Image src={b.image} alt={b.title} fill sizes="(max-width: 768px) 100vw, 380px" quality={80} loading="lazy" className="object-cover transition duration-700 group-hover:scale-105" />
                 </div>
                 <p className="tracked-luxury mt-5 text-xs text-accent">{b.category}</p>
                 <h3 className="mt-2 font-serif text-3xl transition group-hover:text-accent">{b.title}</h3>
@@ -284,7 +292,7 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
               transition={{ delay: i * 0.06, duration: 0.45 }}
               className="relative aspect-square overflow-hidden"
             >
-              <Image src={p.images[0]} alt={p.name} fill sizes="16vw" className="object-cover transition duration-700 hover:scale-110" />
+              <Image src={p.images[0]} alt={p.name} fill sizes="(max-width: 768px) 50vw, 200px" quality={80} loading="lazy" className="object-cover transition duration-700 hover:scale-110" />
             </motion.div>
           ))}
         </div>

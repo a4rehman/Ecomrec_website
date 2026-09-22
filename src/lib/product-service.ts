@@ -78,12 +78,22 @@ export function productWriteData(input: Omit<Product, "id">): Prisma.ProductUnch
   };
 }
 
+import { products as staticCatalog } from "@/data/products";
+
 async function queryProducts(includeUnpublished = false): Promise<Product[]> {
-  const products = await prisma.product.findMany({
-    where: includeUnpublished ? undefined : { status: "published", isActive: true },
-    orderBy: { createdAt: "desc" },
-  });
-  return products.map(toProduct);
+  try {
+    if (!process.env.DATABASE_URL) {
+      return staticCatalog;
+    }
+    const products = await prisma.product.findMany({
+      where: includeUnpublished ? undefined : { status: "published", isActive: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return products.length > 0 ? products.map(toProduct) : staticCatalog;
+  } catch (error) {
+    console.warn("Prisma query failed, falling back to static product catalog:", error instanceof Error ? error.message : String(error));
+    return staticCatalog;
+  }
 }
 
 // The public catalog is read far more often than it changes. Keeping it in
@@ -100,13 +110,24 @@ export async function listProducts(includeUnpublished = false): Promise<Product[
 }
 
 export async function findProduct(identifier: string, includeInactive = false): Promise<Product | null> {
-  const product = await prisma.product.findFirst({
-    where: {
-      OR: [{ id: identifier }, { slug: identifier }],
-      ...(includeInactive ? {} : { status: "published", isActive: true }),
-    },
-  });
-  return product ? toProduct(product) : null;
+  try {
+    if (!process.env.DATABASE_URL) {
+      return staticCatalog.find((p) => p.id === identifier || p.slug === identifier) || null;
+    }
+    const product = await prisma.product.findFirst({
+      where: {
+        OR: [{ id: identifier }, { slug: identifier }],
+        ...(includeInactive ? {} : { status: "published", isActive: true }),
+      },
+    });
+    if (!product) {
+      return staticCatalog.find((p) => p.id === identifier || p.slug === identifier) || null;
+    }
+    return toProduct(product);
+  } catch (error) {
+    console.warn("Prisma findProduct failed, falling back to static product catalog:", error instanceof Error ? error.message : String(error));
+    return staticCatalog.find((p) => p.id === identifier || p.slug === identifier) || null;
+  }
 }
 
 export function safeDatabaseMessage(error: unknown): string {

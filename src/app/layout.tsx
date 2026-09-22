@@ -11,8 +11,20 @@ import { ElevenLabsAgent } from "@/components/layout/elevenlabs-agent";
 import { GoogleCustomerReviewsBadge } from "@/components/layout/google-customer-reviews-badge";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 
-const sans = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-sans", display: "swap" });
-const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-serif", display: "swap" });
+const sans = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+  preload: true
+});
+const serif = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-serif",
+  display: "swap",
+  preload: true
+});
 
 const siteUrl = "https://www.saweracollection.com";
 

@@ -178,8 +178,8 @@ export function HeroSlider({ products }: HeroSliderProps) {
               fill
               priority={current === 0}
               loading={current === 0 ? "eager" : "lazy"}
-              sizes="100vw"
-              quality={95}
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 100vw, 1920px"
+              quality={82}
               style={{ objectPosition: slide.objectPosition || "center 22%" }}
               className="object-cover object-center"
             />

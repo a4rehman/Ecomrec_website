@@ -7,27 +7,48 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true
   },
+  compress: true,
+  poweredByHeader: false,
   images: {
-    // Product photos are hosted on Shopify CDN. Load them directly because
-    // Vercel's optimizer rejects these signed/parameterized image URLs.
-    unoptimized: true,
     formats: ["image/avif", "image/webp"],
-    qualities: [75, 85],
-    minimumCacheTTL: 86400,
-    deviceSizes: [320, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    minimumCacheTTL: 31536000,
+    deviceSizes: [360, 640, 768, 1024, 1280, 1920],
+    imageSizes: [64, 128, 256, 384],
     remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "images.pexels.com" }
+      { protocol: "https", hostname: "**" }
     ]
   },
   async headers() {
     return [
       {
-        source: "/og-image.jpg",
-        headers: [{ key: "Cache-Control", value: "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800" }]
+        source: "/home_page_images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable"
+          }
+        ]
       },
       {
         source: "/sawera-logo.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        source: "/og-image.jpg",
         headers: [{ key: "Cache-Control", value: "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800" }]
       }
     ];
