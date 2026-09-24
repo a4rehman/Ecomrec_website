@@ -129,10 +129,57 @@ export default function CheckoutPage() {
 
     try {
       const orderId = `SAW-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      // Save order to Hostinger MySQL Database — server validates product
+      // existence and prices against the live DB. Only commit client state
+      // after the server confirms the order was recorded.
+      const orderRes = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: orderId,
+          name,
+          email,
+          address,
+          city,
+          zip,
+          phone,
+          date: new Date().toLocaleDateString(),
+          status: "Processing",
+          method: payMethod,
+          couponCode: coupon?.code,
+          discount: discountAmount,
+          items: cart.map((item) => ({
+            id: item.id,
+            qty: item.qty,
+            size: item.size,
+            color: item.color,
+          })),
+        }),
+      });
+
+      let orderData: any;
+      try {
+        orderData = await orderRes.json();
+      } catch {
+        orderData = null;
+      }
+
+      if (!orderRes.ok || !orderData?.ok) {
+        // Server rejected the order — do NOT show success. Show the server message.
+        setError(
+          orderData?.message ||
+            "Your order could not be placed. Please try again or contact support."
+        );
+        return;
+      }
+
+      // Server confirmed the order — now commit to client state.
+      const serverVerifiedTotal: number = orderData.total ?? grandTotal;
       const newOrder = {
         id: orderId,
         items: cart,
-        total: grandTotal,
+        total: serverVerifiedTotal,
         name,
         email,
         address,
@@ -142,40 +189,12 @@ export default function CheckoutPage() {
         date: new Date().toLocaleDateString(),
         status: "Processing",
         couponCode: coupon?.code,
-        discount: discountAmount
+        discount: discountAmount,
       };
 
       const notificationData = buildOrderNotificationData(orderId, "Placed");
-
       dispatch(createOrder(newOrder));
       setPlacedOrderNotificationData(notificationData);
-
-      // Save order to Hostinger MySQL Database
-      try {
-        await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...newOrder,
-            method: payMethod,
-            couponCode: coupon?.code,
-            discount: discountAmount,
-            items: cart.map((item) => {
-              const product = products.find((prod) => prod.id === item.id);
-              return {
-                id: item.id,
-                name: product?.name || "Product",
-                qty: item.qty,
-                size: item.size,
-                color: item.color,
-                price: product?.price || 0
-              };
-            })
-          })
-        });
-      } catch (err) {
-        console.error("Failed to save order to database:", err);
-      }
 
       try {
         const notifyRes = await fetch("/api/notify/order", {
@@ -192,6 +211,7 @@ export default function CheckoutPage() {
       dispatch(clearCart());
       setGeneratedId(orderId);
       setOrderPlaced(true);
+
     } catch (err: any) {
       setError(err?.message || "An error occurred while placing your order. Please try again.");
     } finally {

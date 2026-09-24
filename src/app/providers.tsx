@@ -2,7 +2,8 @@
 
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { ReactNode, useEffect } from "react";
-import { store, RootState, setProducts, setOrders, loginUser, setPriceTier, setDarkMode } from "@/store/store";
+import { store, RootState, setProducts, loginUser, setPriceTier, setDarkMode } from "@/store/store";
+
 
 function StateHydrator({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
@@ -44,13 +45,13 @@ function StateHydrator({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Failed to parse stored price tier:", error);
     }
-    try {
-      const storedOrders = localStorage.getItem("jahanara_orders");
-      if (storedOrders) dispatch(setOrders(JSON.parse(storedOrders)));
-    } catch (error) {
-      console.error("Failed to parse stored orders:", error);
-    }
+    // Orders are not persisted to localStorage — they are loaded from the
+    // server database at admin mount. Storing them locally risks showing
+    // phantom orders that were never confirmed by the server.
+    // Remove any stale key that may still exist from before this fix.
+    try { localStorage.removeItem("jahanara_orders"); } catch { /* ignore */ }
   }, [dispatch]);
+
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -80,13 +81,7 @@ function StateHydrator({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeout);
   }, [state.priceTier]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      try { localStorage.setItem("jahanara_orders", JSON.stringify(state.orders)); }
-      catch (error) { console.error("Failed to persist orders:", error); }
-    }, 0);
-    return () => clearTimeout(timeout);
-  }, [state.orders]);
+  // Orders are intentionally NOT persisted to localStorage.
 
   return <>{children}</>;
 }

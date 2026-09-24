@@ -38,10 +38,7 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
   // a single polished row instead of leaving a partial second line below.
   const bestSellers = (getProductsByBadge(products, "Best Seller").length ? getProductsByBadge(products, "Best Seller") : products).slice(0, 6);
   const celebrityEdit = (getProductsByBadge(products, "Celebrity").length ? getProductsByBadge(products, "Celebrity") : products.filter((p) => p.category === "Festive Chiffon")).slice(0, 6);
-  const configuredPremiumNewArrivals = products.filter((p) =>
-    ["sc_tehwaar_anayra_amal", "sc_amour_bin_ilyas_186a", "sc_amour_bin_ilyas_187b", "sc_push_pawan_zarizaa_titli"].includes(p.id)
-  );
-  const premiumNewArrivals = configuredPremiumNewArrivals.length ? configuredPremiumNewArrivals : products.slice(4, 8);
+  const premiumNewArrivals = (getProductsByBadge(products, "New").length ? getProductsByBadge(products, "New") : products).slice(0, 4);
   const collectionCategories = [...new Set(products.map((product) => product.category))].slice(0, 4);
 
   return (

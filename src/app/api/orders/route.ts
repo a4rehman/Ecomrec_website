@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { products as catalogProducts } from "@/data/products";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -23,27 +22,75 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, message: "Order must contain at least one item." }, { status: 400 });
     }
 
-    // 1. Authoritative Server-side Price & Items Calculation
+    // 1. Authoritative server-side product lookup from the live production database.
+    //    The client is never trusted for pricing or availability.
     let calculatedSubtotal = 0;
-    const validatedItems = items.map((item: any) => {
-      // Find product in catalog or DB
-      const catalogItem = catalogProducts.find((p) => p.id === item.id || p.slug === item.id);
-      const unitPrice = catalogItem ? (catalogItem.salePrice && catalogItem.salePrice > 0 ? catalogItem.salePrice : catalogItem.price) : (Number(item.price) || 0);
-      const qty = Math.max(1, Number(item.qty) || 1);
-      
-      calculatedSubtotal += unitPrice * qty;
+    const validatedItems: {
+      productId: string;
+      productName: string;
+      qty: number;
+      size: string | null;
+      color: string | null;
+      unitPrice: number;
+    }[] = [];
 
-      return {
-        productId: item.id || "product",
-        productName: item.name || catalogItem?.name || "Sawera Luxury Suit",
+    for (const item of items) {
+      const productId: string = item.id || "";
+      if (!productId) {
+        return NextResponse.json(
+          { ok: false, message: "One or more cart items are missing a product ID." },
+          { status: 400 }
+        );
+      }
+
+      // Query the live database — never use static catalog or client-supplied price.
+      let dbProduct: {
+        id: string; name: string; price: number; salePrice: number | null;
+        status: string; isActive: boolean;
+      } | null = null;
+
+      try {
+        dbProduct = await prisma.product.findFirst({
+          where: {
+            OR: [{ id: productId }, { slug: productId }],
+            status: "published",
+            isActive: true,
+          },
+          select: { id: true, name: true, price: true, salePrice: true, status: true, isActive: true },
+        });
+      } catch (dbLookupError) {
+        console.error("Product DB lookup failed during order creation:", dbLookupError);
+        return NextResponse.json(
+          { ok: false, message: "We could not verify your order right now. Please try again in a moment." },
+          { status: 503 }
+        );
+      }
+
+      if (!dbProduct) {
+        return NextResponse.json(
+          { ok: false, message: `One or more products in your cart are no longer available. Please refresh the page and try again.` },
+          { status: 400 }
+        );
+      }
+
+      const unitPrice =
+        typeof dbProduct.salePrice === "number" && dbProduct.salePrice > 0
+          ? dbProduct.salePrice
+          : Number(dbProduct.price);
+      const qty = Math.max(1, Number(item.qty) || 1);
+
+      calculatedSubtotal += unitPrice * qty;
+      validatedItems.push({
+        productId: dbProduct.id,
+        productName: dbProduct.name,
         qty,
         size: item.size || null,
         color: item.color || null,
-        unitPrice
-      };
-    });
+        unitPrice,
+      });
+    }
 
-    // 2. Authoritative Server-side Coupon Calculation
+    // 2. Authoritative server-side coupon calculation.
     let discountAmount = 0;
     if (couponCode && typeof couponCode === "string") {
       const normalizedCode = couponCode.trim().toUpperCase();
@@ -56,7 +103,8 @@ export async function POST(request: NextRequest) {
     const calculatedGrandTotal = Math.max(0, calculatedSubtotal - discountAmount);
     const orderId = id || `SAW-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    // 3. Database Persistence with safe error handling
+    // 3. Persist to production database. If the DB is unavailable, return an
+    //    honest error — never fake a successful order that does not exist.
     try {
       const order = await prisma.order.create({
         data: {
@@ -71,39 +119,19 @@ export async function POST(request: NextRequest) {
           status: status || "Processing",
           method: method || "cod",
           date: date || new Date().toLocaleDateString(),
-          items: {
-            create: validatedItems
-          }
+          items: { create: validatedItems },
         },
-        include: { items: true }
+        include: { items: true },
       });
 
       return NextResponse.json({ ok: true, order, total: calculatedGrandTotal }, { status: 201 });
     } catch (dbError: any) {
-      console.warn("Database persistence unavailable or offline:", dbError?.message || dbError);
-      
-      // Return successful response for client state if DB is offline during local test
-      const fallbackOrder = {
-        id: orderId,
-        name,
-        email,
-        address,
-        city,
-        zip,
-        phone,
-        total: calculatedGrandTotal,
-        status: status || "Processing",
-        method: method || "cod",
-        date: date || new Date().toLocaleDateString(),
-        items: validatedItems
-      };
-
-      return NextResponse.json({
-        ok: true,
-        order: fallbackOrder,
-        total: calculatedGrandTotal,
-        note: "Order recorded in session"
-      }, { status: 201 });
+      console.error("Order DB write failed:", dbError?.message || dbError);
+      // Return 503 — the order was NOT recorded. The client must NOT show a success state.
+      return NextResponse.json(
+        { ok: false, message: "We could not record your order right now due to a temporary issue. Please try again. You have NOT been charged." },
+        { status: 503 }
+      );
     }
   } catch (error: any) {
     console.error("Order API request error:", error);
@@ -122,7 +150,7 @@ export async function GET(request: NextRequest) {
       const orders = await prisma.order.findMany({
         where: whereCondition,
         orderBy: { createdAt: "desc" },
-        include: { items: true }
+        include: { items: true },
       });
 
       const formattedOrders = orders.map((o) => ({
@@ -144,8 +172,8 @@ export async function GET(request: NextRequest) {
           qty: item.qty,
           size: item.size || undefined,
           color: item.color || undefined,
-          price: item.unitPrice
-        }))
+          price: item.unitPrice,
+        })),
       }));
 
       return NextResponse.json({ ok: true, orders: formattedOrders }, { status: 200 });
@@ -158,3 +186,4 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ok: false, message: "Failed to retrieve orders." }, { status: 500 });
   }
 }
+

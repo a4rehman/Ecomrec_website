@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, toggleDarkMode, logoutUser } from "@/store/store";
 import { categories } from "@/data/products";
-import AnnouncementMarquee from "@/components/ui/AnnouncementMarquee";
+// import AnnouncementMarquee from "@/components/ui/AnnouncementMarquee";   
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -36,9 +36,9 @@ export function Header() {
   return (
     <>
       {/* Top free‑shipping marquee */}
-      <div className="h-7 bg-[#191919] text-white">
+      {/* <div className="h-7 bg-[#191919] text-white">
         <AnnouncementMarquee />
-      </div>
+      </div> */}
 
       {/* Main navigation bar */}
       <header className="sticky top-0 z-40 border-b border-line bg-background/88 backdrop-blur-xl transition-all duration-300">

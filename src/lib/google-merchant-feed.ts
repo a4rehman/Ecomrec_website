@@ -36,8 +36,7 @@ async function getPublishedProducts(): Promise<Product[]> {
     // Database fallback
   }
 
-  const { products: staticCatalog } = await import("@/data/products");
-  return staticCatalog.filter((p) => p.status !== "draft" && p.isActive !== false);
+  return [];
 }
 
 export async function generateGoogleShoppingXml(): Promise<string> {

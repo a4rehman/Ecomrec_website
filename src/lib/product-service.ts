@@ -81,31 +81,27 @@ export function productWriteData(input: Omit<Product, "id">): Prisma.ProductUnch
   };
 }
 
-import { products as staticCatalog } from "@/data/products";
-
 async function queryProducts(includeUnpublished = false): Promise<Product[]> {
   try {
     if (!process.env.DATABASE_URL) {
-      return staticCatalog;
+      return [];
     }
     const products = await prisma.product.findMany({
       where: includeUnpublished ? undefined : { status: "published", isActive: true },
       orderBy: { createdAt: "desc" },
     });
-    return products.length > 0 ? products.map(toProduct) : staticCatalog;
+    return products.map(toProduct);
   } catch (error) {
-    console.warn("Prisma query failed, falling back to static product catalog:", error instanceof Error ? error.message : String(error));
-    return staticCatalog;
+    console.warn("Prisma query failed:", error instanceof Error ? error.message : String(error));
+    return [];
   }
 }
 
-// The public catalog is read far more often than it changes. Keeping it in
-// Next's shared data cache avoids a slow Hostinger MySQL connection on every
-// visitor's first product request. Product writes invalidate this cache.
+// The public catalog is cached with tag 'products' which is invalidated immediately on any admin product mutation
 const cachedPublishedProducts = unstable_cache(
   () => queryProducts(false),
-  ["published-products-v2"],
-  { revalidate: 300, tags: ["products"] },
+  ["published-products-v3"],
+  { revalidate: 60, tags: ["products"] },
 );
 
 export async function listProducts(includeUnpublished = false): Promise<Product[]> {
@@ -115,7 +111,7 @@ export async function listProducts(includeUnpublished = false): Promise<Product[
 export async function findProduct(identifier: string, includeInactive = false): Promise<Product | null> {
   try {
     if (!process.env.DATABASE_URL) {
-      return staticCatalog.find((p) => p.id === identifier || p.slug === identifier) || null;
+      return null;
     }
     const product = await prisma.product.findFirst({
       where: {
@@ -124,12 +120,12 @@ export async function findProduct(identifier: string, includeInactive = false): 
       },
     });
     if (!product) {
-      return staticCatalog.find((p) => p.id === identifier || p.slug === identifier) || null;
+      return null;
     }
     return toProduct(product);
   } catch (error) {
-    console.warn("Prisma findProduct failed, falling back to static product catalog:", error instanceof Error ? error.message : String(error));
-    return staticCatalog.find((p) => p.id === identifier || p.slug === identifier) || null;
+    console.warn("Prisma findProduct failed:", error instanceof Error ? error.message : String(error));
+    return null;
   }
 }
 

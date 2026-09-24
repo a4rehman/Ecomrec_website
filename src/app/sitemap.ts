@@ -41,11 +41,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       orderBy: { updatedAt: "desc" },
     });
   } catch {
-    // If database is temporarily unavailable, fallback to published static catalog
-    const { products: staticCatalog } = await import("@/data/products");
-    products = staticCatalog
-      .filter((p) => p.status !== "draft" && p.isActive !== false)
-      .map((p) => ({ slug: p.slug, updatedAt: new Date() }));
+    // Database unavailable
+    products = [];
   }
 
   const productEntries: MetadataRoute.Sitemap = products.map((p) => ({
