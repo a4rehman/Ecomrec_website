@@ -1,5 +1,3 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import crypto from "node:crypto";
 import { put, del } from "@vercel/blob";
 
@@ -19,6 +17,19 @@ const ALLOWED_MIME_TYPES = new Set([
 ]);
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
+/**
+ * Determine if code is running in a serverless / Vercel cloud environment.
+ */
+export function isServerlessEnvironment(): boolean {
+  return Boolean(
+    process.env.VERCEL ||
+    process.env.VERCEL_ENV ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.LAMBDA_TASK_ROOT ||
+    (process.env.NODE_ENV === "production" && !process.env.ALLOW_LOCAL_STORAGE)
+  );
+}
 
 /**
  * Validate image buffer headers (magic bytes) to prevent malicious files disguised as images.
@@ -101,7 +112,7 @@ async function optimizeImageBuffer(
 }
 
 /**
- * Upload an image file to persistent storage (Vercel Blob in production, or local fallback).
+ * Upload an image file to persistent storage (Vercel Blob in production, or local fallback in dev).
  */
 export async function uploadImageToStorage(
   fileBuffer: Buffer,
@@ -142,8 +153,7 @@ export async function uploadImageToStorage(
     .slice(0, 40) || "suit";
   const safeFilename = `products/${cleanBaseName}-${timestamp}-${randomHash}${extension}`;
 
-  // 4. Determine storage target
-  // Check if Vercel Blob token is configured (Standard Vercel Production)
+  // 4. Primary: Vercel Blob Storage (Production & Development with BLOB_READ_WRITE_TOKEN)
   const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
 
   if (blobToken) {
@@ -162,13 +172,13 @@ export async function uploadImageToStorage(
         mimeType: finalMime,
         storageProvider: "vercel-blob"
       };
-    } catch (blobErr) {
-      console.error("Vercel Blob upload failed, falling back if available:", blobErr);
-      // If blob fails in non-prod or token error, continue to fallback
+    } catch (blobErr: any) {
+      console.error("Vercel Blob upload failed:", blobErr);
+      throw new Error(`Vercel Blob storage error: ${blobErr?.message || "Failed to store image in Vercel Blob"}`);
     }
   }
 
-  // Check if Cloudinary is configured
+  // 5. Secondary: Cloudinary Storage
   const cloudinaryName = process.env.CLOUDINARY_CLOUD_NAME;
   const cloudinaryKey = process.env.CLOUDINARY_API_KEY;
   const cloudinarySecret = process.env.CLOUDINARY_API_SECRET;
@@ -206,25 +216,43 @@ export async function uploadImageToStorage(
     }
   }
 
-  // Fallback: Local persistent storage in public/uploads/products/
-  // This ensures local development and server deployments persist images correctly.
-  const localUploadsDir = path.join(process.cwd(), "public", "uploads", "products");
-  await fs.mkdir(localUploadsDir, { recursive: true });
+  // 6. Serverless / Vercel Runtime Guard
+  // On Vercel / serverless runtime, the filesystem is read-only and ephemeral.
+  // NEVER attempt filesystem operations (mkdir/writeFile) on Vercel.
+  if (isServerlessEnvironment()) {
+    throw new Error(
+      "Vercel Blob storage is not connected. Please attach a Vercel Blob store in your Vercel Dashboard (Storage -> Create Blob Store) or set the BLOB_READ_WRITE_TOKEN environment variable in Vercel Project Settings."
+    );
+  }
 
-  const localFileName = `${cleanBaseName}-${timestamp}-${randomHash}${extension}`;
-  const localFilePath = path.join(localUploadsDir, localFileName);
+  // 7. Local Development Fallback (Only on developer machine / localhost outside Vercel)
+  try {
+    const { promises: fs } = await import("node:fs");
+    const path = await import("node:path");
 
-  await fs.writeFile(localFilePath, processedBuffer);
+    const localUploadsDir = path.join(process.cwd(), "public", "uploads", "products");
+    await fs.mkdir(localUploadsDir, { recursive: true });
 
-  const publicUrl = `/uploads/products/${localFileName}`;
+    const localFileName = `${cleanBaseName}-${timestamp}-${randomHash}${extension}`;
+    const localFilePath = path.join(localUploadsDir, localFileName);
 
-  return {
-    url: publicUrl,
-    filename: localFileName,
-    size: processedBuffer.length,
-    mimeType: finalMime,
-    storageProvider: "local"
-  };
+    await fs.writeFile(localFilePath, processedBuffer);
+
+    const publicUrl = `/uploads/products/${localFileName}`;
+
+    return {
+      url: publicUrl,
+      filename: localFileName,
+      size: processedBuffer.length,
+      mimeType: finalMime,
+      storageProvider: "local"
+    };
+  } catch (fsErr: any) {
+    console.error("Local filesystem write failed:", fsErr);
+    throw new Error(
+      `Failed to save image: Persistent cloud storage is required. Please set BLOB_READ_WRITE_TOKEN.`
+    );
+  }
 }
 
 /**
@@ -243,8 +271,10 @@ export async function deleteStoredImage(imageUrl: string): Promise<boolean> {
       }
     }
 
-    // 2. Local uploads file
-    if (imageUrl.startsWith("/uploads/products/")) {
+    // 2. Local uploads file (only in local dev outside serverless)
+    if (!isServerlessEnvironment() && imageUrl.startsWith("/uploads/products/")) {
+      const { promises: fs } = await import("node:fs");
+      const path = await import("node:path");
       const fileName = path.basename(imageUrl);
       const filePath = path.join(process.cwd(), "public", "uploads", "products", fileName);
       await fs.unlink(filePath).catch(() => {});

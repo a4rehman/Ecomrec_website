@@ -18,6 +18,7 @@ import {
   Loader2, Star, X, UploadCloud, AlertCircle
 } from "lucide-react";
 import { isValidImageUrl } from "@/lib/product-service";
+import { upload as uploadToVercelBlob } from "@vercel/blob/client";
 
 const CsvProductImporter = dynamic(
   () => import("@/components/admin/csv-product-importer").then((module) => module.CsvProductImporter),
@@ -219,7 +220,7 @@ export default function AdminPage() {
     }
   };
 
-  // Process real persistent image upload via backend storage API
+  // Process real persistent image upload via direct Vercel Blob client upload or server storage API
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -232,13 +233,13 @@ export default function AdminPage() {
     for (const file of fileList) {
       if (!allowedTypes.includes(file.type.toLowerCase())) {
         setUploadStatus("error");
-        setUploadErrorMsg("Image must be JPG, PNG, or WEBP.");
+        setUploadErrorMsg(`"${file.name}": Image must be JPG, PNG, or WEBP.`);
         e.target.value = "";
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
         setUploadStatus("error");
-        setUploadErrorMsg("Image size is too large (maximum 10MB per file).");
+        setUploadErrorMsg(`"${file.name}": Image size is too large (maximum 10MB per file).`);
         e.target.value = "";
         return;
       }
@@ -246,41 +247,81 @@ export default function AdminPage() {
 
     setUploadingImages(true);
     setUploadStatus("uploading");
-    setUploadProgress(
-      fileList.length === 1 ? "Uploading 1 photo to persistent storage..." : `Uploading 1 of ${fileList.length} photos...`
-    );
 
-    try {
-      const formData = new FormData();
-      fileList.forEach((file) => formData.append("files", file));
+    const uploadedUrls: string[] = [];
+    const errors: string[] = [];
 
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
+    // Attempt direct Vercel Blob client upload first, fallback to /api/admin/upload multipart
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      setUploadProgress(`Uploading ${i + 1} of ${fileList.length}: ${file.name}...`);
 
-      const data = await res.json();
-      if (!res.ok || !data.ok || !Array.isArray(data.urls) || data.urls.length === 0) {
-        throw new Error(data.message || "Failed to upload image(s).");
+      let directSuccess = false;
+      try {
+        const cleanBase = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await uploadToVercelBlob(`products/${cleanBase}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/admin/upload/blob",
+        });
+        if (blob && blob.url) {
+          uploadedUrls.push(blob.url);
+          directSuccess = true;
+        }
+      } catch (blobDirectErr: any) {
+        // Direct client upload not configured or fell through, proceed to server fallback below
+        console.warn("Direct blob client upload not available, using server endpoint:", blobDirectErr);
       }
 
-      setImageFiles((prev) => [...prev, ...data.urls]);
-      setUploadStatus("success");
-      setUploadProgress(
-        `✓ Uploaded ${data.urls.length} photo${data.urls.length > 1 ? "s" : ""} successfully!`
-      );
-      setTimeout(() => {
-        setUploadStatus("idle");
-        setUploadProgress("");
-      }, 4500);
-    } catch (err: any) {
-      console.error("Upload error:", err);
-      setUploadStatus("error");
-      setUploadErrorMsg(`❌ Upload failed: ${err.message || "Please try again"}`);
-    } finally {
-      setUploadingImages(false);
-      e.target.value = "";
+      if (!directSuccess) {
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const res = await fetch("/api/admin/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await res.json();
+          if (res.ok && data.ok && data.url) {
+            uploadedUrls.push(data.url);
+          } else {
+            errors.push(`${file.name}: ${data.message || "Upload failed"}`);
+          }
+        } catch (serverErr: any) {
+          errors.push(`${file.name}: ${serverErr.message || "Upload network error"}`);
+        }
+      }
     }
+
+    if (uploadedUrls.length > 0) {
+      setImageFiles((prev) => [...prev, ...uploadedUrls]);
+      if (errors.length === 0) {
+        setUploadStatus("success");
+        setUploadProgress(
+          `✓ Uploaded ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? "s" : ""} successfully to persistent cloud storage!`
+        );
+      } else {
+        setUploadStatus("error");
+        setUploadErrorMsg(
+          `Uploaded ${uploadedUrls.length} photo(s), but failed for: ${errors.join(", ")}`
+        );
+      }
+      setTimeout(() => {
+        if (errors.length === 0) {
+          setUploadStatus("idle");
+          setUploadProgress("");
+        }
+      }, 5000);
+    } else {
+      setUploadStatus("error");
+      setUploadErrorMsg(
+        `❌ Upload failed: ${errors.join(", ") || "Please verify storage configuration and try again."}`
+      );
+    }
+
+    setUploadingImages(false);
+    e.target.value = "";
   };
 
   const handleAddImageUrl = () => {
