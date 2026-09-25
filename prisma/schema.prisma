@@ -116,6 +116,7 @@ model Product {
 model HomeSlider {
   id             String   @id @default(uuid())
   productId      String
+  selectedImage  String?
   sliderOrder    Int      @default(0)
   tagline        String?
   title          String?

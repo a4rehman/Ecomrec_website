@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { HeroSlider } from "@/components/ui/HeroSlider";
+import { HeroSlider, type BannerSlide } from "@/components/ui/HeroSlider";
 import { faqSchema } from "@/lib/seo";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -15,7 +15,13 @@ const HomeBelowFold = dynamic(() => import("@/components/commerce/home-below-fol
 const MARQUEE_TEXT =
   "SAWERA COLLECTION · MADE FOR HER. INSPIRED BY GRACE · NEW ARRIVALS · MODEST FASHION · BLUSH EDITS · PREMIUM PRET · FESTIVE FORMALS · ";
 
-export function HomeContent({ initialProducts }: { initialProducts: Product[] }) {
+export function HomeContent({
+  initialProducts,
+  heroSlides,
+}: {
+  initialProducts: Product[];
+  heroSlides?: BannerSlide[];
+}) {
   const { priceTier } = useSelector((state: RootState) => state.commerce);
   const filteredProducts = initialProducts.filter((product) => {
     if (priceTier === "premium") return product.price >= 5000;
@@ -31,9 +37,10 @@ export function HomeContent({ initialProducts }: { initialProducts: Product[] })
         { q: "How fast is shipping, both domestically and internationally?", a: "Domestic delivery within Pakistan takes 2-4 business days. International express shipping via DHL/FedEx takes 5-7 business days to the USA, UK, Canada, and UAE. Custom-stitched suits require additional processing time." },
         { q: "How should I care for suits with heavy tilla and zari work?", a: "We strongly recommend dry cleaning for all products containing delicate hand-embroidery, gota borders, tilla work, or premium silk/chiffon fabrics. Iron on low heat on the reverse side of the embroidery to avoid damage." },
       ])) }} />
-      <HeroSlider products={sliderProducts} />
+      <HeroSlider slides={heroSlides} products={sliderProducts} />
       <div className="overflow-hidden border-y border-line bg-foreground py-4"><div className="flex animate-[marquee_28s_linear_infinite] whitespace-nowrap">{[0, 1].map((index) => <span key={index} className="tracked-luxury shrink-0 pr-8 text-xs">{MARQUEE_TEXT}</span>)}</div></div>
       <HomeBelowFold initialProducts={initialProducts} />
     </>
   );
 }
+

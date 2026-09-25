@@ -98,7 +98,7 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
       <FadeIn className="py-8">
         <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
           <Image
-            src="/home_page_images/banner_festive_collection.webp"
+            src="/home_page_images/hero_banner_4_royal_black.jpg"
             alt="Sawera Festive Formals Collection banner — chiffon and raw silk dresses"
             fill
             sizes="(max-width: 768px) 100vw, 1280px"

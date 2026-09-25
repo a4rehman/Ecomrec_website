@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingBag, 
-  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp, FileUp
+  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp, FileUp, SlidersHorizontal
 } from "lucide-react";
 
 const CsvProductImporter = dynamic(
@@ -22,12 +22,17 @@ const CsvProductImporter = dynamic(
   { ssr: false, loading: () => <div className="mb-7 rounded border border-line p-5 text-sm text-muted">Loading CSV import tools…</div> },
 );
 
+const HomeSliderManager = dynamic(
+  () => import("@/components/admin/home-slider-manager").then((module) => module.HomeSliderManager),
+  { ssr: false, loading: () => <div className="p-8 text-center text-sm text-muted">Loading Home Slider manager…</div> },
+);
+
 export default function AdminPage() {
   const router = useRouter();
   const dispatch = useDispatch();
   
   const { products, user, orders } = useSelector((s: RootState) => s.commerce);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "orders" | "users" | "security">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "products" | "slider" | "orders" | "users" | "security">("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [authorized, setAuthorized] = useState(false);
 
@@ -538,6 +543,14 @@ export default function AdminPage() {
             <span className="flex items-center gap-3"><ShoppingBag size={16} /> Manage Products</span>
           </button>
           <button
+            onClick={() => { setActiveTab("slider"); setShowForm(false); }}
+            className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
+              activeTab === "slider" && !showForm ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
+            }`}
+          >
+            <span className="flex items-center gap-3"><SlidersHorizontal size={16} /> Home Hero Slider</span>
+          </button>
+          <button
             onClick={() => { setActiveTab("orders"); setShowForm(false); }}
             className={`w-full text-left px-5 py-4 rounded text-sm uppercase tracking-wider font-semibold transition ${
               activeTab === "orders" ? "bg-foreground text-background" : "hover:bg-neutral-100 dark:hover:bg-neutral-900 text-muted"
@@ -929,6 +942,9 @@ export default function AdminPage() {
                 )}
               </div>
             </div>
+          ) : activeTab === "slider" ? (
+            /* Home Hero Slider Management View */
+            <HomeSliderManager products={products} onToast={showToast} />
           ) : activeTab === "orders" ? (
             /* Orders Management View */
             <div>

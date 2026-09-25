@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import type { Product } from "@/data/products";
 
 interface HeroSliderProps {
+  slides?: BannerSlide[];
   products?: Product[];
 }
 
@@ -107,8 +108,25 @@ const textChildVariants: Variants = {
   },
 };
 
-export function HeroSlider({ products }: HeroSliderProps) {
-  const slides = HERO_BANNER_SLIDES;
+export function HeroSlider({ slides: customSlides, products }: HeroSliderProps) {
+  const slides = (customSlides && customSlides.length > 0)
+    ? customSlides
+    : (products && products.length > 0)
+      ? products.slice(0, 6).map((p) => {
+          const img = p.images.find((i) => i && !i.startsWith("data:")) || p.images[0] || "/images/hero_lawn.png";
+          return {
+            id: `slide-${p.id}`,
+            tagline: p.category?.toUpperCase() || "PREMIUM EMBROIDERY",
+            title: p.name,
+            description: p.fabric ? `${p.fabric} with signature embroidery and handcrafted details.` : p.description?.slice(0, 140) || "",
+            ctaText: "SHOP NOW",
+            href: `/product/${p.slug}`,
+            image: img,
+            ratingText: "Handcrafted Luxury & Premium Fabrics",
+            objectPosition: "center 22%",
+          };
+        })
+      : HERO_BANNER_SLIDES;
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
