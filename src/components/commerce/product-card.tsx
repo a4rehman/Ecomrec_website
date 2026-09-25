@@ -14,7 +14,8 @@ import { addToCart, RootState, toggleWishlist, openCartDrawer } from "@/store/st
 export function ProductCard({ product }: { product: Product }) {
   const dispatch = useDispatch();
   const wished = useSelector((s: RootState) => s.commerce.wishlist.includes(product.id));
-  const nextImage = product.images[1];
+  const primaryImage = product.images?.[0] || "/images/hero_lawn.png";
+  const nextImage = product.images?.[1];
   const addProduct = () => {
     dispatch(addToCart({ id: product.id, qty: 1, size: product.sizes[0], color: product.colors[0] }));
     dispatch(openCartDrawer());
@@ -25,12 +26,15 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="relative overflow-hidden bg-[#f5f1ee] aspect-[3/4] w-full">
         <Link href={`/product/${product.slug}`} className="block w-full h-full focus-ring">
           <Image
-            src={product.images[0]}
+            src={primaryImage}
             alt={productImageAlt(product)}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
             quality={80}
             loading="lazy"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+            }}
             className={`object-cover transition duration-700 ease-out ${nextImage ? "group-hover:scale-105 group-hover:opacity-0" : "group-hover:scale-105"}`}
           />
           {nextImage && (
@@ -42,6 +46,9 @@ export function ProductCard({ product }: { product: Product }) {
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
                 quality={80}
                 loading="lazy"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+                }}
                 className="object-cover opacity-0 scale-105 transition-all duration-700 ease-out group-hover:scale-100 group-hover:opacity-100"
               />
               <span className="pointer-events-none absolute bottom-3 left-3 translate-y-2 bg-background/92 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[.16em] opacity-0 shadow-sm transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">

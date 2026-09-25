@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/data/products";
 import type { HomeSliderItem } from "@/lib/slider-service";
+import { isValidImageUrl } from "@/lib/product-service";
 
 interface HomeSliderManagerProps {
   products: Product[];
@@ -48,7 +49,7 @@ export function HomeSliderManager({ products, onToast }: HomeSliderManagerProps)
   }, []);
 
   const handleAddProduct = (product: Product) => {
-    const defaultImage = product.images.find((img) => img && !img.startsWith("data:")) || product.images[0] || "/images/hero_lawn.png";
+    const defaultImage = product.images.find(isValidImageUrl) || product.images[0] || "/images/hero_lawn.png";
     const newItem: HomeSliderItem = {
       id: `temp-${Date.now()}`,
       productId: product.id,
@@ -244,7 +245,7 @@ export function HomeSliderManager({ products, onToast }: HomeSliderManagerProps)
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-80 overflow-y-auto pr-1">
             {filteredProductsToAdd.map((product) => {
-              const previewImg = product.images.find((i) => i && !i.startsWith("data:")) || product.images[0] || "/images/hero_lawn.png";
+              const previewImg = product.images.find(isValidImageUrl) || product.images[0] || "/images/hero_lawn.png";
               const isAlreadyIn = sliders.some((s) => s.productId === product.id);
 
               return (
@@ -254,7 +255,15 @@ export function HomeSliderManager({ products, onToast }: HomeSliderManagerProps)
                   onClick={() => handleAddProduct(product)}
                 >
                   <div className="relative w-12 aspect-[3/4] overflow-hidden rounded bg-neutral-100 shrink-0 border border-line">
-                    <Image src={previewImg} alt={product.name} fill className="object-cover" />
+                    <Image
+                      src={previewImg}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+                      }}
+                    />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold truncate">{product.name}</p>

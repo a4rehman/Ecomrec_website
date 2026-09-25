@@ -82,11 +82,14 @@ export function CartDrawer() {
                 >
                   <div className="relative h-24 w-20 flex-shrink-0 overflow-hidden bg-neutral-100">
                     <Image
-                      src={l.product.images[0]}
+                      src={l.product.images?.[0] || "/images/hero_lawn.png"}
                       alt={l.product.name}
                       fill
                       sizes="80px"
                       className="object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+                      }}
                     />
                   </div>
                   <div className="flex flex-1 flex-col">

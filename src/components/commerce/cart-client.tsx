@@ -96,11 +96,14 @@ export function CartClient({ checkout = false }: { checkout?: boolean }) {
           >
             <div className="relative h-32 w-24 sm:h-36 sm:w-28 flex-shrink-0 overflow-hidden rounded bg-panel">
               <Image
-                src={l.product.images[0] || "/images/hero_lawn.png"}
+                src={l.product.images?.[0] || "/images/hero_lawn.png"}
                 alt={l.product.name}
                 fill
                 sizes="120px"
                 className="object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+                }}
               />
             </div>
             

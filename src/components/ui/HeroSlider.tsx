@@ -6,6 +6,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { Product } from "@/data/products";
+import { isValidImageUrl } from "@/lib/product-service";
 
 interface HeroSliderProps {
   slides?: BannerSlide[];
@@ -113,7 +114,7 @@ export function HeroSlider({ slides: customSlides, products }: HeroSliderProps) 
     ? customSlides
     : (products && products.length > 0)
       ? products.slice(0, 6).map((p) => {
-          const img = p.images.find((i) => i && !i.startsWith("data:")) || p.images[0] || "/images/hero_lawn.png";
+          const img = p.images.find(isValidImageUrl) || p.images[0] || "/images/hero_lawn.png";
           return {
             id: `slide-${p.id}`,
             tagline: p.category?.toUpperCase() || "PREMIUM EMBROIDERY",

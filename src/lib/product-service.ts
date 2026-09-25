@@ -15,13 +15,31 @@ function stringList(value: unknown): string[] {
   return value.split(",").map((item) => item.trim()).filter(Boolean);
 }
 
+export function isValidImageUrl(image: unknown): boolean {
+  if (typeof image !== "string") return false;
+  const trimmed = image.trim();
+  if (!trimmed) return false;
+  if (
+    trimmed.startsWith("data:") ||
+    trimmed.startsWith("blob:") ||
+    trimmed.startsWith("file:") ||
+    trimmed.includes("fakepath") ||
+    trimmed.includes("undefined") ||
+    trimmed.includes("null") ||
+    trimmed.startsWith("C:\\") ||
+    trimmed.startsWith("D:\\")
+  ) {
+    return false;
+  }
+  return trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/");
+}
+
 function publicImages(value: unknown): string[] {
   const images = stringList(value);
-  // Never send legacy database-embedded image binaries to a visitor. A
-  // migration removes them permanently; this guard keeps responses safe while
-  // a deployment is rolling out. Keep valid remote images in mixed legacy
+  // Never send legacy database-embedded image binaries, temporary blob URLs,
+  // or invalid local paths to a visitor. Keep valid remote/stored images in mixed legacy
   // rows instead of replacing the whole gallery with a placeholder.
-  const safeImages = images.filter((image) => !image.startsWith("data:image/"));
+  const safeImages = images.map((img) => img.trim()).filter(isValidImageUrl);
   return safeImages.length ? safeImages : ["/images/hero_lawn.png"];
 }
 
@@ -68,12 +86,17 @@ export function toProduct(product: DbProduct): Product {
 }
 
 export function productWriteData(input: Omit<Product, "id">): Prisma.ProductUncheckedCreateInput {
+  const sanitizedImages = (Array.isArray(input.images) ? input.images : [input.images])
+    .filter(isValidImageUrl)
+    .map((img) => img.trim());
+  const finalImages = sanitizedImages.length > 0 ? sanitizedImages : ["/images/hero_lawn.png"];
+
   return {
     slug: input.slug, name: input.name.trim(), category: input.category, brand: input.brand,
     price: input.price, compareAt: input.compareAt ?? null, rating: input.rating, reviews: input.reviews,
     badge: input.badge ?? null, colors: JSON.stringify(input.colors), sizes: JSON.stringify(input.sizes),
     // A focused five-image gallery keeps product pages fast and easy to browse.
-    images: JSON.stringify(input.images.slice(0, 5)), description: input.description.trim(), fabric: input.fabric,
+    images: JSON.stringify(finalImages.slice(0, 5)), description: input.description.trim(), fabric: input.fabric,
     stock: input.stock, salePrice: input.salePrice ?? null, saleEnd: input.saleEnd ?? null,
     status: input.status || "published", isActive: input.isActive ?? true,
     publishedAt: input.status === "draft" ? null : input.publishedAt ? new Date(input.publishedAt) : new Date(),

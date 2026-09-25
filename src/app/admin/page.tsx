@@ -14,8 +14,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { 
   Plus, Edit, Trash2, LayoutDashboard, ShoppingBag, 
-  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp, FileUp, SlidersHorizontal
+  Settings, LogOut, ArrowLeft, ImagePlus, CheckCircle, Search, Eye, Shield, Key, Lock, Server, Users, Wallet, Package, TrendingUp, FileUp, SlidersHorizontal,
+  Loader2, Star, X, UploadCloud, AlertCircle
 } from "lucide-react";
+import { isValidImageUrl } from "@/lib/product-service";
 
 const CsvProductImporter = dynamic(
   () => import("@/components/admin/csv-product-importer").then((module) => module.CsvProductImporter),
@@ -69,6 +71,10 @@ export default function AdminPage() {
   const [sizesSelected, setSizesSelected] = useState<string[]>([ "M", "L"]);
   const [imageFiles, setImageFiles] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState("");
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [uploadErrorMsg, setUploadErrorMsg] = useState("");
   const [notification, setNotification] = useState("");
   const [productError, setProductError] = useState("");
   const [productsLoading, setProductsLoading] = useState(true);
@@ -213,30 +219,104 @@ export default function AdminPage() {
     }
   };
 
-  // Process image upload to Base64
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Process real persistent image upload via backend storage API
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
-    
-    const fileArray = Array.from(files);
-    const promises = fileArray.map((file) => {
-      return new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      });
-    });
+    if (!files || files.length === 0) return;
 
-    Promise.all(promises).then((base64Strings) => {
-      setImageFiles([...imageFiles, ...base64Strings]);
+    const fileList = Array.from(files);
+    setUploadErrorMsg("");
+
+    // Frontend validation: format and size
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    for (const file of fileList) {
+      if (!allowedTypes.includes(file.type.toLowerCase())) {
+        setUploadStatus("error");
+        setUploadErrorMsg("Image must be JPG, PNG, or WEBP.");
+        e.target.value = "";
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        setUploadStatus("error");
+        setUploadErrorMsg("Image size is too large (maximum 10MB per file).");
+        e.target.value = "";
+        return;
+      }
+    }
+
+    setUploadingImages(true);
+    setUploadStatus("uploading");
+    setUploadProgress(
+      fileList.length === 1 ? "Uploading 1 photo to persistent storage..." : `Uploading 1 of ${fileList.length} photos...`
+    );
+
+    try {
+      const formData = new FormData();
+      fileList.forEach((file) => formData.append("files", file));
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.ok || !Array.isArray(data.urls) || data.urls.length === 0) {
+        throw new Error(data.message || "Failed to upload image(s).");
+      }
+
+      setImageFiles((prev) => [...prev, ...data.urls]);
+      setUploadStatus("success");
+      setUploadProgress(
+        `✓ Uploaded ${data.urls.length} photo${data.urls.length > 1 ? "s" : ""} successfully!`
+      );
+      setTimeout(() => {
+        setUploadStatus("idle");
+        setUploadProgress("");
+      }, 4500);
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      setUploadStatus("error");
+      setUploadErrorMsg(`❌ Upload failed: ${err.message || "Please try again"}`);
+    } finally {
+      setUploadingImages(false);
+      e.target.value = "";
+    }
+  };
+
+  const handleAddImageUrl = () => {
+    const trimmed = imageUrl.trim();
+    if (!trimmed) return;
+    if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://") && !trimmed.startsWith("/")) {
+      setUploadStatus("error");
+      setUploadErrorMsg("URL must start with http://, https://, or /");
+      return;
+    }
+    if (!imageFiles.includes(trimmed)) {
+      setImageFiles((prev) => [...prev, trimmed]);
+    }
+    setImageUrl("");
+    setUploadStatus("idle");
+    setUploadErrorMsg("");
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    setImageFiles((prev) => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleSetPrimaryImage = (indexToPrimary: number) => {
+    setImageFiles((prev) => {
+      const target = prev[indexToPrimary];
+      const rest = prev.filter((_, idx) => idx !== indexToPrimary);
+      return [target, ...rest];
     });
   };
 
   const handleClearImages = () => {
     setImageFiles([]);
     setImageUrl("");
+    setUploadStatus("idle");
+    setUploadErrorMsg("");
+    setUploadProgress("");
   };
 
   const resetForm = () => {
@@ -258,6 +338,10 @@ export default function AdminPage() {
     setSizesSelected([ "M", "L"]);
     setImageFiles([]);
     setImageUrl("");
+    setUploadingImages(false);
+    setUploadProgress("");
+    setUploadStatus("idle");
+    setUploadErrorMsg("");
     setEditMode(false);
     setSelectedProductId("");
   };
@@ -382,6 +466,10 @@ export default function AdminPage() {
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (savingProduct) return;
+    if (uploadingImages) {
+      alert("Please wait until image uploads have completed before publishing.");
+      return;
+    }
     
     if (!name || !description || Number(price) <= 0) {
       alert("Name, Description, and a valid Price are required.");
@@ -389,8 +477,11 @@ export default function AdminPage() {
     }
 
     // Combine uploaded files and input URL
-    const finalImages = [...imageFiles];
-    if (imageUrl) finalImages.push(imageUrl);
+    const combined = [...imageFiles];
+    if (imageUrl.trim() && !combined.includes(imageUrl.trim()) && isValidImageUrl(imageUrl.trim())) {
+      combined.push(imageUrl.trim());
+    }
+    const finalImages = combined.filter(isValidImageUrl);
     if (finalImages.length === 0) {
       finalImages.push("/images/hero_lawn.png"); // fallback default image
     }
@@ -716,41 +807,121 @@ export default function AdminPage() {
 
                 {/* Upload Image Section */}
                 <div className="border border-line rounded p-5 bg-background/50 grid gap-4">
-                  <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
-                    <ImagePlus size={14} /> Product Images
-                  </h3>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <label className="block text-sm">
-                      Upload Photos from Device
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleImageUpload}
-                        className="mt-2 block w-full text-xs text-muted file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-foreground file:text-background hover:file:opacity-85 file:cursor-pointer"
-                      />
-                    </label>
-                    <label className="block text-sm">
-                      Or Paste Image Web URL
-                      <Input
-                        className="mt-2"
-                        placeholder="https://example.com/suit.jpg"
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                      />
-                    </label>
+                  <div className="flex items-center justify-between">
+                    <h3 className="tracked-luxury text-xs text-accent font-semibold flex items-center gap-2">
+                      <ImagePlus size={14} /> Product Images & Gallery
+                    </h3>
+                    {uploadingImages && (
+                      <span className="flex items-center gap-1.5 text-xs text-accent font-medium">
+                        <Loader2 className="animate-spin" size={13} /> {uploadProgress}
+                      </span>
+                    )}
                   </div>
 
-                  {imageFiles.length > 0 && (
-                    <div className="mt-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-muted">Photos Preview ({imageFiles.length})</span>
-                        <button type="button" onClick={handleClearImages} className="text-xs text-red-600 underline">Clear All</button>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block text-sm">
+                      <span className="font-medium">Upload Photos from Device</span>
+                      <span className="block text-[11px] text-muted mb-2">Select 1 or more images (JPG, PNG, WEBP — max 10MB each)</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/jpg"
+                        multiple
+                        disabled={uploadingImages}
+                        onChange={handleImageUpload}
+                        className="block w-full text-xs text-muted file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-foreground file:text-background hover:file:opacity-85 file:cursor-pointer disabled:opacity-50"
+                      />
+                    </label>
+
+                    <div>
+                      <span className="block text-sm font-medium">Or Paste Image Web URL</span>
+                      <span className="block text-[11px] text-muted mb-2">Paste a direct public image link (e.g. https://...)</span>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="https://example.com/suit.jpg"
+                          value={imageUrl}
+                          disabled={uploadingImages}
+                          onChange={(e) => setImageUrl(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleAddImageUrl();
+                            }
+                          }}
+                        />
+                        <Button type="button" variant="outline" onClick={handleAddImageUrl} disabled={!imageUrl.trim() || uploadingImages}>
+                          <Plus size={14} /> Add
+                        </Button>
                       </div>
-                      <div className="flex flex-wrap gap-3">
-                        {imageFiles.map((base64, index) => (
-                          <div key={index} className="relative w-20 aspect-[3/4] border border-line overflow-hidden rounded">
-                            <Image src={base64} alt={`Preview ${index}`} fill className="object-cover" />
+                    </div>
+                  </div>
+
+                  {/* Status Banner */}
+                  {uploadStatus === "uploading" && (
+                    <div className="flex items-center gap-2 rounded bg-accent/10 border border-accent/20 p-3 text-xs text-accent font-medium">
+                      <Loader2 className="animate-spin shrink-0" size={15} />
+                      <span>{uploadProgress || "Uploading images to persistent storage..."}</span>
+                    </div>
+                  )}
+                  {uploadStatus === "success" && (
+                    <div className="flex items-center gap-2 rounded bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-600 font-medium">
+                      <CheckCircle className="shrink-0" size={15} />
+                      <span>{uploadProgress || "✓ Upload completed successfully!"}</span>
+                    </div>
+                  )}
+                  {uploadStatus === "error" && (
+                    <div className="flex items-center gap-2 rounded bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-600 font-medium">
+                      <AlertCircle className="shrink-0" size={15} />
+                      <span>{uploadErrorMsg || "Upload failed. Please try again."}</span>
+                    </div>
+                  )}
+
+                  {/* Photos Preview Grid */}
+                  {imageFiles.length > 0 && (
+                    <div className="mt-2 pt-3 border-t border-line/60">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs font-semibold text-muted">
+                          Photos Gallery ({imageFiles.length}) — First image is the primary cover
+                        </span>
+                        <button type="button" onClick={handleClearImages} className="text-xs text-red-600 hover:underline">
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-4">
+                        {imageFiles.map((src, index) => (
+                          <div key={`${src}-${index}`} className="group relative w-24 aspect-[3/4] border border-line overflow-hidden rounded bg-neutral-100 shadow-sm">
+                            <Image
+                              src={src}
+                              alt={`Product image ${index + 1}`}
+                              fill
+                              unoptimized={src.startsWith("http")}
+                              className="object-cover"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+                              }}
+                            />
+                            {index === 0 ? (
+                              <span className="absolute top-1 left-1 bg-accent text-white text-[9px] font-semibold px-1.5 py-0.5 rounded shadow">
+                                Main Cover
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleSetPrimaryImage(index)}
+                                className="opacity-0 group-hover:opacity-100 absolute top-1 left-1 bg-background/90 hover:bg-foreground hover:text-background text-[9px] font-semibold px-1.5 py-0.5 rounded shadow transition flex items-center gap-0.5"
+                                title="Set as primary image"
+                              >
+                                <Star size={9} /> Set Main
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(index)}
+                              className="opacity-0 group-hover:opacity-100 absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 shadow hover:bg-red-700 transition"
+                              title="Remove image"
+                              aria-label="Remove image"
+                            >
+                              <X size={11} />
+                            </button>
                           </div>
                         ))}
                       </div>
@@ -760,8 +931,8 @@ export default function AdminPage() {
 
                 <div className="flex justify-end gap-3 mt-4">
                   <Button type="button" variant="outline" onClick={() => { setShowForm(false); resetForm(); }}>Cancel</Button>
-                  <Button type="submit" disabled={savingProduct}>
-                    {savingProduct ? "Saving product..." : editMode ? "Apply Changes" : "Publish Suit"}
+                  <Button type="submit" disabled={savingProduct || uploadingImages}>
+                    {savingProduct ? "Saving product..." : uploadingImages ? "Uploading images..." : editMode ? "Apply Changes" : "Publish Suit"}
                   </Button>
                 </div>
               </form>
@@ -905,9 +1076,20 @@ export default function AdminPage() {
                     {filteredProducts.map((p) => (
                       <tr key={p.id} className="border-b border-line/60 hover:bg-neutral-50 dark:hover:bg-neutral-900/40 transition">
                         <td className="py-4">
-                          <div className="relative w-12 aspect-[3/4] border border-line/50 overflow-hidden bg-neutral-100">
-                            {p.images && p.images[0] && (
-                              <Image src={p.images[0]} alt={p.name} fill className="object-cover" />
+                          <div className="relative w-12 aspect-[3/4] border border-line/50 overflow-hidden bg-neutral-100 rounded">
+                            {p.images && p.images[0] ? (
+                              <Image
+                                src={p.images[0]}
+                                alt={p.name}
+                                fill
+                                unoptimized={p.images[0].startsWith("http")}
+                                className="object-cover"
+                                onError={(e) => {
+                                  (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-[9px] text-muted">No Image</div>
                             )}
                           </div>
                         </td>

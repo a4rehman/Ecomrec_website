@@ -58,7 +58,8 @@ function getProductSeason(category: string) {
 }
 
 function ProductDetailContent({ product, priceTier, products }: { product: Product; priceTier: string; products: Product[] }) {
-  const [image, setImage] = useState(product.images[0]);
+  const galleryImages = product.images && product.images.length > 0 ? product.images : ["/images/hero_lawn.png"];
+  const [image, setImage] = useState(galleryImages[0]);
   const [size, setSize] = useState(product.sizes[0]);
   const [color, setColor] = useState(product.colors[0]);
   const dispatch = useDispatch();
@@ -89,14 +90,14 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
   const handleColorChange = (c: string) => {
     setColor(c);
     const idx = product.colors.indexOf(c);
-    if (idx !== -1 && product.images[idx]) {
-      setImage(product.images[idx]);
+    if (idx !== -1 && galleryImages[idx]) {
+      setImage(galleryImages[idx]);
     }
   };
 
   const handleImageClick = (src: string) => {
     setImage(src);
-    const idx = product.images.indexOf(src);
+    const idx = galleryImages.indexOf(src);
     if (idx !== -1 && product.colors[idx]) {
       setColor(product.colors[idx]);
     }
@@ -104,7 +105,8 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
 
   useEffect(() => {
     // Reset selections on product change
-    setImage(product.images[0]);
+    const initialImages = product.images && product.images.length > 0 ? product.images : ["/images/hero_lawn.png"];
+    setImage(initialImages[0]);
     setSize(product.sizes[0]);
     setColor(product.colors[0]);
     
@@ -125,26 +127,38 @@ function ProductDetailContent({ product, priceTier, products }: { product: Produ
       <div className="grid gap-8 lg:gap-10 lg:grid-cols-[1.15fr_.85fr] min-w-0">
         <div className="grid gap-4 md:grid-cols-[96px_1fr] min-w-0">
           <div className="order-2 flex gap-2.5 overflow-x-auto max-w-full pb-2 no-scrollbar md:order-1 md:flex-col md:overflow-visible md:pb-0">
-            {product.images.map((src) => (
+            {galleryImages.map((src, index) => (
               <button
                 className={`focus-ring relative aspect-square w-16 sm:w-20 md:w-24 shrink-0 overflow-hidden border transition ${image === src ? "border-accent ring-1 ring-accent" : "border-line"}`}
-                aria-label={`View ${product.name} image`}
+                aria-label={`View ${product.name} image ${index + 1}`}
                 aria-pressed={image === src}
                 onClick={() => handleImageClick(src)}
-                key={src}
+                key={`${src}-${index}`}
               >
-                <Image src={src} alt={productImageAlt(product)} fill sizes="(max-width: 768px) 80px, 96px" className="object-cover" />
+                <Image
+                  src={src}
+                  alt={productImageAlt(product)}
+                  fill
+                  sizes="(max-width: 768px) 80px, 96px"
+                  className="object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+                  }}
+                />
               </button>
             ))}
           </div>
           <div className="relative order-1 aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden bg-neutral-100 md:order-2">
             <Image
-              src={image}
+              src={image || "/images/hero_lawn.png"}
               alt={productImageAlt(product)}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 55vw"
               className="object-cover transition duration-500 hover:scale-105"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = "/images/hero_lawn.png";
+              }}
             />
             <span className="glass absolute bottom-3 right-3 sm:bottom-5 sm:right-5 flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm">
               <ZoomIn size={15} /> Hover to zoom
