@@ -76,7 +76,7 @@ export const blogPosts: BlogPost[] = [
     slug: "heritage-lawn-edit",
     title: "The Heritage Lawn Edit",
     category: "Styling",
-    image: "/images/hero_lawn.png",
+    image: "/home_page_images/hero_banner_1_lavender.jpg",
     excerpt:
       "How to style your luxury lawn sets with statement jewelry and traditional khussas.",
     author: "Sawera Style Desk",
@@ -116,7 +116,7 @@ export const blogPosts: BlogPost[] = [
     slug: "caring-for-embellishments",
     title: "Caring for Zari and Chiffon",
     category: "Care",
-    image: "/images/hero_lawn.png",
+    image: "/home_page_images/hero_banner_4_royal_black.jpg",
     excerpt:
       "A complete guide to preserving hand-crafted tilla, gota, and dabka work on festive wear.",
     author: "Sawera Collection",
@@ -156,7 +156,7 @@ export const blogPosts: BlogPost[] = [
     slug: "evolution-of-peshwas",
     title: "The Evolution of the Peshwas",
     category: "Editorial",
-    image: "/images/hero_lawn.png",
+    image: "/home_page_images/hero_banner_3_teal.jpg",
     excerpt:
       "Exploring the historic roots of the flowy South Asian Peshwas silhouette and its modern revival.",
     author: "Sawera Collection",
@@ -195,7 +195,7 @@ export const blogPosts: BlogPost[] = [
     slug: "eid-dressing-guide",
     title: "Eid Dressing: A Complete Guide",
     category: "Editorial",
-    image: "/images/hero_lawn.png",
+    image: "/home_page_images/hero_banner_2_crimson.jpg",
     excerpt:
       "From sehri to Eid night, a curated style guide for every occasion of the festive season.",
     author: "Sawera Collection",

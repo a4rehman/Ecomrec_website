@@ -41,6 +41,15 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
   const premiumNewArrivals = (getProductsByBadge(products, "New").length ? getProductsByBadge(products, "New") : products).slice(0, 4);
   const collectionCategories = [...new Set(products.map((product) => product.category))].slice(0, 4);
 
+  const luxuryLawnProduct = products.find((p) => p.category === "Luxury Lawn" && p.images?.length > 0) || products[0];
+  const luxuryLawnImage = luxuryLawnProduct?.images?.find((img) => img && !img.startsWith("data:")) || luxuryLawnProduct?.images?.[0] || "/home_page_images/banner_luxury_lawn.webp";
+
+  const festiveProduct = products.find((p) => (p.category === "Festive Chiffon" || p.category === "Bridal & Couture") && p.images?.length > 0) || products[1] || products[0];
+  const festiveImage = festiveProduct?.images?.find((img) => img && !img.startsWith("data:")) || festiveProduct?.images?.[0] || "/home_page_images/hero_banner_4_royal_black.jpg";
+
+  const gardenProduct = products.find((p) => p.category === "Printed Lawn" && p.images?.length > 0) || products[2] || products[0];
+  const gardenImage = gardenProduct?.images?.find((img) => img && !img.startsWith("data:")) || gardenProduct?.images?.[0] || "/home_page_images/banner_summer_edit.webp";
+
   return (
     <>
       <FadeIn className="container-lux py-16">
@@ -51,15 +60,15 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
       <FadeIn className="py-8">
         <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
           <Image
-            src="/home_page_images/banner_luxury_lawn.webp"
+            src={luxuryLawnImage}
             alt="Sawera Luxury Lawn Collection banner — embroidered 3 piece lawn suits for women"
             fill
             sizes="(max-width: 768px) 100vw, 1280px"
             quality={80}
             loading="lazy"
-            className="object-cover"
+            className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-black/25" />
           <div className="absolute inset-y-0 left-8 md:left-16 flex flex-col justify-center text-white z-10 max-w-md md:max-w-xl">
             <p className="tracked-luxury text-xs text-white/80 uppercase">The Heritage Collection</p>
             <h2 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl text-white">Luxury Lawn &apos;26</h2>
@@ -98,13 +107,13 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
       <FadeIn className="py-8">
         <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
           <Image
-            src="/home_page_images/hero_banner_4_royal_black.jpg"
+            src={festiveImage}
             alt="Sawera Festive Formals Collection banner — chiffon and raw silk dresses"
             fill
             sizes="(max-width: 768px) 100vw, 1280px"
             quality={80}
             loading="lazy"
-            className="object-cover"
+            className="object-cover object-center"
           />
           <div className="absolute inset-0 bg-black/35" />
           <div className="absolute inset-y-0 right-8 md:right-16 flex flex-col justify-center text-right text-white z-10 max-w-md md:max-w-xl ml-auto">
@@ -176,13 +185,13 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
       <FadeIn className="py-8">
         <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
           <Image
-            src="/home_page_images/banner_summer_edit.webp"
+            src={gardenImage}
             alt="Sawera Garden Edit banner — lightweight cotton lawn suits in pastel florals"
             fill
             sizes="(max-width: 768px) 100vw, 1280px"
             quality={80}
             loading="lazy"
-            className="object-cover"
+            className="object-cover object-center"
           />
           <div className="absolute inset-0 bg-black/15" />
           <div className="absolute inset-y-0 left-8 md:left-16 flex flex-col justify-center text-white z-10 max-w-md md:max-w-xl">
@@ -262,18 +271,22 @@ export default function HomeBelowFold({ initialProducts }: { initialProducts: Pr
       <FadeIn className="container-lux py-16">
         <SectionHeading eyebrow="Journal" title="Editorial Notes" />
         <div className="grid gap-6 md:grid-cols-3">
-          {blogPosts.map((b, i) => (
-            <FadeIn key={b.slug} delay={i * 0.08}>
-              <Link href={`/blog/${b.slug}`} className="group block">
-                <div className="lux-sheen relative aspect-[4/3] overflow-hidden rounded-2xl">
-                  <Image src={b.image} alt={b.title} fill sizes="(max-width: 768px) 100vw, 380px" quality={80} loading="lazy" className="object-cover transition duration-700 group-hover:scale-105" />
-                </div>
-                <p className="tracked-luxury mt-5 text-xs text-accent">{b.category}</p>
-                <h3 className="mt-2 font-serif text-3xl transition group-hover:text-accent">{b.title}</h3>
-                <p className="mt-2 text-muted">{b.excerpt}</p>
-              </Link>
-            </FadeIn>
-          ))}
+          {blogPosts.map((b, i) => {
+            const assignedProduct = products[i % products.length];
+            const blogImg = (assignedProduct && assignedProduct.images?.find((img) => img && !img.startsWith("data:"))) || b.image;
+            return (
+              <FadeIn key={b.slug} delay={i * 0.08}>
+                <Link href={`/blog/${b.slug}`} className="group block">
+                  <div className="lux-sheen relative aspect-[4/3] overflow-hidden rounded-2xl bg-neutral-100">
+                    <Image src={blogImg} alt={b.title} fill sizes="(max-width: 768px) 100vw, 380px" quality={80} loading="lazy" className="object-cover transition duration-700 group-hover:scale-105" />
+                  </div>
+                  <p className="tracked-luxury mt-5 text-xs text-accent">{b.category}</p>
+                  <h3 className="mt-2 font-serif text-3xl transition group-hover:text-accent">{b.title}</h3>
+                  <p className="mt-2 text-muted">{b.excerpt}</p>
+                </Link>
+              </FadeIn>
+            );
+          })}
         </div>
       </FadeIn>
 
