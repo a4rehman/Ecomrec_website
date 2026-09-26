@@ -38,7 +38,11 @@ async function uploadToCloudinary(file: File): Promise<string> {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `Cloudinary upload failed (HTTP ${res.status})`);
+    let errMsg = err?.error?.message || `Cloudinary upload failed (HTTP ${res.status})`;
+    if (errMsg.toLowerCase().includes("unknown api key")) {
+      errMsg = `Cloudinary Upload Preset '${uploadPreset}' is currently set to Signed mode. Please set Signing Mode to UNSIGNED in Cloudinary Console (Settings → Upload → Upload Presets → Edit '${uploadPreset}').`;
+    }
+    throw new Error(errMsg);
   }
   const data = await res.json();
   if (!data.secure_url) throw new Error("Cloudinary did not return a secure image URL.");
