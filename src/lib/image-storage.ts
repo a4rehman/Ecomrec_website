@@ -1,40 +1,43 @@
 import crypto from "node:crypto";
-import { put, del } from "@vercel/blob";
 
 export interface UploadResult {
   url: string;
   filename: string;
   size: number;
   mimeType: string;
-  storageProvider: "vercel-blob" | "cloudinary" | "local";
+  storageProvider: "cloudinary" | "local";
 }
 
 const ALLOWED_MIME_TYPES = new Set([
   "image/jpeg",
   "image/jpg",
   "image/png",
-  "image/webp"
+  "image/webp",
 ]);
 
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 /**
- * Determine if code is running in a serverless / Vercel cloud environment.
+ * Returns true when running inside Vercel / any serverless runtime where the
+ * filesystem is read-only and ephemeral.
  */
 export function isServerlessEnvironment(): boolean {
   return Boolean(
     process.env.VERCEL ||
-    process.env.VERCEL_ENV ||
-    process.env.AWS_LAMBDA_FUNCTION_NAME ||
-    process.env.LAMBDA_TASK_ROOT ||
-    (process.env.NODE_ENV === "production" && !process.env.ALLOW_LOCAL_STORAGE)
+      process.env.VERCEL_ENV ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.LAMBDA_TASK_ROOT ||
+      (process.env.NODE_ENV === "production" && !process.env.ALLOW_LOCAL_STORAGE)
   );
 }
 
 /**
- * Validate image buffer headers (magic bytes) to prevent malicious files disguised as images.
+ * Validates image file headers (magic bytes) to prevent disguised malicious files.
  */
-export function validateImageMagicBytes(buffer: Buffer): { valid: boolean; detectedMime?: string } {
+export function validateImageMagicBytes(buffer: Buffer): {
+  valid: boolean;
+  detectedMime?: string;
+} {
   if (buffer.length < 12) return { valid: false };
 
   // JPEG: FF D8 FF
@@ -56,7 +59,7 @@ export function validateImageMagicBytes(buffer: Buffer): { valid: boolean; detec
     return { valid: true, detectedMime: "image/png" };
   }
 
-  // WEBP: RIFF .... WEBP (bytes 0-3: 'RIFF', bytes 8-11: 'WEBP')
+  // WEBP: RIFF....WEBP
   if (
     buffer[0] === 0x52 &&
     buffer[1] === 0x49 &&
@@ -74,158 +77,107 @@ export function validateImageMagicBytes(buffer: Buffer): { valid: boolean; detec
 }
 
 /**
- * Optimizes image buffer using sharp if available, converting to high-quality WebP.
- * Gracefully falls back to the original buffer if sharp is unavailable.
- */
-async function optimizeImageBuffer(
-  inputBuffer: Buffer,
-  _originalMime: string
-): Promise<{ buffer: Buffer; mimeType: string; extension: string }> {
-  try {
-    const sharpModule = await import("sharp");
-    const sharp = sharpModule.default || sharpModule;
-
-    const pipeline = sharp(inputBuffer, { failOnError: false })
-      .rotate() // auto-orient by EXIF
-      .resize({
-        width: 2000,
-        height: 2500,
-        fit: "inside",
-        withoutEnlargement: true
-      })
-      .webp({ quality: 85, effort: 4 });
-
-    const optimizedBuffer = await pipeline.toBuffer();
-    return {
-      buffer: optimizedBuffer,
-      mimeType: "image/webp",
-      extension: ".webp"
-    };
-  } catch (err) {
-    console.warn("Sharp image optimization not applied, using original buffer:", err);
-    return {
-      buffer: inputBuffer,
-      mimeType: _originalMime,
-      extension: _originalMime === "image/png" ? ".png" : _originalMime === "image/webp" ? ".webp" : ".jpg"
-    };
-  }
-}
-
-/**
- * Upload an image file to persistent storage (Vercel Blob in production, or local fallback in dev).
+ * Upload an image buffer to Cloudinary via the server-side REST API.
+ * Uses an unsigned upload preset — no API secret is required on the server.
+ * Falls back to local filesystem storage only in local dev (non-serverless).
  */
 export async function uploadImageToStorage(
   fileBuffer: Buffer,
   originalFilename: string,
   clientMimeType?: string
 ): Promise<UploadResult> {
-  // 1. File size check
+  // --- Size guard ---
   if (fileBuffer.length > MAX_FILE_SIZE_BYTES) {
-    throw new Error("Image size exceeds maximum limit of 10MB.");
+    throw new Error("Image size exceeds the 10 MB limit.");
   }
   if (fileBuffer.length === 0) {
     throw new Error("Uploaded file is empty.");
   }
 
-  // 2. Validate magic bytes
+  // --- Magic-byte validation ---
   const magicCheck = validateImageMagicBytes(fileBuffer);
   if (!magicCheck.valid) {
-    throw new Error("Invalid image format. Allowed formats are JPG, PNG, and WEBP.");
+    throw new Error(
+      "Invalid image format. Only JPG, PNG, and WEBP images are accepted."
+    );
   }
-
   const detectedMime = magicCheck.detectedMime || clientMimeType || "image/jpeg";
   if (!ALLOWED_MIME_TYPES.has(detectedMime)) {
     throw new Error("Image must be JPG, PNG, or WEBP.");
   }
 
-  // 3. Optimize image buffer
-  const { buffer: processedBuffer, mimeType: finalMime, extension } = await optimizeImageBuffer(
-    fileBuffer,
-    detectedMime
-  );
-
+  // --- Build a safe filename (used as Cloudinary public_id) ---
   const timestamp = Date.now();
   const randomHash = crypto.randomBytes(6).toString("hex");
   const cleanBaseName = originalFilename
     .replace(/\.[^/.]+$/, "")
     .toLowerCase()
     .replace(/[^a-z0-9_-]+/g, "-")
-    .slice(0, 40) || "suit";
-  const safeFilename = `products/${cleanBaseName}-${timestamp}-${randomHash}${extension}`;
+    .slice(0, 40) || "product";
+  const publicId = `sawera/products/${cleanBaseName}-${timestamp}-${randomHash}`;
 
-  // 4. Primary: Vercel Blob Storage (Production & Development with BLOB_READ_WRITE_TOKEN)
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+  // --- Primary: Cloudinary server-side upload ---
+  const cloudName =
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset =
+    process.env.CLOUDINARY_UPLOAD_PRESET ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
-  if (blobToken) {
+  if (cloudName && uploadPreset) {
     try {
-      const blob = await put(safeFilename, processedBuffer, {
-        access: "public",
-        contentType: finalMime,
-        token: blobToken,
-        addRandomSuffix: false
-      });
+      // Convert buffer to base64 data URI for Cloudinary's REST API
+      const base64Data = `data:${detectedMime};base64,${fileBuffer.toString("base64")}`;
 
-      return {
-        url: blob.url,
-        filename: safeFilename,
-        size: processedBuffer.length,
-        mimeType: finalMime,
-        storageProvider: "vercel-blob"
-      };
-    } catch (blobErr: any) {
-      console.error("Vercel Blob upload failed:", blobErr);
-      throw new Error(`Vercel Blob storage error: ${blobErr?.message || "Failed to store image in Vercel Blob"}`);
-    }
-  }
-
-  // 5. Secondary: Cloudinary Storage
-  const cloudinaryName = process.env.CLOUDINARY_CLOUD_NAME;
-  const cloudinaryKey = process.env.CLOUDINARY_API_KEY;
-  const cloudinarySecret = process.env.CLOUDINARY_API_SECRET;
-  const cloudinaryUrl = process.env.CLOUDINARY_URL;
-
-  if (cloudinaryUrl || (cloudinaryName && cloudinaryKey && cloudinarySecret)) {
-    try {
-      const base64Data = `data:${finalMime};base64,${processedBuffer.toString("base64")}`;
-      const cloudName = cloudinaryName || (cloudinaryUrl ? cloudinaryUrl.split("@")[1] : "");
-      
       const formData = new FormData();
       formData.append("file", base64Data);
-      formData.append("upload_preset", process.env.CLOUDINARY_UPLOAD_PRESET || "sawera_products");
+      formData.append("upload_preset", uploadPreset);
+      formData.append("public_id", publicId);
       formData.append("folder", "sawera/products");
 
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: "POST",
-        body: formData
-      });
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: "POST", body: formData }
+      );
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.secure_url) {
-          return {
-            url: data.secure_url,
-            filename: data.public_id || safeFilename,
-            size: processedBuffer.length,
-            mimeType: finalMime,
-            storageProvider: "cloudinary"
-          };
-        }
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(
+          (errBody as any)?.error?.message ||
+            `Cloudinary responded with HTTP ${res.status}`
+        );
       }
-    } catch (cloudErr) {
-      console.warn("Cloudinary upload failed:", cloudErr);
+
+      const data = (await res.json()) as { secure_url: string; public_id: string; bytes: number };
+      if (!data.secure_url) {
+        throw new Error("Cloudinary did not return a secure_url.");
+      }
+
+      return {
+        url: data.secure_url,
+        filename: data.public_id || publicId,
+        size: data.bytes ?? fileBuffer.length,
+        mimeType: detectedMime,
+        storageProvider: "cloudinary",
+      };
+    } catch (cloudErr: any) {
+      console.error("Cloudinary server-side upload failed:", cloudErr);
+      throw new Error(
+        `Image upload to Cloudinary failed: ${cloudErr?.message || "Unknown error"}`
+      );
     }
   }
 
-  // 6. Serverless / Vercel Runtime Guard
-  // On Vercel / serverless runtime, the filesystem is read-only and ephemeral.
-  // NEVER attempt filesystem operations (mkdir/writeFile) on Vercel.
+  // --- Serverless guard (no Cloudinary configured) ---
   if (isServerlessEnvironment()) {
     throw new Error(
-      "Vercel Blob storage is not connected. Please attach a Vercel Blob store in your Vercel Dashboard (Storage -> Create Blob Store) or set the BLOB_READ_WRITE_TOKEN environment variable in Vercel Project Settings."
+      "Image storage is not configured. " +
+        "Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET " +
+        "in your Vercel project environment variables."
     );
   }
 
-  // 7. Local Development Fallback (Only on developer machine / localhost outside Vercel)
+  // --- Local development filesystem fallback ---
   try {
     const { promises: fs } = await import("node:fs");
     const path = await import("node:path");
@@ -233,52 +185,67 @@ export async function uploadImageToStorage(
     const localUploadsDir = path.join(process.cwd(), "public", "uploads", "products");
     await fs.mkdir(localUploadsDir, { recursive: true });
 
-    const localFileName = `${cleanBaseName}-${timestamp}-${randomHash}${extension}`;
+    const ext =
+      detectedMime === "image/png"
+        ? ".png"
+        : detectedMime === "image/webp"
+        ? ".webp"
+        : ".jpg";
+    const localFileName = `${cleanBaseName}-${timestamp}-${randomHash}${ext}`;
     const localFilePath = path.join(localUploadsDir, localFileName);
 
-    await fs.writeFile(localFilePath, processedBuffer);
-
-    const publicUrl = `/uploads/products/${localFileName}`;
+    await fs.writeFile(localFilePath, fileBuffer);
 
     return {
-      url: publicUrl,
+      url: `/uploads/products/${localFileName}`,
       filename: localFileName,
-      size: processedBuffer.length,
-      mimeType: finalMime,
-      storageProvider: "local"
+      size: fileBuffer.length,
+      mimeType: detectedMime,
+      storageProvider: "local",
     };
   } catch (fsErr: any) {
     console.error("Local filesystem write failed:", fsErr);
     throw new Error(
-      `Failed to save image: Persistent cloud storage is required. Please set BLOB_READ_WRITE_TOKEN.`
+      "Failed to save image locally. Configure Cloudinary for persistent storage."
     );
   }
 }
 
 /**
- * Safely delete an uploaded image from persistent storage if it was removed.
+ * Delete a stored product image.
+ * For Cloudinary URLs this is a no-op on the server side (management API requires
+ * a signed API key; images are cleaned up via Cloudinary dashboard).
+ * For local /uploads paths this removes the file from disk.
  */
 export async function deleteStoredImage(imageUrl: string): Promise<boolean> {
   if (!imageUrl || typeof imageUrl !== "string") return false;
 
   try {
-    // 1. Vercel Blob URL
-    if (imageUrl.includes("blob.vercel-storage.com")) {
-      const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-      if (blobToken) {
-        await del(imageUrl, { token: blobToken });
-        return true;
-      }
-    }
-
-    // 2. Local uploads file (only in local dev outside serverless)
+    // Local file cleanup (only in local dev)
     if (!isServerlessEnvironment() && imageUrl.startsWith("/uploads/products/")) {
       const { promises: fs } = await import("node:fs");
       const path = await import("node:path");
       const fileName = path.basename(imageUrl);
-      const filePath = path.join(process.cwd(), "public", "uploads", "products", fileName);
+      const filePath = path.join(
+        process.cwd(),
+        "public",
+        "uploads",
+        "products",
+        fileName
+      );
       await fs.unlink(filePath).catch(() => {});
       return true;
+    }
+
+    // Cloudinary images are public CDN URLs — deletion requires the signed
+    // Cloudinary Admin API (separate from the upload preset).
+    // Log for reference but do not throw.
+    if (imageUrl.includes("cloudinary.com")) {
+      console.info(
+        "Cloudinary image deletion skipped (requires signed Admin API):",
+        imageUrl
+      );
+      return false;
     }
 
     return false;
