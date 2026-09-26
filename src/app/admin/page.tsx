@@ -18,7 +18,32 @@ import {
   Loader2, Star, X, UploadCloud, AlertCircle
 } from "lucide-react";
 import { isValidImageUrl } from "@/lib/product-service";
-import { upload as uploadToVercelBlob } from "@vercel/blob/client";
+// Cloudinary unsigned upload — browser uploads directly to Cloudinary CDN
+// Requires NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+async function uploadToCloudinary(file: File): Promise<string> {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+  if (!cloudName || !uploadPreset) {
+    throw new Error(
+      "Cloudinary is not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in Vercel project environment variables."
+    );
+  }
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", uploadPreset);
+  formData.append("folder", "sawera/products");
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `Cloudinary upload failed (HTTP ${res.status})`);
+  }
+  const data = await res.json();
+  if (!data.secure_url) throw new Error("Cloudinary did not return a secure image URL.");
+  return data.secure_url as string;
+}
 
 const CsvProductImporter = dynamic(
   () => import("@/components/admin/csv-product-importer").then((module) => module.CsvProductImporter),
@@ -220,7 +245,7 @@ export default function AdminPage() {
     }
   };
 
-  // Process real persistent image upload via direct Vercel Blob client upload or server storage API
+  // Upload images directly to Cloudinary (browser → Cloudinary CDN, no server route needed)
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -251,46 +276,14 @@ export default function AdminPage() {
     const uploadedUrls: string[] = [];
     const errors: string[] = [];
 
-    // Attempt direct Vercel Blob client upload first, fallback to /api/admin/upload multipart
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
-      setUploadProgress(`Uploading ${i + 1} of ${fileList.length}: ${file.name}...`);
-
-      let directSuccess = false;
+      setUploadProgress(`Uploading ${i + 1} of ${fileList.length}: ${file.name}…`);
       try {
-        const cleanBase = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const blob = await uploadToVercelBlob(`products/${cleanBase}`, file, {
-          access: "public",
-          handleUploadUrl: "/api/admin/upload/blob",
-        });
-        if (blob && blob.url) {
-          uploadedUrls.push(blob.url);
-          directSuccess = true;
-        }
-      } catch (blobDirectErr: any) {
-        // Direct client upload not configured or fell through, proceed to server fallback below
-        console.warn("Direct blob client upload not available, using server endpoint:", blobDirectErr);
-      }
-
-      if (!directSuccess) {
-        try {
-          const formData = new FormData();
-          formData.append("file", file);
-
-          const res = await fetch("/api/admin/upload", {
-            method: "POST",
-            body: formData,
-          });
-
-          const data = await res.json();
-          if (res.ok && data.ok && data.url) {
-            uploadedUrls.push(data.url);
-          } else {
-            errors.push(`${file.name}: ${data.message || "Upload failed"}`);
-          }
-        } catch (serverErr: any) {
-          errors.push(`${file.name}: ${serverErr.message || "Upload network error"}`);
-        }
+        const url = await uploadToCloudinary(file);
+        uploadedUrls.push(url);
+      } catch (err: any) {
+        errors.push(`${file.name}: ${err?.message || "Upload failed"}`);
       }
     }
 
@@ -299,7 +292,7 @@ export default function AdminPage() {
       if (errors.length === 0) {
         setUploadStatus("success");
         setUploadProgress(
-          `✓ Uploaded ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? "s" : ""} successfully to persistent cloud storage!`
+          `✓ Uploaded ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? "s" : ""} successfully to Cloudinary!`
         );
       } else {
         setUploadStatus("error");
@@ -316,7 +309,7 @@ export default function AdminPage() {
     } else {
       setUploadStatus("error");
       setUploadErrorMsg(
-        `❌ Upload failed: ${errors.join(", ") || "Please verify storage configuration and try again."}`
+        errors.join(", ") || "Upload failed. Check that Cloudinary environment variables are set in Vercel."
       );
     }
 
