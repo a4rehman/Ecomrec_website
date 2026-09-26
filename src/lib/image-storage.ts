@@ -119,10 +119,12 @@ export async function uploadImageToStorage(
   // --- Primary: Cloudinary server-side upload ---
   const cloudName =
     process.env.CLOUDINARY_CLOUD_NAME ||
-    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+    "dtafeqfp";
   const uploadPreset =
     process.env.CLOUDINARY_UPLOAD_PRESET ||
-    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+    "sawera_products";
 
   if (cloudName && uploadPreset) {
     try {
