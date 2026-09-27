@@ -23,30 +23,52 @@ import { isValidImageUrl } from "@/lib/product-service";
 async function uploadToCloudinary(file: File): Promise<string> {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dtafeqfp";
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "sawera_products";
-  if (!cloudName || !uploadPreset) {
-    throw new Error(
-      "Cloudinary is not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in Vercel project environment variables."
-    );
-  }
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", uploadPreset);
-  formData.append("folder", "sawera/products");
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-    method: "POST",
-    body: formData,
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    let errMsg = err?.error?.message || `Cloudinary upload failed (HTTP ${res.status})`;
-    if (errMsg.toLowerCase().includes("unknown api key")) {
-      errMsg = `Cloudinary Upload Preset '${uploadPreset}' is currently set to Signed mode. Please set Signing Mode to UNSIGNED in Cloudinary Console (Settings → Upload → Upload Presets → Edit '${uploadPreset}').`;
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.secure_url) {
+        return data.secure_url as string;
+      }
     }
-    throw new Error(errMsg);
+
+    const err = await res.json().catch(() => ({}));
+    const rawMsg = err?.error?.message || `HTTP ${res.status}`;
+    
+    // If direct upload failed due to signed preset / api key, provide clear hint
+    if (rawMsg.toLowerCase().includes("unknown api key") || rawMsg.toLowerCase().includes("signed")) {
+      throw new Error(`Cloudinary Preset '${uploadPreset}' is set to Signed mode. Please set Signing Mode to UNSIGNED and click SAVE in Cloudinary Console.`);
+    }
+    
+    throw new Error(rawMsg);
+  } catch (directErr: any) {
+    // Attempt fallback to server API endpoint (/api/admin/upload)
+    try {
+      const fallbackData = new FormData();
+      fallbackData.append("file", file);
+      const apiRes = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: fallbackData,
+      });
+      const apiJson = await apiRes.json();
+      if (apiRes.ok && apiJson.ok && apiJson.url) {
+        return apiJson.url;
+      }
+    } catch {
+      // Fallback failed, throw original error
+    }
+
+    throw directErr;
   }
-  const data = await res.json();
-  if (!data.secure_url) throw new Error("Cloudinary did not return a secure image URL.");
-  return data.secure_url as string;
 }
 
 const CsvProductImporter = dynamic(
