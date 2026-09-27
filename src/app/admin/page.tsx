@@ -21,7 +21,7 @@ import { isValidImageUrl } from "@/lib/product-service";
 // Cloudinary unsigned upload — browser uploads directly to Cloudinary CDN
 // Requires NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 async function uploadToCloudinary(file: File): Promise<string> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dtafeqfp";
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "dtafeqpf";
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "sawera_products";
 
   try {
@@ -34,21 +34,13 @@ async function uploadToCloudinary(file: File): Promise<string> {
       body: formData,
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      if (data.secure_url) {
-        return data.secure_url as string;
-      }
+    const data = await res.json().catch(() => ({}));
+
+    if (res.ok && data.secure_url) {
+      return data.secure_url as string;
     }
 
-    const err = await res.json().catch(() => ({}));
-    const rawMsg = err?.error?.message || `HTTP ${res.status}`;
-    
-    // If direct upload failed due to signed preset / api key, provide clear hint
-    if (rawMsg.toLowerCase().includes("unknown api key") || rawMsg.toLowerCase().includes("signed")) {
-      throw new Error(`Cloudinary Preset '${uploadPreset}' is set to Signed mode. Please set Signing Mode to UNSIGNED and click SAVE in Cloudinary Console.`);
-    }
-    
+    const rawMsg = data?.error?.message || `Cloudinary upload failed (HTTP ${res.status})`;
     throw new Error(rawMsg);
   } catch (directErr: any) {
     // Attempt fallback to server API endpoint (/api/admin/upload)
@@ -64,7 +56,7 @@ async function uploadToCloudinary(file: File): Promise<string> {
         return apiJson.url;
       }
     } catch {
-      // Fallback failed, throw original error
+      // Fallback failed
     }
 
     throw directErr;

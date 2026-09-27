@@ -120,7 +120,7 @@ export async function uploadImageToStorage(
   const cloudName =
     process.env.CLOUDINARY_CLOUD_NAME ||
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
-    "dtafeqfp";
+    "dtafeqpf";
   const uploadPreset =
     process.env.CLOUDINARY_UPLOAD_PRESET ||
     process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
