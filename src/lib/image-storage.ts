@@ -117,10 +117,11 @@ export async function uploadImageToStorage(
   const publicId = `sawera/products/${cleanBaseName}-${timestamp}-${randomHash}`;
 
   // --- Primary: Cloudinary server-side upload ---
-  const cloudName =
+  const envCloudName =
     process.env.CLOUDINARY_CLOUD_NAME ||
-    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
-    "dtafeqpf";
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const cloudName =
+    envCloudName && envCloudName !== "dtafeqfp" ? envCloudName : "dtafeqpf";
   const uploadPreset =
     process.env.CLOUDINARY_UPLOAD_PRESET ||
     process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
