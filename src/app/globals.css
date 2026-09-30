@@ -168,3 +168,9 @@ img { max-width: 100%; height: auto; }
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
+
+/* ElevenLabs Conversational AI Widget positioning */
+elevenlabs-convai {
+  display: block;
+  z-index: 9999 !important;
+}
