@@ -59,6 +59,8 @@ const BRAND_FOOTER = `
 /**
  * 1. Order Confirmation / Lifecycle Email Template
  */
+import { OrderActionType } from "@/types/email";
+
 export function buildOrderLifecycleTemplate(params: {
   orderId: string;
   customerName: string;
@@ -68,7 +70,7 @@ export function buildOrderLifecycleTemplate(params: {
   items: OrderItemSummary[];
   totalAmount: number;
   dateTime: string;
-  status: "Placed" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+  status: OrderActionType;
 }): { subject: string; html: string } {
   const isPlaced = params.status === "Placed";
   const subject = isPlaced

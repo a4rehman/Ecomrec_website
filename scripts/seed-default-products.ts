@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../src/lib/db";
 import { products } from "../src/data/products";
-
-const prisma = new PrismaClient();
 
 async function seedDefaultProducts() {
   let inserted = 0;

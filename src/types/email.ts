@@ -1,4 +1,4 @@
-export type OrderActionType = "Placed" | "Cancelled" | "Replacement" | "Return";
+export type OrderActionType = "Placed" | "Processing" | "Shipped" | "Delivered" | "Cancelled" | "Replacement" | "Return";
 
 export type OrderNotificationItem = {
   productName: string;

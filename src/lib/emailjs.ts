@@ -10,6 +10,7 @@ import {
 import {
   ContactNotificationData,
   EmailSendResult,
+  OrderActionType,
   OrderNotificationData,
 } from "@/types/email";
 
@@ -30,7 +31,7 @@ export async function sendOrderNotification(data: OrderNotificationData): Promis
     })),
     totalAmount: data.totalAmount,
     dateTime: data.dateTime || new Date().toLocaleString("en-PK", { timeZone: "Asia/Karachi" }),
-    status: (data.actionType as any) || "Placed",
+    status: data.actionType || "Placed",
   });
 
   return {
@@ -43,7 +44,7 @@ export async function sendOrderStatusUpdateNotification(params: {
   customerEmail: string;
   customerName: string;
   orderId: string;
-  status: string;
+  status: OrderActionType | string;
 }): Promise<EmailSendResult> {
   const res = await sendOrderEmail({
     orderId: params.orderId,
@@ -54,7 +55,7 @@ export async function sendOrderStatusUpdateNotification(params: {
     items: [],
     totalAmount: 0,
     dateTime: new Date().toLocaleString("en-PK", { timeZone: "Asia/Karachi" }),
-    status: (params.status as any) || "Processing",
+    status: (params.status as OrderActionType) || "Processing",
   });
 
   return {

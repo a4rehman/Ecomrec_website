@@ -49,6 +49,8 @@ function isValidEmail(email?: string | null): boolean {
  * 1. Send Order Lifecycle Email (Confirmation, Status Updates)
  * Sent FROM order@saweracollection.com to Customer + Owner BCC
  */
+import { OrderActionType } from "@/types/email";
+
 export async function sendOrderEmail(params: {
   orderId: string;
   customerName: string;
@@ -58,7 +60,7 @@ export async function sendOrderEmail(params: {
   items: OrderItemSummary[];
   totalAmount: number;
   dateTime: string;
-  status: "Placed" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+  status: OrderActionType;
 }): Promise<{ ok: boolean; message: string }> {
   const transporter = getTransporter();
   if (!transporter) {

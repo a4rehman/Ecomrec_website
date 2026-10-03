@@ -2,10 +2,7 @@
 // locked out after the emailVerified column is added (new column defaults to false).
 //
 // Run ONLY after `npx prisma db push` on the server where DATABASE_URL is set:
-//   npx tsx prisma/backfill-email-verified.ts
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../src/lib/db";
 
 async function main() {
   const result = await prisma.user.updateMany({
