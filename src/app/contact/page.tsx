@@ -1,0 +1,95 @@
+"use client";
+
+import { useState } from "react";
+import { Mail, MapPin, Phone, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input, Textarea } from "@/components/ui/input";
+import { BrandLogo } from "@/components/layout/brand-logo";
+import { EmailSendResult } from "@/types/email";
+import { contact as trackContact } from "@/lib/metaPixel";
+
+export default function ContactPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setStatusMessage("");
+    setIsSending(true);
+
+    const res = await fetch("/api/notify/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, message, dateTime: new Date().toLocaleString() }),
+    });
+    const result: EmailSendResult = await res.json();
+
+    setStatusMessage(result.message);
+    setIsSending(false);
+
+    if (result.ok) {
+      trackContact();
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+    }
+  };
+
+  return (
+    <section className="container-lux py-14">
+      <div className="mb-10">
+        <BrandLogo className="mb-6 items-start" imageClassName="w-48" showTagline />
+        <h1 className="font-serif text-6xl">Contact Us</h1>
+      </div>
+      <div className="grid gap-10 lg:grid-cols-2">
+        <form className="premium-surface grid gap-4 p-6" onSubmit={handleSubmit}>
+          <Input placeholder="Name" aria-label="Your name" value={name} onChange={(event) => setName(event.target.value)} required />
+          <Input placeholder="E-mail" type="email" aria-label="Your email address" value={email} onChange={(event) => setEmail(event.target.value)} required />
+          <Input placeholder="Phone number" type="tel" aria-label="Your phone number" value={phone} onChange={(event) => setPhone(event.target.value)} />
+          <Textarea placeholder="Message" aria-label="Your message" value={message} onChange={(event) => setMessage(event.target.value)} required />
+          {statusMessage && (
+            <div className={`rounded border p-3 text-sm ${statusMessage.includes("successfully") ? "border-green-200 bg-green-50 text-green-700" : "border-yellow-200 bg-yellow-50 text-yellow-800"}`}>
+              {statusMessage}
+            </div>
+          )}
+          <Button type="submit" disabled={isSending}>{isSending ? "Sending..." : "Send Message"}</Button>
+        </form>
+        <div>
+          <div className="grid gap-4">
+            <p className="flex gap-3">
+              <MapPin /> Sawera Collection, Lahore, Punjab, Pakistan
+            </p>
+            <p className="flex gap-3">
+              <a href="https://wa.me/923066378857" target="_blank" rel="noopener noreferrer" className="hover:underline">+92 306 6378857 (WhatsApp Helpline)</a>
+            </p>
+            <p className="flex gap-3">
+              <Mail /> <a href="mailto:support@saweracollection.com" className="hover:underline">support@saweracollection.com</a>
+            </p>
+            <p className="flex items-center gap-3">
+              <a
+                href="https://www.instagram.com/saweraa_collection/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline flex items-center gap-2 hover:text-accent transition-colors"
+              >
+                <span>Instagram:</span>
+                <strong>@saweraa_collection</strong>
+              </a>
+            </p>
+          </div>
+          <div className="botanical-panel mt-8 aspect-[16/10] rounded-[28px] border border-line bg-[linear-gradient(135deg,#fffaf9,#f4dfe0,#c98386)] p-6 text-foreground">
+            <p className="tracked-luxury">Customer Concierge &amp; Order Support</p>
+            <p className="relative z-10 mt-4 max-w-sm text-sm leading-7 text-muted">
+              Our styling team and customer concierge are available via WhatsApp and email to assist with sizing, custom stitching, order tracking, and international express delivery.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

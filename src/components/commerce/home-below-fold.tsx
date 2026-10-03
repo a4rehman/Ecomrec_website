@@ -1,0 +1,346 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { BadgeCheck, Banknote, Eye, MessageCircle, RotateCcw, ShieldCheck, Truck } from "lucide-react";
+import { motion } from "framer-motion";
+import { ProductCard } from "@/components/commerce/product-card";
+import { ProductStrip } from "@/components/commerce/product-strip";
+import { SectionHeading } from "@/components/commerce/section-heading";
+import { blogPosts, getProductsByBadge, testimonials } from "@/data/products";
+import { CountdownTimer } from "@/components/ui/CountdownTimer";
+import { FadeIn } from "@/components/ui/FadeIn";
+import { Button } from "@/components/ui/button";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import type { Product } from "@/data/products";
+
+const trustBadges = [
+  [Truck, "Free Shipping in Pakistan"],
+  [Banknote, "Cash on Delivery Available"],
+  [RotateCcw, "Easy Returns & Exchanges"],
+  [ShieldCheck, "Secure Checkout"],
+  [BadgeCheck, "100% Original Products"],
+  [MessageCircle, "WhatsApp Support"],
+] as const;
+
+export default function HomeBelowFold({ initialProducts }: { initialProducts: Product[] }) {
+  const { priceTier } = useSelector((state: RootState) => state.commerce);
+  const products = initialProducts;
+
+  const filteredProducts = products.filter((p) => {
+    if (priceTier === "premium") return p.price >= 5000;
+    if (priceTier === "simple") return p.price < 5000;
+    return true;
+  });
+
+  // Six cards fit the desktop six-column strip, keeping both collections on
+  // a single polished row instead of leaving a partial second line below.
+  const bestSellers = (getProductsByBadge(products, "Best Seller").length ? getProductsByBadge(products, "Best Seller") : products).slice(0, 6);
+  const celebrityEdit = (getProductsByBadge(products, "Celebrity").length ? getProductsByBadge(products, "Celebrity") : products.filter((p) => p.category === "Festive Chiffon")).slice(0, 6);
+  const premiumNewArrivals = (getProductsByBadge(products, "New").length ? getProductsByBadge(products, "New") : products).slice(0, 4);
+  const collectionCategories = [...new Set(products.map((product) => product.category))].slice(0, 4);
+
+  const luxuryLawnProduct = products.find((p) => p.category === "Luxury Lawn" && p.images?.length > 0) || products[0];
+  const luxuryLawnImage = luxuryLawnProduct?.images?.find((img) => img && !img.startsWith("data:")) || luxuryLawnProduct?.images?.[0] || "/home_page_images/banner_luxury_lawn.webp";
+
+  const festiveProduct = products.find((p) => (p.category === "Festive Chiffon" || p.category === "Bridal & Couture") && p.images?.length > 0) || products[1] || products[0];
+  const festiveImage = festiveProduct?.images?.find((img) => img && !img.startsWith("data:")) || festiveProduct?.images?.[0] || "/home_page_images/hero_banner_4_royal_black.jpg";
+
+  const gardenProduct = products.find((p) => p.category === "Printed Lawn" && p.images?.length > 0) || products[2] || products[0];
+  const gardenImage = gardenProduct?.images?.find((img) => img && !img.startsWith("data:")) || gardenProduct?.images?.[0] || "/home_page_images/banner_summer_edit.webp";
+
+  return (
+    <>
+      <FadeIn className="container-lux py-16">
+        <SectionHeading eyebrow="Most Loved" title="Best Sellers" />
+        <ProductStrip products={bestSellers} />
+      </FadeIn>
+
+      <FadeIn className="py-8">
+        <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
+          <Image
+            src={luxuryLawnImage}
+            alt="Sawera Luxury Lawn Collection banner — embroidered 3 piece lawn suits for women"
+            fill
+            sizes="(max-width: 768px) 100vw, 1280px"
+            quality={80}
+            loading="lazy"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-y-0 left-8 md:left-16 flex flex-col justify-center text-white z-10 max-w-md md:max-w-xl">
+            <p className="tracked-luxury text-xs text-white/80 uppercase">The Heritage Collection</p>
+            <h2 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl text-white">Luxury Lawn &apos;26</h2>
+            <p className="mt-4 text-xs md:text-sm text-white/90 leading-relaxed font-light hidden sm:block">
+              Intricately detailed resham embroidery, premium fabrics, and signature silhouettes crafted for summer grace.
+            </p>
+            <div className="mt-6">
+              <Link href="/shop?category=Luxury%20Lawn">
+                <Button className="bg-white text-black hover:bg-black hover:text-white transition-all text-xs font-semibold px-6 py-2 h-auto rounded-none">
+                  Shop Luxury Lawn
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+
+      <FadeIn className="container-lux py-16">
+        <SectionHeading
+          eyebrow="Star Style"
+          title="Celebrity Edit"
+          text="Embroidered raw silk, luxury lawn, and chiffon pieces inspired by iconic festive looks."
+        />
+        <ProductStrip products={celebrityEdit} showFabric />
+      </FadeIn>
+
+      <FadeIn className="container-lux py-16">
+        <SectionHeading eyebrow="Just In" title="Premium New Arrivals" />
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-8">
+          {premiumNewArrivals.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </FadeIn>
+
+      <FadeIn className="py-8">
+        <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
+          <Image
+            src={festiveImage}
+            alt="Sawera Festive Formals Collection banner — chiffon and raw silk dresses"
+            fill
+            sizes="(max-width: 768px) 100vw, 1280px"
+            quality={80}
+            loading="lazy"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-y-0 right-8 md:right-16 flex flex-col justify-center text-right text-white z-10 max-w-md md:max-w-xl ml-auto">
+            <p className="tracked-luxury text-xs text-white/80 uppercase">Bespoke Couture</p>
+            <h2 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl text-white">Festive Formals</h2>
+            <p className="mt-4 text-xs md:text-sm text-white/90 leading-relaxed font-light hidden sm:block">
+              Opulent chiffon, raw silk, and organza ensembles embellished with handcrafted tilla, gota, and dabka work.
+            </p>
+            <div className="mt-6 flex justify-end">
+              <Link href="/shop?category=Festive%20Chiffon">
+                <Button className="bg-white text-black hover:bg-black hover:text-white transition-all text-xs font-semibold px-6 py-2 h-auto rounded-none">
+                  Explore Couture
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+
+      <FadeIn className="container-lux py-20">
+        <SectionHeading
+          eyebrow="Featured"
+          title="The Grace Edit"
+          text="Explore soft silhouettes, premium fabrics, and delicate detailing designed for modern women and girls who love refined fashion."
+        />
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-8">
+          {filteredProducts.slice(0, 4).map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </FadeIn>
+
+      {collectionCategories.length > 0 && <section className="container-lux grid gap-4 py-10 sm:grid-cols-2 lg:grid-cols-4">
+        {collectionCategories.map((cat, i) => (
+          <FadeIn key={cat} delay={i * 0.08}>
+            <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="lux-sheen group relative block min-h-80 overflow-hidden rounded-3xl bg-neutral-100 shadow-sm">
+              <Image
+                src={(filteredProducts[i % filteredProducts.length] || products[0]).images[0]}
+                alt={`${cat} suits for women by Sawera Collection`}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+                quality={80}
+                loading="lazy"
+                className="object-cover transition duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#3b2022]/72 via-[#6f4144]/18 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6 z-10">
+                <p className="tracked-luxury text-[10px] text-white/70">Sawera Edit</p>
+                <h3 className="mt-2 font-serif text-3xl text-white transition duration-500 group-hover:translate-x-1">{cat}</h3>
+              </div>
+            </Link>
+          </FadeIn>
+        ))}
+      </section>}
+
+      <FadeIn className="container-lux py-20">
+        <div className="botanical-panel premium-surface grid gap-8 overflow-hidden p-8 md:grid-cols-[1fr_1.4fr] md:p-12">
+          <div className="relative z-10">
+            <p className="tracked-luxury text-xs text-accent">Private Boutique Offer</p>
+            <h2 className="mt-3 font-serif text-5xl">Graceful Festive Savings</h2>
+            <p className="mt-5 text-muted">
+              Get 15% off selected everyday and luxury pieces. Use coupon <b>SAWERA15</b> at checkout.
+            </p>
+          </div>
+          <CountdownTimer />
+        </div>
+      </FadeIn>
+
+      <FadeIn className="py-8">
+        <div className="relative aspect-[21/9] w-full overflow-hidden md:aspect-[3.2/1]">
+          <Image
+            src={gardenImage}
+            alt="Sawera Garden Edit banner — lightweight cotton lawn suits in pastel florals"
+            fill
+            sizes="(max-width: 768px) 100vw, 1280px"
+            quality={80}
+            loading="lazy"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-black/15" />
+          <div className="absolute inset-y-0 left-8 md:left-16 flex flex-col justify-center text-white z-10 max-w-md md:max-w-xl">
+            <p className="tracked-luxury text-xs text-white/80 uppercase">Atelier Summer Edit</p>
+            <h2 className="mt-2 font-serif text-3xl md:text-5xl lg:text-6xl text-white">The Garden Edit</h2>
+            <p className="mt-4 text-xs md:text-sm text-white/90 leading-relaxed font-light hidden sm:block">
+              Lightweight cambric cotton and fine printed lawn ensembles detailed with soft pastel colors and floral prints.
+            </p>
+            <div className="mt-6">
+              <Link href="/shop?category=Printed%20Lawn">
+                <Button className="bg-white text-black hover:bg-black hover:text-white transition-all text-xs font-semibold px-6 py-2 h-auto rounded-none">
+                  View Printed Lawn
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+
+      <FadeIn className="container-lux py-16">
+        <SectionHeading eyebrow="New Arrivals" title="Made to Be Remembered" />
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:gap-8">
+          {(filteredProducts.length >= 3 ? filteredProducts.slice(1, 4) : filteredProducts).map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </FadeIn>
+
+      <section className="border-y border-line py-16">
+        <div className="container-lux grid gap-8 md:grid-cols-3">
+          {trustBadges.map(([Icon, text], i) => (
+            <FadeIn key={text} delay={i * 0.1}>
+              <div className="premium-surface flex items-center gap-4 p-6 transition hover:-translate-y-1">
+                <Icon className="text-accent" />
+                <span className="tracked-luxury text-sm">{text}</span>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </section>
+
+      <FadeIn className="container-lux py-20">
+        <SectionHeading eyebrow="Clients" title="Client Testimonials" />
+        <div className="grid gap-4 md:grid-cols-3">
+          {testimonials.map((t, i) => (
+            <motion.blockquote
+              key={t}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.12, duration: 0.5 }}
+              className="glass p-7 leading-8 transition hover:-translate-y-1"
+            >
+              &ldquo;{t}&rdquo;
+            </motion.blockquote>
+          ))}
+        </div>
+      </FadeIn>
+
+      <FadeIn className="container-lux py-16">
+        <div className="botanical-panel premium-surface grid gap-8 p-8 md:grid-cols-[1fr_auto] md:items-center md:p-12">
+          <div className="relative z-10">
+            <p className="brand-script text-xl text-accent">Made for Her. Inspired by Grace</p>
+            <h2 className="mt-3 font-serif text-5xl">A softer kind of confidence.</h2>
+            <p className="mt-4 max-w-2xl leading-8 text-muted">
+              Sawera Collection brings premium modest fashion, polished occasion wear, and elegant everyday pieces into one graceful wardrobe.
+            </p>
+          </div>
+          <Link href="/about" className="relative z-10">
+            <Button variant="outline">
+              Discover Sawera <Eye size={15} />
+            </Button>
+          </Link>
+        </div>
+      </FadeIn>
+
+      <FadeIn className="container-lux py-16">
+        <SectionHeading eyebrow="Journal" title="Editorial Notes" />
+        <div className="grid gap-6 md:grid-cols-3">
+          {blogPosts.map((b, i) => {
+            const assignedProduct = products[i % products.length];
+            const blogImg = (assignedProduct && assignedProduct.images?.find((img) => img && !img.startsWith("data:"))) || b.image;
+            return (
+              <FadeIn key={b.slug} delay={i * 0.08}>
+                <Link href={`/blog/${b.slug}`} className="group block">
+                  <div className="lux-sheen relative aspect-[4/3] overflow-hidden rounded-2xl bg-neutral-100">
+                    <Image src={blogImg} alt={b.title} fill sizes="(max-width: 768px) 100vw, 380px" quality={80} loading="lazy" className="object-cover transition duration-700 group-hover:scale-105" />
+                  </div>
+                  <p className="tracked-luxury mt-5 text-xs text-accent">{b.category}</p>
+                  <h3 className="mt-2 font-serif text-3xl transition group-hover:text-accent">{b.title}</h3>
+                  <p className="mt-2 text-muted">{b.excerpt}</p>
+                </Link>
+              </FadeIn>
+            );
+          })}
+        </div>
+      </FadeIn>
+
+      <FadeIn className="container-lux py-16">
+        <SectionHeading eyebrow="Gallery" title="Follow the Atelier" />
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-6">
+          {(filteredProducts.length >= 6 ? filteredProducts.slice(0, 6) : products.slice(0, 6)).map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, scale: 0.92 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06, duration: 0.45 }}
+              className="relative aspect-square overflow-hidden"
+            >
+              <Image src={p.images[0]} alt={p.name} fill sizes="(max-width: 768px) 50vw, 200px" quality={80} loading="lazy" className="object-cover transition duration-700 hover:scale-110" />
+            </motion.div>
+          ))}
+        </div>
+      </FadeIn>
+
+      <FadeIn className="container-lux pb-16">
+        <SectionHeading eyebrow="FAQ" title="Before You Order" />
+        <div className="space-y-2">
+          {[
+            {
+              q: "Do you offer tailoring and stitching services?",
+              a: "Yes, we offer premium professional stitching for both local and international orders. You can choose from standard sizes (XS to XL) or select custom tailoring during checkout by submitting your measurements. Stitching typically adds 7-10 business days to fulfillment.",
+            },
+            {
+              q: "How fast is shipping, both domestically and internationally?",
+              a: "Domestic delivery within Pakistan takes 2-4 business days. International express shipping via DHL/FedEx takes 5-7 business days to the USA, UK, Canada, and UAE. Custom-stitched suits require additional processing time.",
+            },
+            {
+              q: "How should I care for suits with heavy tilla and zari work?",
+              a: "We strongly recommend dry cleaning for all products containing delicate hand-embroidery, gota borders, tilla work, or premium silk/chiffon fabrics. Iron on low heat on the reverse side of the embroidery to avoid damage.",
+            },
+          ].map((item, i) => (
+            <motion.details
+              key={item.q}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06 }}
+              className="group border-b border-line py-5"
+            >
+              <summary className="cursor-pointer list-none font-medium transition group-open:text-accent [&::-webkit-details-marker]:hidden">
+                {item.q}
+              </summary>
+              <p className="mt-3 text-muted">{item.a}</p>
+            </motion.details>
+          ))}
+        </div>
+      </FadeIn>
+    </>
+  );
+}

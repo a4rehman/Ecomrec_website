@@ -1,0 +1,191 @@
+"use client";
+
+import { useMemo, useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { ProductCard } from "@/components/commerce/product-card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/utils";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, setPriceTier } from "@/store/store";
+import type { Product } from "@/data/products";
+import { getCategorySeoContent } from "@/data/seo-content";
+import { search as trackSearch } from "@/lib/metaPixel";
+import { CollectionSwitcher } from "@/components/layout/collection-switcher";
+
+function ShopContentInner({ initialProducts }: { initialProducts: Product[] }) {
+  const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const catParam = searchParams.get("category");
+
+  const { products: syncedProducts, priceTier } = useSelector((state: RootState) => state.commerce);
+  // Render server-provided products immediately. The browser sync only updates
+  // the catalog afterwards; it must never leave the page visually empty.
+  const products = syncedProducts.length ? syncedProducts : initialProducts;
+
+  const [query, setQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [category, setCategory] = useState("All");
+  const [brand, setBrand] = useState("All");
+  const [max, setMax] = useState(100000);
+  const [sort, setSort] = useState("featured");
+
+  // Reset sort to default when category or brand changes
+  useEffect(() => {
+    setSort("featured");
+  }, [category, brand]);
+
+  // Determine price bounds based on active tier
+  const minLimit = 1000;
+  const maxLimit = priceTier === "simple" ? 5000 : 100000;
+
+  useEffect(() => {
+    if (catParam) {
+      setCategory(catParam);
+    }
+  }, [catParam]);
+
+  // Adjust price state if it goes out of active range limits
+  useEffect(() => {
+    if (priceTier === "simple" && max > 5000) {
+      setMax(5000);
+    } else if (priceTier === "premium" && max < 5000) {
+      setMax(100000);
+    }
+  }, [priceTier, max]);
+
+  // Debounced Meta `Search` event when the visitor types in the search box
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) return;
+    const timer = setTimeout(() => trackSearch(q), 600);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const filtered = useMemo(() => {
+    const list = products.filter((p) => {
+      // 1. Price tier filter
+      if (priceTier === "premium" && p.price < 5000) return false;
+      if (priceTier === "simple" && p.price >= 5000) return false;
+
+      // 2. Search & filter controls
+      return (
+        (category === "All" ||
+         (category === "Trending" && (p.rating >= 4.8 || p.badge === "Bestseller")) ||
+         p.category === category) &&
+        (brand === "All" || brand === "Sawera Collection" || p.brand === brand) &&
+        p.price <= max &&
+        p.name.toLowerCase().includes(query.toLowerCase())
+      );
+    });
+    return [...list].sort((a, b) => sort === "price-asc" ? a.price - b.price : sort === "price-desc" ? b.price - a.price : b.rating - a.rating);
+  }, [products, query, category, brand, max, sort, priceTier]);
+
+  // Filter available categories and brands for dropdown dynamically
+  const availableCategories = useMemo(() => {
+    const list = products.filter(p => priceTier === "premium" ? p.price >= 5000 : priceTier === "simple" ? p.price < 5000 : true);
+    const cats = [...new Set(list.map(p => p.category))];
+    return ["Trending", ...cats];
+  }, [products, priceTier]);
+
+  const availableBrands = useMemo(() => {
+    return ["Sawera Collection"];
+  }, []);
+
+  const handleResetFilters = () => {
+    dispatch(setPriceTier("all"));
+    setQuery("");
+    setCategory("All");
+    setBrand("All");
+    setMax(100000);
+  };
+
+  return (
+    <section className="container-lux py-8 sm:py-14">
+      <div className="mb-8 sm:mb-10 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+        <div>
+          <p className="tracked-luxury text-xs text-accent">Shop</p>
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+            {priceTier === "premium" ? "Luxury Atelier" : priceTier === "simple" ? "Everyday Essentials" : "Collections"}
+          </h1>
+        </div>
+        <div className="flex flex-col sm:flex-row items-center gap-3 flex-1 lg:max-w-2xl lg:justify-end">
+          <CollectionSwitcher />
+          
+          <div className="relative flex items-center justify-center">
+            {isSearchOpen || query ? (
+              <div className="relative flex items-center animate-in fade-in zoom-in-95 duration-200">
+                <Search className="absolute left-4 text-muted pointer-events-none" size={17} />
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Search products..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="h-11 w-60 sm:w-68 rounded-full border border-line bg-background/95 pl-11 pr-9 text-xs focus:outline-none focus:border-accent shadow-sm transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    setIsSearchOpen(false);
+                  }}
+                  className="absolute right-3 text-muted hover:text-foreground text-xs p-1"
+                  aria-label="Close search"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen(true)}
+                className="h-11 w-11 rounded-full border border-line/80 bg-background/95 flex items-center justify-center text-foreground hover:border-accent hover:text-accent shadow-sm transition-all duration-300 shrink-0"
+                aria-label="Search products"
+                title="Search products"
+              >
+                <Search size={18} />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
+        <aside className="glass h-fit p-5">
+          <h2 className="mb-5 flex items-center gap-2 tracked-luxury text-xs"><SlidersHorizontal size={16} /> Filters</h2>
+          <label className="mb-4 block text-sm">Category<select className="mt-2 h-11 w-full border border-line bg-background px-3" value={category} onChange={(e) => setCategory(e.target.value)}><option>All</option>{availableCategories.map((c) => <option key={c}>{c}</option>)}</select></label>
+          <label className="mb-4 block text-sm">Brand<select className="mt-2 h-11 w-full border border-line bg-background px-3" value={brand} onChange={(e) => setBrand(e.target.value)}><option>All</option>{availableBrands.map((b) => <option key={b}>{b}</option>)}</select></label>
+          <label className="mb-4 block text-sm">Max price: {formatPrice(max)}<input type="range" min={minLimit} max={maxLimit} step={priceTier === "simple" ? 200 : 1000} value={max} onChange={(e) => setMax(Number(e.target.value))} className="mt-3 w-full accent-[var(--accent)]" /></label>
+          <Button variant="outline" className="w-full" onClick={handleResetFilters}>Reset</Button>
+        </aside>
+        <div>
+          <div className="mb-6 flex items-center justify-between border-b border-line pb-4"><p className="text-sm text-muted">{filtered.length} products</p><select className="h-11 border border-line bg-background px-3" value={sort} onChange={(e) => setSort(e.target.value)}><option value="featured">Featured</option><option value="price-asc">Price low to high</option><option value="price-desc">Price high to low</option></select></div>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} />)}</div>{filtered.length === 0 && <div className="premium-surface mt-6 p-8 text-center"><h2 className="font-serif text-3xl">No pieces found</h2><p className="mt-2 text-muted">Try clearing a filter or searching for another style.</p><Button variant="outline" className="mt-5" onClick={handleResetFilters}>Clear filters</Button></div>}
+          <div className="mt-12 flex justify-center gap-2">{[1, 2, 3].map((n) => <button className="h-11 w-11 border border-line hover:bg-foreground hover:text-background" key={n}>{n}</button>)}</div>
+
+          {(() => {
+            const seoContent = getCategorySeoContent(category);
+            if (!seoContent) return null;
+            return (
+              <div className="mt-16 border-t border-line pt-10">
+                <h2 className="font-serif text-3xl mb-4">{seoContent.heading}</h2>
+                {seoContent.paragraphs.map((para, idx) => (
+                  <p key={idx} className="mb-4 leading-7 text-muted max-w-3xl">{para}</p>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
+  return (
+    <Suspense fallback={<div className="container-lux py-24 text-center">Loading collections...</div>}>
+      <ShopContentInner initialProducts={initialProducts} />
+    </Suspense>
+  );
+}
